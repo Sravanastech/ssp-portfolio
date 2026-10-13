@@ -1,7 +1,7 @@
 {
   "projects": {
-    "default": "ssp-profile-ui",
-    "prod": "ssp-profile-ui"
+    "default": "ssp-profile",
+    "prod": "ssp-profile"
   },
   "targets": {},
   "etags": {}

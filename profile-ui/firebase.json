@@ -20,6 +20,13 @@
         "function": { "functionId": "resumeApi", "region": "us-central1", "pinTag": true }
       },
       {
+        "source": "/api/**",
+        "run": {
+          "serviceId": "profile-backend",
+          "region": "us-central1"
+        }
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
