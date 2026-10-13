@@ -11,9 +11,15 @@ public final class EnvironmentPolicy {
    if(!env.getProperty("profile.email.mode","capture").equals("capture")) throw new IllegalStateException("Tests prohibit external email");
   }
   if(profiles.contains("prod")) {
-   for(String key:Set.of("spring.datasource.url","spring.datasource.username","spring.datasource.password","profile.auth.issuer","profile.auth.audience","profile.media.root","profile.email.mode","profile.email.endpoint","profile.email.key","profile.email.recipient","profile.email.from")) {
+   for(String key:Set.of("spring.datasource.url","spring.datasource.username","spring.datasource.password","profile.auth.issuer","profile.auth.audience","profile.media.root")) {
     String value=env.getProperty(key,"");
-    if(value.isBlank() || value.contains("example") || value.contains("CHANGEME") || value.contains("localhost") || value.equals("capture")) throw new IllegalStateException("Production requires configured " +key);
+    if(value.isBlank() || value.contains("example") || value.contains("CHANGEME") || value.contains("localhost")) throw new IllegalStateException("Production requires configured " +key);
+   }
+   if("provider".equals(env.getProperty("profile.email.mode"))) {
+    for(String key:Set.of("profile.email.endpoint","profile.email.key","profile.email.recipient","profile.email.from")) {
+     String value=env.getProperty(key,"");
+     if(value.isBlank() || value.contains("example") || value.contains("CHANGEME") || value.contains("localhost")) throw new IllegalStateException("Production requires configured " +key);
+    }
    }
    if(!env.getProperty("profile.auth.issuer", "").startsWith("https://")) throw new IllegalStateException("Production identity must use HTTPS");
    if(!env.getProperty("spring.datasource.url", "").contains("sslmode=verify-full") && !env.getProperty("spring.datasource.url", "").contains("sslmode=require")) throw new IllegalStateException("Production database must verify TLS");
