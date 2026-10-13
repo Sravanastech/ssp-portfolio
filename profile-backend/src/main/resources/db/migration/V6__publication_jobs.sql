@@ -1,0 +1,2 @@
+ALTER TABLE site_state ADD COLUMN target_revision bigint REFERENCES content_revision(id);
+CREATE TABLE publication_jobs(id uuid PRIMARY KEY,revision_id bigint NOT NULL UNIQUE REFERENCES content_revision(id), status varchar(16) NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','processing','complete','failed','superseded')), lease_id uuid, lease_until timestamptz, error varchar(128), created_at timestamptz NOT NULL DEFAULT now());

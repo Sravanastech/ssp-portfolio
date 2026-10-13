@@ -1,0 +1,19 @@
+# pack-refs with: peeled fully-peeled sorted 
+2eeb6ee3944d879cfbf4547fe1bc45805dec40ff refs/codex/turn-diffs/checkpoints/7e7bcd5bccc24aa11b8a5f1caff51d76/484dd49e7d655f61c9d2be9e49e64f6b/1791293815053/1dc3d707-9435-4e30-b255-d69873c10c03
+87a65704d8c9bcecdfada7e1a74309c9e648b5c5 refs/heads/Fix-deploy-and-firebase-json
+c0af1600ff534cc0ab106e00f40cb6c95544872f refs/heads/Fix-ts-config-typescript-7.0
+5c7d95e763e6f622adbb2e70050c3f4405af90c9 refs/heads/Upgrade-about-page
+38edd13313d9c9ff39fec0e101e98417921df183 refs/heads/develop
+e6f1959af5beda81dc808fd480dffad222846303 refs/heads/feature/codex-astra-enhancements
+534609f5d9f43f08583331ac55c9f6f9c3fc439e refs/heads/feature/ssp2.0-redesign
+1c6f3d7814aaaca9e107df76da3056059fc4968d refs/heads/feature/ssp3.0-redesign
+e2cbf32a66ae067dff8d451957d29eb51e3f5c10 refs/heads/main
+87a65704d8c9bcecdfada7e1a74309c9e648b5c5 refs/remotes/origin/Fix-deploy-and-firebase-json
+c0af1600ff534cc0ab106e00f40cb6c95544872f refs/remotes/origin/Fix-ts-config-typescript-7.0
+5c7d95e763e6f622adbb2e70050c3f4405af90c9 refs/remotes/origin/Upgrade-about-page
+38edd13313d9c9ff39fec0e101e98417921df183 refs/remotes/origin/develop
+1aeda79ebbbab520df1b13d68537a3091139f2fd refs/remotes/origin/feature/codex-astra-enhancements
+534609f5d9f43f08583331ac55c9f6f9c3fc439e refs/remotes/origin/feature/ssp2.0-redesign
+1c6f3d7814aaaca9e107df76da3056059fc4968d refs/remotes/origin/feature/ssp3.0-redesign
+ea2f9c47d154520cdac292adc5f9d592bb98958b refs/remotes/origin/main
+deb866ea7ca741671a17154fa893ecd1b92b7696 refs/stash

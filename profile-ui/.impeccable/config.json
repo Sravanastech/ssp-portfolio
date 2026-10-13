@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "space grotesk",
+        "createdAt": "2026-10-07T17:46:16.573Z",
+        "reason": "Existing DESIGN.md specifies Space Grotesk as the site-wide typography token, and its matching use in project workflow diagrams follows that established system."
+      }
+    ]
+  }
+}

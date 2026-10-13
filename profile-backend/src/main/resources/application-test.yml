@@ -1,0 +1,9 @@
+profile:
+  email:
+    mode: capture
+  jobs:
+    enabled: false
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 4

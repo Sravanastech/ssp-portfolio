@@ -1,0 +1,4 @@
+CREATE TABLE inquiries(id uuid PRIMARY KEY, idempotency_key varchar(128) NOT NULL UNIQUE, payload_hash varchar(64) NOT NULL, name varchar(120) NOT NULL,email varchar(254),phone varchar(32),message varchar(8000) NOT NULL, archived boolean NOT NULL DEFAULT false,created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE outbox(id uuid PRIMARY KEY, inquiry_id uuid NOT NULL UNIQUE REFERENCES inquiries(id), status varchar(16) NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','processing','sent','failed')),attempts int NOT NULL DEFAULT 0,available_at timestamptz NOT NULL DEFAULT now(),lease_id uuid,lease_until timestamptz,last_error varchar(128), created_at timestamptz NOT NULL DEFAULT now());
+CREATE INDEX outbox_available ON outbox(available_at) WHERE status IN ('pending','processing');
+CREATE TABLE contact_limits(key varchar(64) PRIMARY KEY, window_start timestamptz NOT NULL DEFAULT now(),requests int NOT NULL);

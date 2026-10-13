@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /auth-callback
+Disallow: /profile
+Disallow: /resume
+
+Sitemap: https://sravanasparimi.com/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1

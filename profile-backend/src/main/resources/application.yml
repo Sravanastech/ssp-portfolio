@@ -1,0 +1,46 @@
+server:
+  port: 8080
+  shutdown: graceful
+  error:
+    include-message: never
+    include-stacktrace: never
+spring:
+  application:
+    name: profile-backend
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  datasource:
+    hikari:
+      maximum-pool-size: 8
+      connection-timeout: 3000
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:56379}
+      timeout: 200ms
+      connect-timeout: 200ms
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+profile:
+  auth:
+    issuer: ${AUTH_ISSUER:https://invalid.example/}
+    audience: ${AUTH_AUDIENCE:profile-dev}
+  admin:
+    require-mfa: true
+  media:
+    root: ${MEDIA_ROOT:.local/media}
+  email:
+    mode: capture
+  jobs:
+    enabled: true

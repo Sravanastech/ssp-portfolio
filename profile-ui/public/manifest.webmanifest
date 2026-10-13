@@ -1,0 +1,17 @@
+{
+  "name": "Sravana S Parimi — Portfolio",
+  "short_name": "SSP Portfolio",
+  "description": "Full-stack engineering portfolio by Sravana S Parimi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F3F5FA",
+  "theme_color": "#244CE4",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

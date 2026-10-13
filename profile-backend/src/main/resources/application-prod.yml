@@ -1,0 +1,21 @@
+spring:
+  config:
+    import: configtree:/run/secrets/
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  flyway:
+    enabled: false
+profile:
+  auth:
+    issuer: ${AUTH_ISSUER}
+    audience: ${AUTH_AUDIENCE}
+  media:
+    root: /var/lib/profile/media
+  email:
+    mode: provider
+    endpoint: ${EMAIL_ENDPOINT}
+    key: ${EMAIL_KEY}
+    recipient: ${EMAIL_RECIPIENT}
+    from: ${EMAIL_FROM}

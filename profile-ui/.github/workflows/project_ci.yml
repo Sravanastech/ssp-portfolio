@@ -1,0 +1,49 @@
+name: Project CI - Release checks
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      # Synthetic public SPA configuration: fork PRs need no production secrets.
+      VITE_AUTH0_DOMAIN: portfolio-tests.auth0.com
+      VITE_AUTH0_CLIENT_ID: portfolio-tests
+      VITE_AUTH0_CALLBACK_URL: http://127.0.0.1:5173/auth-callback
+      VITE_AUTH0_AUDIENCE: https://portfolio-tests.example/api
+      VITE_WEB3FORMS_ACCESS_KEY: test-only-not-a-delivery-key
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Clean install dependencies
+        run: npm ci && npm ci --prefix server
+
+      - name: Check formatting, lint, tests and production build
+        run: npm run verify
+
+      - name: Check for Vulnerabilities
+        run: npm audit --audit-level=moderate && npm audit --prefix server --audit-level=moderate
+
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Test production UI
+        run: npm run test:e2e
+        env:
+          PLAYWRIGHT_TEST_BUILD: "1"
+
+      - name: Verify Hosting and private resume routing
+        run: npm run test:hosting

@@ -1,0 +1,28 @@
+{
+  "functions": [{
+    "source": "server",
+    "codebase": "portfolio-resume",
+    "runtime": "nodejs22",
+    "ignore": ["node_modules", ".git", "*.test.mjs", "index.mjs", "telemetry.mjs", "*.log"],
+    "predeploy": ["node scripts/prepare-api.mjs"]
+  }],
+  "emulators": {
+    "hosting": { "host": "127.0.0.1", "port": 5500 },
+    "functions": { "host": "127.0.0.1", "port": 5501 },
+    "ui": { "enabled": false }
+  },
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "/api/resume",
+        "function": { "functionId": "resumeApi", "region": "us-central1", "pinTag": true }
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+CREATE TABLE media(id uuid PRIMARY KEY, filename text NOT NULL UNIQUE, content_type varchar(80) NOT NULL, alt_text varchar(500) NOT NULL, private boolean NOT NULL DEFAULT false, size_bytes bigint NOT NULL, sha256 varchar(64) NOT NULL, created_at timestamptz NOT NULL DEFAULT now());

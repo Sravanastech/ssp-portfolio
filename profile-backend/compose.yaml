@@ -1,0 +1,41 @@
+name: profile-backend-dev
+services:
+  postgres:
+    image: postgres:17.9-alpine
+    environment:
+      POSTGRES_DB: profile_dev
+      POSTGRES_USER: profile_bootstrap
+      POSTGRES_PASSWORD: ${DB_BOOTSTRAP_PASSWORD:?Generate local secrets first}
+      DB_RUNTIME_PASSWORD: ${DB_RUNTIME_PASSWORD:?Generate local secrets first}
+      DB_MIGRATION_PASSWORD: ${DB_MIGRATION_PASSWORD:?Generate local secrets first}
+    ports: ["127.0.0.1:55432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init.sh:/docker-entrypoint-initdb.d/10-roles.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U profile_bootstrap -d profile_dev"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+  redis:
+    image: redis:8.2.2-alpine
+    command: ["redis-server", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru", "--save", "", "--appendonly", "no"]
+    ports: ["127.0.0.1:56379:6379"]
+    restart: unless-stopped
+  vault:
+    image: hashicorp/vault:latest
+    profiles: [vault-lab]
+    cap_add: [IPC_LOCK]
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: local-only-vault-root-token
+    command: ["server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
+    ports: ["127.0.0.1:18200:8200"]
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+volumes:
+  pgdata:

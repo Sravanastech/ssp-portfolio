@@ -1,0 +1,1 @@
+CREATE TABLE job_runs(name varchar(80) NOT NULL,scheduled_at timestamptz NOT NULL,status varchar(16) NOT NULL DEFAULT 'pending', lease_id uuid,lease_until timestamptz,attempts int NOT NULL DEFAULT 0,PRIMARY KEY(name,scheduled_at));

@@ -1,0 +1,21 @@
+{
+  "reference": "studio-compositions.png",
+  "direction": "Architect Studio",
+  "approval": {
+    "status": "approved",
+    "date": "2026-09-29",
+    "source": "User selection in this conversation",
+    "scope": [
+      "A \u2014 Bold",
+      "B \u2014 Bright",
+      "C \u2014 Spatial"
+    ],
+    "interaction": "All three compositions, with a persistent sliding selector and transitions"
+  },
+  "implementation": {
+    "selector": "Native radio group with a sliding selected indicator",
+    "persistence": "portfolio-composition in local storage with an in-memory fallback",
+    "motion": "View Transitions where supported; reduced-motion and direct-update fallbacks"
+  },
+  "verification": "Approval records the selected direction; implementation verification is tracked separately."
+}

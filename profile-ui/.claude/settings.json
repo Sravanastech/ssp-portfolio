@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m ' *)",
+      "Bash(git checkout *)",
+      "Bash(curl -s http://localhost:5173/)",
+      "Bash(curl -s http://localhost:5173/work)",
+      "Bash(curl -s http://localhost:5175/)",
+      "Bash(pkill -f \"vite\")",
+      "Bash(pkill -f \"npm run dev\")",
+      "Bash(npm run *)",
+      "Bash(git log *)",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(codex resume *)",
+      "Bash(mkdir -p /Users/ramasrinivas/Desktop/Dev/TDT/Development/ssp_profile/profile-ui/public/images/projects && ls -la /Users/ramasrinivas/Desktop/Dev/TDT/Development/ssp_profile/profile-ui/public/images/)",
+      "Bash(node -e \"console.log\\(require\\('react-helmet-async'\\).HelmetServerState\\)\")",
+      "Bash(curl -s http://localhost:8787/api/resume -H \"Authorization: Bearer invalid-token\")",
+      "Bash(node /Users/ramasrinivas/.claude/skills/impeccable/scripts/context.mjs --target src/components/Header.tsx)"
+    ],
+    "additionalDirectories": [
+      "/Users/ramasrinivas/Desktop/Dev/TDT/Development/ssp_profile/profile-ui/public/images"
+    ]
+  }
+}

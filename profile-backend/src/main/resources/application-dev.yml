@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:55432/profile_dev
+    username: profile_runtime
+    password: ${DB_RUNTIME_PASSWORD}
+  flyway:
+    user: profile_migrator
+    password: ${DB_MIGRATION_PASSWORD}
+profile:
+  renderer:
+    script: ../profile-ui/scripts/render-snapshot.mjs
+    bundle: ${PROFILE_RENDERER_BUNDLE:../profile-ui/dist/renderer/prerender.mjs}
+    template: ${PROFILE_STATIC_INDEX:../profile-ui/dist/index.html}
+  email:
+    mode: capture
