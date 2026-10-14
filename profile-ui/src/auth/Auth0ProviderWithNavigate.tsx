@@ -15,7 +15,9 @@ const Auth0ProviderWithNavigate = ({ children }: Props) => {
   const navigate = useNavigate();
   const domain = import.meta.env.VITE_AUTH0_DOMAIN;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
-  const redirectUri = import.meta.env.VITE_AUTH0_CALLBACK_URL;
+  const redirectUri =
+    import.meta.env.VITE_AUTH0_CALLBACK_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "http://localhost:5173");
   const authAudience = import.meta.env.VITE_AUTH0_AUDIENCE;
 
   if (!domain || !clientId || !redirectUri || !authAudience) {

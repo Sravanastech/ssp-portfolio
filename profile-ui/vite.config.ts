@@ -36,6 +36,8 @@ export default defineConfig({
     }),
   ],
   server: {
+    port: 5173,
+    strictPort: true,
     proxy: { "/api": process.env.VITE_API_URL || "http://127.0.0.1:8080" },
     fs: { deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "**/private/**"] },
   },
