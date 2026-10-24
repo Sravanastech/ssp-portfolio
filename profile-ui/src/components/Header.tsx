@@ -1,5 +1,5 @@
 import { SiteText } from "@/content/SiteContent";
-import { Link } from "react-router-dom";
+import PrefetchLink from "@/components/PrefetchLink";
 import MainMenu from "./MainMenu";
 import MobileMenu from "./MobileMenu";
 import ModeToggle from "./ModeToggle";
@@ -9,7 +9,7 @@ export default function Header() {
   return (
     <header className="studio-header">
       <div className="studio-container studio-header-inner">
-        <Link
+        <PrefetchLink
           to="/"
           className="studio-brand"
           aria-label="Sravana S Parimi - Home"
@@ -27,7 +27,7 @@ export default function Header() {
               <SiteText id="components.Header.text.4" />
             </span>
           </span>
-        </Link>
+        </PrefetchLink>
         <div className="studio-desktop-nav">
           <MainMenu />
           <ModeToggle />

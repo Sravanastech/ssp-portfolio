@@ -1,6 +1,6 @@
 import { useSiteContent } from "@/content/siteContentContext";
 import { SiteText } from "@/content/SiteContent";
-import { NavLink } from "react-router-dom";
+import { PrefetchNavLink as NavLink } from "@/components/PrefetchLink";
 import { LockKeyhole } from "lucide-react";
 import { useAuth } from "@/auth/auth";
 

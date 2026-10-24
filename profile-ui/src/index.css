@@ -2,6 +2,7 @@
 @import "@fontsource/space-grotesk/500.css";
 @import "@fontsource/space-grotesk/700.css";
 @import "tailwindcss";
+@import "./styles/studio-motion.css";
 
 :root {
   --color-primary: #244ce4;
@@ -1446,24 +1447,6 @@ a:hover .project-art-sheet {
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none !important;
-  }
-}
-::view-transition-old(root) {
-  animation: composition-out 0.28s ease both;
-}
-::view-transition-new(root) {
-  animation: composition-in 0.45s var(--studio-ease) both;
-}
-@keyframes composition-out {
-  to {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-}
-@keyframes composition-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
   }
 }
 /* Inner pages carry each composition's spatial rhythm. */

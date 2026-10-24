@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import Layout from "./layouts/Layout";
+import LayoutRoute, { PageSkeleton } from "./layouts/LayoutRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
@@ -20,145 +20,71 @@ import "./styles/pages.css";
 
 const AppRoutes = () => {
   return (
-    <Suspense
-      fallback={
-        <div className="studio-page page-skeleton" aria-busy="true">
-          <div className="studio-container studio-page-intro">
-            <p role="status" className="sr-only">
-              Loading page…
-            </p>
-            <span
-              className="skeleton-bar skeleton-bar--title"
-              aria-hidden="true"
-            />
-            <span
-              className="skeleton-bar skeleton-bar--line"
-              aria-hidden="true"
-            />
-            <span
-              className="skeleton-bar skeleton-bar--line"
-              aria-hidden="true"
-            />
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<PageSkeleton />}>
       <Routes>
-        {/* Public Routes */}
-        <Route
-          path={DEFINED_ROUTES.HOME}
-          element={
-            <Layout>
-              <HomePage />
-            </Layout>
-          }
-        />
+        {/* Outside the shell: bare callback screen */}
         <Route path={DEFINED_ROUTES.AUTH_CALLBACK} element={<AuthCallback />} />
-        <Route
-          path={DEFINED_ROUTES.ABOUT}
-          element={
-            <Layout>
-              <AboutPage />
-            </Layout>
-          }
-        />
-        <Route
-          path={DEFINED_ROUTES.WORK}
-          element={
-            <Layout>
-              <WorkPage />
-            </Layout>
-          }
-        />
-        <Route
-          path={DEFINED_ROUTES.WORK_PROJECT}
-          element={
-            <Layout>
-              <ProjectPage />
-            </Layout>
-          }
-        />
-        <Route
-          path={DEFINED_ROUTES.CONTACT}
-          element={
-            <Layout>
-              <ContactPage />
-            </Layout>
-          }
-        />
-        <Route
-          path={DEFINED_ROUTES.PRIVACY}
-          element={
-            <Layout>
-              <PrivacyPage />
-            </Layout>
-          }
-        />
-        <Route
-          path={DEFINED_ROUTES.TERMS}
-          element={
-            <Layout>
-              <TermsAndConditionsPage />
-            </Layout>
-          }
-        />
 
-        {/* Protected Routes */}
-        <Route
-          path={DEFINED_ROUTES.RESUME}
-          element={
-            <Layout>
+        <Route element={<LayoutRoute />}>
+          {/* Public Routes */}
+          <Route path={DEFINED_ROUTES.HOME} element={<HomePage />} />
+          <Route path={DEFINED_ROUTES.ABOUT} element={<AboutPage />} />
+          <Route path={DEFINED_ROUTES.WORK} element={<WorkPage />} />
+          <Route path={DEFINED_ROUTES.WORK_PROJECT} element={<ProjectPage />} />
+          <Route path={DEFINED_ROUTES.CONTACT} element={<ContactPage />} />
+          <Route path={DEFINED_ROUTES.PRIVACY} element={<PrivacyPage />} />
+          <Route
+            path={DEFINED_ROUTES.TERMS}
+            element={<TermsAndConditionsPage />}
+          />
+
+          {/* Protected Routes */}
+          <Route
+            path={DEFINED_ROUTES.RESUME}
+            element={
               <ProtectedRoute>
                 <ResumePage />
               </ProtectedRoute>
-            </Layout>
-          }
-        />
-        <Route
-          path={DEFINED_ROUTES.ACCOUNT}
-          element={
-            <Layout>
+            }
+          />
+          <Route
+            path={DEFINED_ROUTES.ACCOUNT}
+            element={
               <ProtectedRoute>
                 <AccountPage />
               </ProtectedRoute>
-            </Layout>
-          }
-        />
-        <Route
-          path={DEFINED_ROUTES.ADMIN}
-          element={
-            <Layout>
+            }
+          />
+          <Route
+            path={DEFINED_ROUTES.ADMIN}
+            element={
               <ProtectedRoute>
                 <AdminPage />
               </ProtectedRoute>
-            </Layout>
-          }
-        />
-        <Route
-          path={DEFINED_ROUTES.INQUIRIES}
-          element={
-            <Layout>
+            }
+          />
+          <Route
+            path={DEFINED_ROUTES.INQUIRIES}
+            element={
               <ProtectedRoute>
                 <InquiriesPage />
               </ProtectedRoute>
-            </Layout>
-          }
-        />
+            }
+          />
 
-        {/* Catch-all: 404 */}
-        <Route
-          path="*"
-          element={
-            <Layout>
+          {/* Catch-all: 404 */}
+          <Route
+            path="*"
+            element={
               <ErrorPage
                 code="404"
                 message="Page not found"
                 redirectPath={DEFINED_ROUTES.HOME}
                 autoRedirect={false}
               />
-            </Layout>
-          }
-        />
+            }
+          />
+        </Route>
       </Routes>
     </Suspense>
   );

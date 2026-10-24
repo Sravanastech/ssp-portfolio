@@ -1,0 +1,810 @@
+/*
+ * Kinetic maximalist paradigm.
+ * Lazy-loaded via import("@/styles/kinetic-maximalist.css"); never imported by index.css.
+ * Everything is scoped to :root[data-paradigm="kinetic"], except the View Transition
+ * portal rules (:root[data-paradigm-transition="portal"]).
+ * Motion is compositor-only: translate, rotate, scale, opacity, clip-path.
+ * Legibility: tilt and offset shadow apply to cards only, never to text, forms or the resume page.
+ */
+
+/* ---------------------------------------------------------------- portal */
+:root[data-paradigm-transition="portal"]::view-transition-old(root),
+:root[data-paradigm-transition="portal"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+:root[data-paradigm-transition="portal"]::view-transition-old(root) {
+  z-index: 1;
+}
+:root[data-paradigm-transition="portal"]::view-transition-new(root) {
+  z-index: 9999;
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-paradigm-transition="portal"]::view-transition-old(root),
+  :root[data-paradigm-transition="portal"]::view-transition-new(root) {
+    animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------- tokens */
+/*
+ * ThemeContext writes --color-* inline on :root, which beats any stylesheet rule,
+ * so the colour roles that matter use !important. Other tokens override normally.
+ */
+:root[data-paradigm="kinetic"] {
+  --color-background: #06030d !important;
+  --color-surface: #120924 !important;
+  --color-primary: #d4ff00 !important;
+  --color-secondary: #c4b5fd !important;
+  --color-accent: #06030d !important;
+  --color-text: #f7f4ff !important;
+  --color-textSecondary: #c4b5fd !important;
+  --color-border: #ff2a85 !important;
+  --color-borderLight: #3a1f63 !important;
+  --color-focus-ring: #00f0ff !important;
+  --color-cta-bg: #d4ff00 !important;
+  --color-cta-text: #06030d !important;
+  --color-cta-hover: #d4ff00 !important;
+  --color-success: #5dff9d !important;
+  --color-warning: #ffd166 !important;
+  --color-error: #ff6b8b !important;
+  --color-info: #00f0ff !important;
+  --kinetic-cyan: #00f0ff;
+  --kinetic-magenta: #ff2a85;
+  --kinetic-lime: #d4ff00;
+  --kinetic-void: #06030d;
+  --kinetic-ink: #120924;
+  --kinetic-spring: linear(
+    0,
+    0.016 0.5%,
+    0.06 1%,
+    0.226 2%,
+    1.116 5.4%,
+    1.375 6.6%,
+    1.527 7.7%,
+    1.585 8.8%,
+    1.458 10.9%,
+    0.937 14.3%,
+    0.693 16.6%,
+    0.657 17.7%,
+    0.729 19.8%,
+    1.13 24.5%,
+    1.201 26.7%,
+    1.156 28.8%,
+    0.925 33.4%,
+    0.882 35.6%,
+    1.045 42.4%,
+    1.059 46.3%,
+    0.96 53.4%,
+    1.024 62.3%,
+    0.986 71.2%,
+    1
+  );
+  --kinetic-shadow: 6px 6px 0 var(--kinetic-magenta);
+  --studio-blue: #120924;
+  --studio-ink: #06030d;
+  --studio-lime: #d4ff00;
+  --studio-paper: #120924;
+  --studio-on-ink: #f7f4ff;
+  --studio-on-ink-soft: #d9ceff;
+  --studio-ink-line: #ff2a85;
+  --studio-ink-line-strong: #ff2a85;
+  --studio-ink-hover: #1b0d36;
+  --studio-ink-rule: #3a1f63;
+  --studio-on-blue: #f7f4ff;
+  --studio-on-blue-muted: #d9ceff;
+  --studio-on-blue-line: #ff2a85;
+  --studio-blue-line: #ff2a85;
+  --diagram-line: #8b6bd6;
+  color-scheme: dark;
+  accent-color: #d4ff00;
+}
+
+/* ----------------------------------------- old controls hidden, compositions neutral */
+:root[data-paradigm="kinetic"] .theme-switcher,
+:root[data-paradigm="kinetic"] .mode-toggle,
+:root[data-paradigm="kinetic"] .composition-switcher {
+  display: none !important;
+}
+
+/* Kinetic ignores data-composition: reset every variant to the shared base layout. */
+:root[data-paradigm="kinetic"] .studio-hero::before {
+  content: none;
+}
+:root[data-paradigm="kinetic"] .studio-hero {
+  background: var(--studio-blue);
+  color: var(--studio-on-blue);
+}
+:root[data-paradigm="kinetic"] .studio-hero h1 {
+  color: var(--color-text);
+  font-size: clamp(3rem, 1rem + 4.5vw, 5.125rem);
+}
+:root[data-paradigm="kinetic"] .studio-hero-description,
+:root[data-paradigm="kinetic"] .studio-hero-foot {
+  color: var(--studio-on-blue-muted);
+}
+:root[data-paradigm="kinetic"] .studio-hero-foot {
+  background: transparent;
+  margin-inline: 0;
+  padding-inline: 0;
+  border-color: var(--kinetic-magenta);
+}
+:root[data-paradigm="kinetic"] .studio-hero-copy {
+  padding-block: 0;
+}
+:root[data-paradigm="kinetic"] .studio-rail-nav {
+  display: none;
+}
+:root[data-paradigm="kinetic"] .studio-page-intro {
+  text-align: start;
+  padding-inline: 0;
+  margin: 0;
+  background: transparent;
+  color: var(--color-text);
+  border-radius: 0;
+}
+:root[data-paradigm="kinetic"] .studio-page-intro > * {
+  margin-inline: 0;
+}
+:root[data-paradigm="kinetic"] .studio-page-intro .studio-lede,
+:root[data-paradigm="kinetic"] .studio-page-intro p {
+  color: var(--color-textSecondary);
+  opacity: 1;
+}
+:root[data-paradigm="kinetic"] .system-studio {
+  background: transparent;
+  color: var(--studio-on-blue);
+  transform: none;
+  padding: 0;
+  border-radius: 0;
+  display: block;
+}
+:root[data-paradigm="kinetic"] .system-model {
+  height: 265px;
+}
+:root[data-paradigm="kinetic"] .system-node {
+  width: 86px;
+  height: 86px;
+}
+:root[data-paradigm="kinetic"] .system-detail {
+  min-height: 155px;
+  background: transparent;
+  padding: 0;
+  color: var(--studio-on-blue-muted);
+}
+:root[data-paradigm="kinetic"] .system-controls,
+:root[data-paradigm="kinetic"] .system-caption {
+  background: transparent;
+  padding-inline: 0;
+}
+:root[data-paradigm="kinetic"] .system-detail p,
+:root[data-paradigm="kinetic"] .system-detail > span,
+:root[data-paradigm="kinetic"] .system-caption,
+:root[data-paradigm="kinetic"] .system-controls button {
+  color: var(--studio-on-blue-muted);
+}
+:root[data-paradigm="kinetic"] .system-controls button[aria-pressed="true"] {
+  color: var(--kinetic-lime);
+  border-color: var(--kinetic-lime);
+}
+:root[data-paradigm="kinetic"] .studio-case-body {
+  grid-template-columns: repeat(3, 1fr);
+}
+:root[data-paradigm="kinetic"] .studio-project {
+  display: block;
+  width: auto;
+  align-self: auto;
+  padding: 20px;
+  border-top-width: 2px;
+}
+:root[data-paradigm="kinetic"] .studio-project-image {
+  grid-row: auto;
+}
+:root[data-paradigm="kinetic"] .project-art {
+  height: 290px;
+}
+@media (min-width: 701px) {
+  :root[data-paradigm="kinetic"] .studio-hero-grid {
+    grid-template-columns: 1.25fr 1fr;
+    gap: 64px;
+  }
+  :root[data-paradigm="kinetic"] .studio-project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+  :root[data-paradigm="kinetic"] .studio-project:last-child {
+    grid-column: auto;
+  }
+}
+@media (max-width: 700px) {
+  :root[data-paradigm="kinetic"] .studio-project-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 38px;
+  }
+  :root[data-paradigm="kinetic"] .studio-case-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------------------------------------------------------------- base surfaces */
+:root[data-paradigm="kinetic"] body {
+  background-color: var(--kinetic-void);
+  color: var(--color-text);
+}
+:root[data-paradigm="kinetic"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgb(255 42 133 / 0.22), transparent 45%),
+    radial-gradient(circle at 85% 25%, rgb(0 240 255 / 0.18), transparent 45%),
+    radial-gradient(rgb(247 244 255 / 0.07) 1px, transparent 1px);
+  background-size:
+    auto,
+    auto,
+    22px 22px;
+}
+@supports (background: linear-gradient(in oklch, red, blue)) {
+  :root[data-paradigm="kinetic"] body::before {
+    background-image:
+      radial-gradient(
+        circle at 15% 15% in oklch,
+        rgb(255 42 133 / 0.22),
+        transparent 45%
+      ),
+      radial-gradient(
+        circle at 85% 25% in oklch,
+        rgb(0 240 255 / 0.18),
+        transparent 45%
+      ),
+      radial-gradient(rgb(247 244 255 / 0.07) 1px, transparent 1px);
+  }
+}
+:root[data-paradigm="kinetic"] ::selection {
+  background: var(--kinetic-magenta);
+  color: #fff;
+}
+:root[data-paradigm="kinetic"] h1,
+:root[data-paradigm="kinetic"] h2,
+:root[data-paradigm="kinetic"] h3 {
+  letter-spacing: -0.04em;
+}
+:root[data-paradigm="kinetic"] .studio-hero h1 {
+  font-weight: 700;
+  text-transform: none;
+}
+:root[data-paradigm="kinetic"] :focus-visible {
+  outline: 3px solid var(--kinetic-cyan);
+  outline-offset: 4px;
+}
+:root[data-paradigm="kinetic"] .studio-hero :focus-visible {
+  outline-color: var(--kinetic-cyan);
+}
+
+/* Header and footer */
+:root[data-paradigm="kinetic"] .studio-header {
+  background: rgb(6 3 13 / 0.92);
+  border-bottom: 2px solid var(--kinetic-lime);
+  backdrop-filter: blur(10px);
+}
+:root[data-paradigm="kinetic"] .studio-header a,
+:root[data-paradigm="kinetic"] .studio-header button {
+  color: var(--color-text);
+}
+:root[data-paradigm="kinetic"] .studio-desktop-nav a,
+:root[data-paradigm="kinetic"] .studio-mobile-sheet a {
+  transition: translate 0.45s var(--kinetic-spring);
+}
+:root[data-paradigm="kinetic"] .studio-desktop-nav a:hover {
+  translate: 0 -2px;
+  color: var(--kinetic-lime);
+}
+:root[data-paradigm="kinetic"] .studio-mobile-sheet {
+  background: var(--kinetic-void);
+  color: var(--color-text);
+}
+:root[data-paradigm="kinetic"] .studio-footer {
+  background: var(--kinetic-void);
+  color: var(--studio-on-ink);
+  border-top: 2px solid var(--kinetic-magenta);
+}
+:root[data-paradigm="kinetic"] .studio-footer a {
+  color: var(--kinetic-lime);
+}
+
+/* Links and buttons */
+:root[data-paradigm="kinetic"] .studio-link,
+:root[data-paradigm="kinetic"] .studio-hero-link,
+:root[data-paradigm="kinetic"] .link-button {
+  color: var(--kinetic-cyan);
+}
+:root[data-paradigm="kinetic"] .studio-button,
+:root[data-paradigm="kinetic"] .studio-button-secondary,
+:root[data-paradigm="kinetic"] .studio-button-light,
+:root[data-paradigm="kinetic"] .consent-button {
+  min-height: 48px;
+  border: 2px solid var(--kinetic-lime);
+  border-radius: 999px;
+  background: var(--kinetic-lime);
+  color: var(--kinetic-void);
+  font-weight: 700;
+  transition:
+    translate 0.5s var(--kinetic-spring),
+    scale 0.5s var(--kinetic-spring),
+    background-color 0.2s,
+    color 0.2s;
+}
+:root[data-paradigm="kinetic"] .studio-button-secondary {
+  background: transparent;
+  color: var(--kinetic-lime);
+}
+:root[data-paradigm="kinetic"] .studio-button:hover:not(:disabled),
+:root[data-paradigm="kinetic"] .studio-button-secondary:hover:not(:disabled),
+:root[data-paradigm="kinetic"] .studio-button-light:hover:not(:disabled) {
+  translate: 0 -3px;
+  scale: 1.04;
+  opacity: 1;
+  transform: none;
+  background: var(--kinetic-magenta);
+  border-color: var(--kinetic-magenta);
+  color: #fff;
+}
+:root[data-paradigm="kinetic"] .studio-button:active:not(:disabled),
+:root[data-paradigm="kinetic"] .studio-button-secondary:active:not(:disabled) {
+  translate: 0 1px;
+  scale: 0.97;
+  transform: none;
+}
+
+/* Forms stay flat and legible: coloured borders only, no tilt, no offset shadow. */
+:root[data-paradigm="kinetic"] .studio-contact form {
+  border: 2px solid var(--kinetic-lime);
+  background: var(--kinetic-ink);
+  rotate: none;
+  box-shadow: none;
+}
+:root[data-paradigm="kinetic"] .field-input,
+:root[data-paradigm="kinetic"]
+  .studio-contact
+  form
+  input:not([type="checkbox"]),
+:root[data-paradigm="kinetic"] .studio-contact form textarea {
+  background: var(--kinetic-void);
+  color: var(--color-text);
+  border: 2px solid #8b6bd6;
+  rotate: none;
+  box-shadow: none;
+}
+:root[data-paradigm="kinetic"] .field-input:hover:not(:disabled) {
+  border-color: var(--kinetic-cyan);
+}
+:root[data-paradigm="kinetic"] .field-input:focus-visible,
+:root[data-paradigm="kinetic"] .studio-contact form input:focus-visible,
+:root[data-paradigm="kinetic"] .studio-contact form textarea:focus-visible {
+  outline: 3px solid var(--kinetic-cyan);
+  outline-offset: 2px;
+  border-color: var(--kinetic-cyan);
+}
+:root[data-paradigm="kinetic"] .studio-contact form button[type="submit"] {
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+/* ------------------------------------------------- cards (tilt + offset shadow) */
+:root[data-paradigm="kinetic"] .studio-project,
+:root[data-paradigm="kinetic"] .studio-case,
+:root[data-paradigm="kinetic"] .page-panel,
+:root[data-paradigm="kinetic"] .project-related a {
+  border: 2px solid var(--kinetic-lime);
+  border-radius: 6px;
+  background: var(--kinetic-ink);
+  color: var(--color-text);
+  box-shadow: var(--kinetic-shadow);
+  transition:
+    translate 0.55s var(--kinetic-spring),
+    rotate 0.55s var(--kinetic-spring),
+    scale 0.55s var(--kinetic-spring);
+}
+:root[data-paradigm="kinetic"] .studio-case {
+  padding: clamp(16px, 2.5vw, 28px);
+}
+:root[data-paradigm="kinetic"] .studio-project:nth-child(odd),
+:root[data-paradigm="kinetic"] .studio-case:nth-of-type(odd),
+:root[data-paradigm="kinetic"] .project-related li:nth-child(odd) a,
+:root[data-paradigm="kinetic"] .project-related a:nth-child(odd) {
+  rotate: -0.8deg;
+}
+:root[data-paradigm="kinetic"] .studio-project:nth-child(even),
+:root[data-paradigm="kinetic"] .studio-case:nth-of-type(even),
+:root[data-paradigm="kinetic"] .project-related li:nth-child(even) a,
+:root[data-paradigm="kinetic"] .project-related a:nth-child(even) {
+  rotate: 0.8deg;
+}
+:root[data-paradigm="kinetic"] .studio-project:hover,
+:root[data-paradigm="kinetic"] .studio-case:hover,
+:root[data-paradigm="kinetic"] .page-panel:hover,
+:root[data-paradigm="kinetic"] .project-related a:hover,
+:root[data-paradigm="kinetic"] .project-related a:focus-visible {
+  rotate: 0deg;
+  translate: -4px -4px;
+  scale: 1.015;
+  transform: none;
+}
+:root[data-paradigm="kinetic"] .studio-project-image {
+  border-radius: 4px;
+  border: 2px solid var(--kinetic-cyan);
+}
+:root[data-paradigm="kinetic"]
+  .studio-project-image:hover
+  .studio-project-open {
+  background: var(--kinetic-lime);
+}
+:root[data-paradigm="kinetic"] .studio-project h3 a,
+:root[data-paradigm="kinetic"] .project-related-name {
+  color: var(--color-text);
+}
+:root[data-paradigm="kinetic"] .studio-project-summary,
+:root[data-paradigm="kinetic"] .studio-project-contribution {
+  color: var(--color-text);
+}
+
+/* Text-heavy surfaces stay straight, flat and shadow-free (guardrail). */
+:root[data-paradigm="kinetic"] .resume-page,
+:root[data-paradigm="kinetic"] .resume-page *,
+:root[data-paradigm="kinetic"] .legal-page .page-panel,
+:root[data-paradigm="kinetic"] .legal-prose,
+:root[data-paradigm="kinetic"] .studio-prose,
+:root[data-paradigm="kinetic"] .about-prose {
+  rotate: none !important;
+  box-shadow: none !important;
+}
+:root[data-paradigm="kinetic"] .resume-page .page-panel,
+:root[data-paradigm="kinetic"] .resume-page .resume-panel {
+  translate: none;
+  scale: none;
+  transition: none;
+  border: 2px solid var(--kinetic-lime);
+  background: var(--kinetic-ink);
+}
+:root[data-paradigm="kinetic"] .legal-page .page-panel:hover {
+  translate: none;
+  scale: none;
+}
+
+/* ------------------------------------------------------- entrance animations */
+@keyframes kinetic-hero-in {
+  from {
+    opacity: 0;
+    translate: 0 36px;
+    scale: 0.96;
+    clip-path: inset(0 0 40% 0);
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    clip-path: inset(0);
+  }
+}
+@keyframes kinetic-fade-up {
+  from {
+    opacity: 0;
+    translate: 0 20px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes kinetic-page-in {
+  from {
+    opacity: 0;
+    translate: 0 28px;
+    scale: 0.985;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+@keyframes kinetic-page-out {
+  to {
+    opacity: 0;
+    translate: 0 -12px;
+    scale: 0.99;
+  }
+}
+@keyframes kinetic-ticker-slide {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: -50% 0;
+  }
+}
+@keyframes kinetic-card-in {
+  from {
+    opacity: 0;
+    scale: 0.92;
+    translate: 0 40px;
+  }
+}
+@keyframes kinetic-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    scale: 1;
+  }
+  50% {
+    opacity: 0.55;
+    scale: 0.8;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-paradigm="kinetic"] .studio-hero h1 {
+    animation: kinetic-hero-in 0.9s var(--kinetic-spring) both;
+  }
+  :root[data-paradigm="kinetic"] .studio-hero-name,
+  :root[data-paradigm="kinetic"] .studio-hero-description,
+  :root[data-paradigm="kinetic"] .studio-actions,
+  :root[data-paradigm="kinetic"] .studio-hero-foot {
+    animation: kinetic-fade-up 0.7s var(--kinetic-spring) both;
+  }
+  :root[data-paradigm="kinetic"] .studio-hero-name {
+    animation-delay: 0.1s;
+  }
+  :root[data-paradigm="kinetic"] .studio-hero-description {
+    animation-delay: 0.18s;
+  }
+  :root[data-paradigm="kinetic"] .studio-actions {
+    animation-delay: 0.26s;
+  }
+  :root[data-paradigm="kinetic"] .studio-hero-foot {
+    animation-delay: 0.34s;
+  }
+  :root[data-paradigm="kinetic"] .studio-page-heading {
+    animation: kinetic-hero-in 0.8s var(--kinetic-spring) both;
+  }
+
+  /* Page enter/exit: the router names the content wrapper `page`. */
+  :root[data-paradigm="kinetic"]::view-transition-old(page) {
+    animation: kinetic-page-out 0.2s ease-in both;
+  }
+  :root[data-paradigm="kinetic"]::view-transition-new(page) {
+    animation: kinetic-page-in 0.6s var(--kinetic-spring) both;
+  }
+  /* The portal transition owns the root layers while it runs. */
+  :root[data-paradigm-transition="portal"]::view-transition-old(root),
+  :root[data-paradigm-transition="portal"]::view-transition-new(root) {
+    animation: none;
+  }
+}
+
+/* Scroll-driven card entrance */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    :root[data-paradigm="kinetic"] .studio-project,
+    :root[data-paradigm="kinetic"] .studio-case,
+    :root[data-paradigm="kinetic"] .project-related a {
+      animation: kinetic-card-in linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% entry 30%;
+    }
+  }
+}
+
+/* ------------------------------------------------------------ paradigm toggle */
+:root[data-paradigm="kinetic"] .paradigm-toggle {
+  border: 2px solid var(--kinetic-lime);
+  border-radius: 999px;
+  background: var(--kinetic-magenta);
+  color: #fff;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: 0 0 18px rgb(212 255 0 / 0.45);
+  transition:
+    translate 0.5s var(--kinetic-spring),
+    scale 0.5s var(--kinetic-spring);
+}
+:root[data-paradigm="kinetic"] .paradigm-toggle[aria-pressed="true"] {
+  background: var(--kinetic-lime);
+  color: var(--kinetic-void);
+  border-color: var(--kinetic-magenta);
+}
+:root[data-paradigm="kinetic"] .paradigm-toggle:hover {
+  translate: 0 -2px;
+  scale: 1.06;
+}
+:root[data-paradigm="kinetic"] .paradigm-toggle:active {
+  scale: 0.95;
+}
+:root[data-paradigm="kinetic"] .paradigm-toggle:focus-visible {
+  outline: 3px solid var(--kinetic-cyan);
+  outline-offset: 4px;
+}
+
+/* ------------------------------------------------------------- stage / HUD */
+:root[data-paradigm="kinetic"] .kinetic-stage {
+  position: relative;
+  z-index: 45;
+  pointer-events: none;
+}
+:root[data-paradigm="kinetic"] .kinetic-ticker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  overflow: hidden;
+  background: var(--kinetic-lime);
+  color: var(--kinetic-void);
+  border-bottom: 2px solid var(--kinetic-void);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: auto;
+}
+:root[data-paradigm="kinetic"] .kinetic-ticker-track {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 48px;
+  width: max-content;
+  min-width: 0;
+  white-space: nowrap;
+  will-change: translate;
+  animation: kinetic-ticker-slide 32s linear infinite;
+}
+:root[data-paradigm="kinetic"]
+  .kinetic-ticker[data-paused="true"]
+  .kinetic-ticker-track,
+:root[data-paradigm="kinetic"] .kinetic-ticker.is-paused .kinetic-ticker-track,
+:root[data-paradigm="kinetic"] .kinetic-ticker:hover .kinetic-ticker-track,
+:root[data-paradigm="kinetic"]
+  .kinetic-ticker:focus-within
+  .kinetic-ticker-track {
+  animation-play-state: paused;
+}
+:root[data-paradigm="kinetic"] .kinetic-pause {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-left: 2px solid var(--kinetic-void);
+  background: var(--kinetic-void);
+  color: var(--kinetic-lime);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.2s;
+}
+:root[data-paradigm="kinetic"] .kinetic-pause:hover {
+  background: var(--kinetic-magenta);
+  color: #fff;
+}
+:root[data-paradigm="kinetic"] .kinetic-pause:focus-visible {
+  outline: 3px solid var(--kinetic-cyan);
+  outline-offset: -5px;
+}
+:root[data-paradigm="kinetic"] .kinetic-hud {
+  position: fixed;
+  inset: auto auto 12px 12px;
+  z-index: 44;
+  padding: 6px 10px;
+  border: 1px solid var(--kinetic-cyan);
+  background: rgb(6 3 13 / 0.88);
+  color: var(--kinetic-cyan);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+:root[data-paradigm="kinetic"] .kinetic-hud [data-live],
+:root[data-paradigm="kinetic"] .kinetic-hud::before {
+  animation: kinetic-pulse 2.4s ease-in-out infinite;
+}
+:root[data-paradigm="kinetic"] .kinetic-hud::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50%;
+  background: var(--kinetic-lime);
+}
+@media (max-width: 700px) {
+  :root[data-paradigm="kinetic"] .kinetic-hud {
+    display: none;
+  }
+}
+
+/* Reticle: translate-driven (set --kinetic-x / --kinetic-y or style.translate), fine pointers only. */
+:root[data-paradigm="kinetic"] .kinetic-reticle {
+  display: none;
+}
+@media (pointer: fine) and (hover: hover) {
+  :root[data-paradigm="kinetic"] .kinetic-reticle {
+    display: block;
+    position: fixed;
+    inset: 0 auto auto 0;
+    z-index: 9000;
+    width: 36px;
+    height: 36px;
+    margin: -18px 0 0 -18px;
+    border: 2px solid var(--kinetic-cyan);
+    border-radius: 50%;
+    mix-blend-mode: difference;
+    pointer-events: none;
+    translate: var(--kinetic-x, -100px) var(--kinetic-y, -100px);
+    transition: scale 0.4s var(--kinetic-spring);
+    will-change: translate;
+  }
+  :root[data-paradigm="kinetic"] .kinetic-reticle::after {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 6px;
+    height: 6px;
+    margin: -3px 0 0 -3px;
+    border-radius: 50%;
+    background: var(--kinetic-lime);
+  }
+  :root[data-paradigm="kinetic"] .kinetic-reticle[data-active="true"] {
+    scale: 1.6;
+  }
+}
+
+/* ------------------------------------------------------------ reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-paradigm="kinetic"] .studio-project,
+  :root[data-paradigm="kinetic"] .studio-case,
+  :root[data-paradigm="kinetic"] .page-panel,
+  :root[data-paradigm="kinetic"] .project-related a {
+    rotate: none;
+    transition: none;
+    animation: none;
+  }
+  :root[data-paradigm="kinetic"] .studio-project:hover,
+  :root[data-paradigm="kinetic"] .studio-case:hover,
+  :root[data-paradigm="kinetic"] .page-panel:hover,
+  :root[data-paradigm="kinetic"] .project-related a:hover {
+    translate: none;
+    scale: none;
+  }
+  :root[data-paradigm="kinetic"] .kinetic-ticker-track {
+    animation: none;
+    width: auto;
+    overflow-x: auto;
+  }
+  :root[data-paradigm="kinetic"] .kinetic-hud::before,
+  :root[data-paradigm="kinetic"] .kinetic-hud [data-live] {
+    animation: none;
+  }
+  :root[data-paradigm="kinetic"] .studio-hero h1,
+  :root[data-paradigm="kinetic"] .studio-hero-name,
+  :root[data-paradigm="kinetic"] .studio-hero-description,
+  :root[data-paradigm="kinetic"] .studio-actions,
+  :root[data-paradigm="kinetic"] .studio-hero-foot,
+  :root[data-paradigm="kinetic"] .studio-page-heading {
+    animation: none;
+  }
+  :root[data-paradigm="kinetic"] .studio-button,
+  :root[data-paradigm="kinetic"] .studio-button-secondary,
+  :root[data-paradigm="kinetic"] .paradigm-toggle {
+    transition: none;
+  }
+  :root[data-paradigm="kinetic"]::view-transition-old(page),
+  :root[data-paradigm="kinetic"]::view-transition-new(page) {
+    animation: none !important;
+  }
+}
