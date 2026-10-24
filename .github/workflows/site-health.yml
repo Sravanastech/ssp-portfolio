@@ -1,0 +1,36 @@
+name: Site health
+
+on:
+  schedule:
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Broken links
+        id: links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress --max-concurrency 4 https://sravanasparimi.com/ https://sravanasparimi.com/work/ https://sravanasparimi.com/about/
+          fail: true
+      - name: Crawl essentials
+        run: |
+          set -e
+          test "$(curl -s -o /dev/null -w '%{http_code}' https://sravanasparimi.com/robots.txt)" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' https://sravanasparimi.com/sitemap.xml)" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' https://sravanasparimi.com/llms.txt)" = 200
+          test "$(curl -s -o /dev/null -w '%{http_code}' https://sravanasparimi.com/definitely-missing-page)" = 404
+          curl -s https://sravanasparimi.com/ | grep -q 'application/ld+json'
+      - name: Lighthouse (live)
+        run: npx --yes @lhci/cli@0.14.0 collect --url=https://sravanasparimi.com/ --url=https://sravanasparimi.com/work/ && npx --yes @lhci/cli@0.14.0 assert --preset=lighthouse:no-pwa --assertions.categories:seo=error --assertions.categories:accessibility=error
+      - name: Open issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh issue create --repo "$GITHUB_REPOSITORY" --title "Site health check failed $(date +%F)" --body "See run $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
