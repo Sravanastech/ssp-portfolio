@@ -7,7 +7,14 @@ import ProjectArtwork from "@/components/ProjectArtwork";
 import EmployerTimeline from "@/components/EmployerTimeline";
 
 export default function HomePage() {
-  const { caseStudies, experiences } = useSiteContent();
+  const { caseStudies, experiences, copy } = useSiteContent();
+  const copyMap = copy as Record<string, string>;
+  const workHeadingGhost = [
+    copyMap["pages.HomePage.text.1"],
+    copyMap["pages.HomePage.text.2"],
+  ]
+    .filter(Boolean)
+    .join(" ");
   // Tools derived from the stacks already listed on the case studies, most-used first.
   const tallies = new Map<string, number>();
   caseStudies.forEach((study) =>
@@ -27,7 +34,7 @@ export default function HomePage() {
         className="studio-container studio-section"
         aria-labelledby="selected-work-title"
       >
-        <div className="studio-section-heading">
+        <div className="studio-section-heading" data-ghost={workHeadingGhost}>
           <h2 id="selected-work-title">
             <SiteText id="pages.HomePage.text.1" />
             <br />

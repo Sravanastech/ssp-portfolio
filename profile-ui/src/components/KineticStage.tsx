@@ -14,12 +14,14 @@ function matches(query: string): boolean {
   }
 }
 
-export default function KineticStage() {
+const INTERACTIVE =
+  'a, button, [role="button"], .studio-project, input, textarea, select';
+
+/** Ticker rendered inside the mode strip's lead slot. */
+export function KineticTicker() {
   const { isKinetic } = useParadigm();
   const { profile, caseStudies } = useSiteContent();
   const [paused, setPaused] = useState(() => matches(REDUCED_MOTION));
-  const [finePointer, setFinePointer] = useState(false);
-  const reticleRef = useRef<HTMLDivElement>(null);
 
   // Real profile data only.
   const items = useMemo(
@@ -33,6 +35,58 @@ export default function KineticStage() {
     ],
     [profile, caseStudies],
   );
+
+  if (!isKinetic) return null;
+
+  const track = (hidden: boolean) => (
+    <ul
+      className="kinetic-ticker-copy"
+      data-copy={hidden ? "clone" : "primary"}
+      aria-hidden={hidden ? true : undefined}
+      style={{
+        display: "flex",
+        gap: 48,
+        margin: 0,
+        padding: 0,
+        listStyle: "none",
+      }}
+    >
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
+
+  return (
+    <div
+      className="kinetic-stage"
+      role="region"
+      aria-label="Kinetic telemetry ticker"
+    >
+      <div className="kinetic-ticker" data-paused={paused ? "true" : "false"}>
+        <div className="kinetic-ticker-track">
+          {track(false)}
+          {track(true)}
+        </div>
+        <button
+          type="button"
+          className="kinetic-pause"
+          aria-pressed={paused}
+          aria-label={paused ? "Play kinetic ticker" : "Pause kinetic ticker"}
+          onClick={() => setPaused((p) => !p)}
+        >
+          {paused ? "Play" : "Pause"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Reticle (fine pointers only). The ticker lives in the mode strip. */
+export default function KineticStage() {
+  const { isKinetic } = useParadigm();
+  const [finePointer, setFinePointer] = useState(false);
+  const reticleRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isKinetic) {
@@ -57,60 +111,28 @@ export default function KineticStage() {
       y = e.clientY;
       if (!frame) frame = window.requestAnimationFrame(flush);
     };
+    const onOver = (e: Event) => {
+      const el = reticleRef.current;
+      if (!el) return;
+      const t = e.target;
+      const hit =
+        t instanceof Element && typeof t.closest === "function"
+          ? t.closest(INTERACTIVE)
+          : null;
+      if (hit) el.setAttribute("data-active", "true");
+      else el.removeAttribute("data-active");
+    };
     window.addEventListener("pointermove", onMove, { passive: true });
+    document.addEventListener("pointerover", onOver, { passive: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerover", onOver);
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [isKinetic, finePointer]);
 
-  if (!isKinetic) return null;
-
-  const track = (hidden: boolean) => (
-    <ul
-      className="kinetic-ticker-copy"
-      data-copy={hidden ? "clone" : "primary"}
-      aria-hidden={hidden ? true : undefined}
-      style={{
-        display: "flex",
-        gap: 48,
-        margin: 0,
-        padding: 0,
-        listStyle: "none",
-      }}
-    >
-      {items.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
-    </ul>
-  );
-
+  if (!isKinetic || !finePointer) return null;
   return (
-    <>
-      <aside
-        className="kinetic-stage"
-        role="region"
-        aria-label="Kinetic telemetry ticker"
-      >
-        <div className="kinetic-ticker" data-paused={paused ? "true" : "false"}>
-          <div className="kinetic-ticker-track">
-            {track(false)}
-            {track(true)}
-          </div>
-          <button
-            type="button"
-            className="kinetic-pause"
-            aria-pressed={paused}
-            aria-label={paused ? "Play kinetic ticker" : "Pause kinetic ticker"}
-            onClick={() => setPaused((p) => !p)}
-          >
-            {paused ? "Play" : "Pause"}
-          </button>
-        </div>
-      </aside>
-      {finePointer && (
-        <div ref={reticleRef} className="kinetic-reticle" aria-hidden="true" />
-      )}
-    </>
+    <div ref={reticleRef} className="kinetic-reticle" aria-hidden="true" />
   );
 }

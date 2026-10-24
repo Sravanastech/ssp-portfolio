@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { ParadigmProvider } from "@/theme/ParadigmContext";
-import KineticStage from "../KineticStage";
+import KineticStage, { KineticTicker } from "../KineticStage";
 
 function mockMedia(matching: string[]) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
@@ -20,6 +20,7 @@ function renderKinetic() {
   localStorage.setItem("portfolio-paradigm", "kinetic");
   return render(
     <ParadigmProvider>
+      <KineticTicker />
       <KineticStage />
     </ParadigmProvider>,
   );
@@ -35,10 +36,12 @@ describe("KineticStage", () => {
   it("renders nothing in studio", () => {
     const { container } = render(
       <ParadigmProvider>
+        <KineticTicker />
         <KineticStage />
       </ParadigmProvider>,
     );
     expect(container.querySelector(".kinetic-stage")).toBeNull();
+    expect(container.querySelector(".kinetic-reticle")).toBeNull();
   });
 
   it("renders ticker twice (second copy aria-hidden) with pause toggle", () => {
@@ -112,5 +115,29 @@ describe("KineticStage", () => {
     unmount();
     expect(cancel).toHaveBeenCalled();
     expect(remove.mock.calls.some(([t]) => t === "pointermove")).toBe(true);
+  });
+
+  it("delegated pointerover toggles reticle data-active", () => {
+    mockMedia(["(pointer: fine)"]);
+    const { container, unmount } = renderKinetic();
+    const reticle = container.querySelector<HTMLElement>(".kinetic-reticle")!;
+    const link = document.createElement("a");
+    const span = document.createElement("span");
+    link.appendChild(span);
+    document.body.appendChild(link);
+    act(() => {
+      span.dispatchEvent(new MouseEvent("pointerover", { bubbles: true }));
+    });
+    expect(reticle).toHaveAttribute("data-active", "true");
+    act(() => {
+      document.body.dispatchEvent(
+        new MouseEvent("pointerover", { bubbles: true }),
+      );
+    });
+    expect(reticle).not.toHaveAttribute("data-active");
+    const remove = vi.spyOn(document, "removeEventListener");
+    unmount();
+    expect(remove.mock.calls.some(([t]) => t === "pointerover")).toBe(true);
+    link.remove();
   });
 });

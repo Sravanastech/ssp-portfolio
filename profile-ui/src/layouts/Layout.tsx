@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import ModeStrip from "@/components/ModeStrip";
 import PageMetadata from "@/components/PageMetadata";
 import OfflineBanner from "@/components/OfflineBanner";
 import ConsentBanner from "@/components/ConsentBanner";
@@ -69,6 +70,7 @@ export default function Layout({ children }: Props) {
           <a className="skip-link" href="#main-content">
             Skip to content
           </a>
+          <ModeStrip />
           <KineticStageSlot />
           <Header />
           <PageMetadata />

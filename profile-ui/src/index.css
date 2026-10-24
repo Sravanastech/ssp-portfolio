@@ -3,6 +3,7 @@
 @import "@fontsource/space-grotesk/700.css";
 @import "tailwindcss";
 @import "./styles/studio-motion.css";
+@import "./styles/mode-strip.css";
 
 :root {
   --color-primary: #244ce4;

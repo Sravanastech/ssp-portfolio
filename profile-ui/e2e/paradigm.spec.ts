@@ -30,15 +30,16 @@ function trackConsole(page: Page): string[] {
   return errors;
 }
 
-const toggle = (page: Page) => page.locator(".paradigm-toggle:visible").first();
+const seg = (page: Page, mode: "studio" | "kinetic") =>
+  page.locator(`.mode-switch button[data-mode="${mode}"]`);
 
 async function paradigmState(page: Page) {
   return page.evaluate(() => ({
     attr: document.documentElement.dataset.paradigm ?? null,
     stored: localStorage.getItem("portfolio-paradigm"),
-    pressed: Array.from(document.querySelectorAll(".paradigm-toggle")).map(
-      (b) => b.getAttribute("aria-pressed"),
-    ),
+    pressed: Array.from(
+      document.querySelectorAll('.mode-switch button[data-mode="kinetic"]'),
+    ).map((b) => b.getAttribute("aria-pressed")),
   }));
 }
 
@@ -76,7 +77,13 @@ test.describe("paradigm toggle (desktop)", () => {
     );
     await expect(page.locator(".mode-toggle:visible").first()).toBeVisible();
 
-    await toggle(page).click();
+    const topBefore = await page.evaluate(
+      () =>
+        document.querySelector("header.studio-header")!.getBoundingClientRect()
+          .top,
+    );
+    await seg(page, "kinetic").focus();
+    await seg(page, "kinetic").click();
     await expect(page.locator("html")).toHaveAttribute(
       "data-paradigm",
       "kinetic",
@@ -88,10 +95,28 @@ test.describe("paradigm toggle (desktop)", () => {
     await expectSwitchersHidden(page);
     expect(
       await page.evaluate(() =>
-        document.activeElement?.classList.contains("paradigm-toggle"),
+        document.activeElement?.matches(
+          '.mode-switch button[data-mode="kinetic"]',
+        ),
       ),
     ).toBe(true);
-    await expect(toggle(page)).toHaveAttribute("aria-pressed", "true");
+    await expect(seg(page, "kinetic")).toHaveAttribute("aria-pressed", "true");
+    const topAfter = await page.evaluate(
+      () =>
+        document.querySelector("header.studio-header")!.getBoundingClientRect()
+          .top,
+    );
+    expect(
+      Math.abs(topAfter - topBefore),
+      "layout shift on toggle",
+    ).toBeLessThan(1);
+    expect(await page.locator("body").innerText()).not.toMatch(/return/i);
+    // Active segment click is a no-op.
+    await seg(page, "kinetic").click();
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-paradigm",
+      "kinetic",
+    );
 
     await page.reload();
     await expect(page.locator("html")).toHaveAttribute(
@@ -102,7 +127,7 @@ test.describe("paradigm toggle (desktop)", () => {
       page.getByRole("region", { name: "Kinetic telemetry ticker" }),
     ).toBeVisible();
 
-    await toggle(page).click();
+    await seg(page, "studio").click();
     await expect(page.locator("html")).toHaveAttribute(
       "data-paradigm",
       "studio",
@@ -119,7 +144,7 @@ test.describe("paradigm toggle (desktop)", () => {
     const errors = trackConsole(page);
     await page.goto("/");
     for (let i = 0; i < 10; i++) {
-      await toggle(page).click({ delay: 0 });
+      await seg(page, i % 2 === 0 ? "kinetic" : "studio").click({ delay: 0 });
     }
     await settle(page);
     await page.waitForTimeout(200);
@@ -127,7 +152,7 @@ test.describe("paradigm toggle (desktop)", () => {
     expect(s.attr).toBe("studio"); // even number of toggles
     expect(s.stored).toBe(s.attr);
     expect(new Set(s.pressed)).toEqual(new Set(["false"]));
-    await toggle(page).click();
+    await seg(page, "kinetic").click();
     await settle(page);
     s = await paradigmState(page);
     expect(s.attr).toBe("kinetic");
@@ -196,7 +221,7 @@ test.describe("reduced motion", () => {
   test("toggle applies instantly without view transition", async ({ page }) => {
     const errors = trackConsole(page);
     await page.goto("/");
-    await toggle(page).click();
+    await seg(page, "kinetic").click();
     // Synchronous path: attribute present immediately, no portal marker.
     const s = await page.evaluate(() => ({
       p: document.documentElement.dataset.paradigm,
@@ -205,7 +230,7 @@ test.describe("reduced motion", () => {
     expect(s).toEqual({ p: "kinetic", vt: false });
     const ticker = page.locator(".kinetic-ticker");
     await expect(ticker).toHaveAttribute("data-paused", "true");
-    await toggle(page).click();
+    await seg(page, "studio").click();
     await expect(page.locator("html")).toHaveAttribute(
       "data-paradigm",
       "studio",
@@ -221,17 +246,15 @@ test.describe("mobile 390x844", () => {
     isMobile: true,
   });
 
-  test("toggle reachable from mobile bar and menu; kinetic usable", async ({
-    page,
-  }) => {
+  test("mode strip reachable and usable; kinetic usable", async ({ page }) => {
     const errors = trackConsole(page);
     await page.goto("/");
-    const bar = page.locator(".studio-mobile-nav .paradigm-toggle");
-    await expect(bar).toBeVisible();
-    const box = await bar.boundingBox();
+    const kin = seg(page, "kinetic");
+    await expect(kin).toBeVisible();
+    const box = await kin.boundingBox();
     expect(box!.width).toBeGreaterThanOrEqual(44);
     expect(box!.height).toBeGreaterThanOrEqual(44);
-    await bar.tap();
+    await kin.tap();
     await expect(page.locator("html")).toHaveAttribute(
       "data-paradigm",
       "kinetic",
@@ -246,18 +269,16 @@ test.describe("mobile 390x844", () => {
     await page.screenshot({
       path: "test-results/paradigm/mobile-kinetic-home.png",
     });
-    // Menu path: open menu, toggle back to studio from inside it.
-    await page.getByRole("button", { name: /menu/i }).first().tap();
-    const inMenu = page
-      .locator('[role="dialog"] .paradigm-toggle, nav .paradigm-toggle')
-      .filter({ visible: true })
-      .last();
-    await expect(inMenu).toBeVisible();
-    await inMenu.tap();
+    await seg(page, "studio").tap();
     await expect(page.locator("html")).toHaveAttribute(
       "data-paradigm",
       "studio",
     );
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
     expect(errors).toEqual([]);
   });
 });
@@ -329,9 +350,7 @@ for (const rate of [1, 4]) {
     // Hover-prefetch is part of the real flow, but measure cold: click directly.
     results.push(
       await measure(page, "studio->kinetic (cold)", async () => {
-        await page
-          .locator(".studio-desktop-nav .paradigm-toggle")
-          .dispatchEvent("click");
+        await seg(page, "kinetic").dispatchEvent("click");
         await expect(page.locator("html")).toHaveAttribute(
           "data-paradigm",
           "kinetic",
@@ -340,9 +359,7 @@ for (const rate of [1, 4]) {
     );
     results.push(
       await measure(page, "kinetic->studio", async () => {
-        await page
-          .locator(".studio-desktop-nav .paradigm-toggle")
-          .dispatchEvent("click");
+        await seg(page, "studio").dispatchEvent("click");
         await expect(page.locator("html")).toHaveAttribute(
           "data-paradigm",
           "studio",
@@ -369,9 +386,7 @@ for (const rate of [1, 4]) {
     );
     results.push(
       await measure(page, "studio->kinetic (warm)", async () => {
-        await page
-          .locator(".studio-desktop-nav .paradigm-toggle")
-          .dispatchEvent("click");
+        await seg(page, "kinetic").dispatchEvent("click");
         await expect(page.locator("html")).toHaveAttribute(
           "data-paradigm",
           "kinetic",

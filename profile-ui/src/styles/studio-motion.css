@@ -97,38 +97,3 @@
     translate: 0 16px;
   }
 }
-
-/* Paradigm toggle: always loaded; also styles prerendered HTML (no attribute). */
-.paradigm-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-block-size: 44px;
-  min-inline-size: 44px;
-  padding: 8px 16px;
-  border: 1px solid currentColor;
-  border-radius: 999px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-:root:not([data-paradigm="kinetic"]) .paradigm-toggle {
-  border: 1px dashed var(--color-primary);
-  border-radius: 4px;
-  background: var(--color-surface);
-  color: var(--color-primary);
-  font-family: ui-monospace, Menlo, Consolas, monospace;
-  text-transform: uppercase;
-  transition: translate 0.25s var(--sm-ease, ease);
-}
-:root:not([data-paradigm="kinetic"]) .paradigm-toggle:hover {
-  translate: 0 -2px;
-}
-:root:not([data-paradigm="kinetic"]) .paradigm-toggle:focus-visible {
-  outline: 3px solid var(--color-focus-ring);
-  outline-offset: 3px;
-}

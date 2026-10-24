@@ -13,7 +13,7 @@ describe("studio motion", () => {
   it("stays within the 2KB gzip budget", () => {
     expect(gzipSync(css).length).toBeLessThanOrEqual(2048);
   });
-  it("scopes every selector to studio paradigm (or the shared toggle base)", () => {
+  it("scopes every selector to studio paradigm ", () => {
     const sels = css
       .replace(/\/\*[\s\S]*?\*\//g, "")
       .replace(/@keyframes[^{]+\{(?:[^{}]*\{[^{}]*\})+\s*\}/g, "")
@@ -23,7 +23,7 @@ describe("studio motion", () => {
     for (const s of sels)
       for (const part of s.split(/,\s*(?=:root)/))
         expect(part).toMatch(
-          /^(:root(\[data-paradigm="studio"\]|:not\(\[data-paradigm\]\)|:not\(\[data-paradigm="kinetic"\]\))|\.paradigm-toggle$)/,
+          /^:root(\[data-paradigm="studio"\]|:not\(\[data-paradigm\]\)|:not\(\[data-paradigm="kinetic"\]\))/,
         );
   });
   it("defines page view-transition enter/exit", () => {

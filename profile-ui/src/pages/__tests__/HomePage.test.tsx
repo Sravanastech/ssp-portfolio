@@ -86,29 +86,39 @@ describe("HomePage paradigm toggle", () => {
   it("switches to kinetic, mounts ticker, returns to studio, keeps focus", async () => {
     localStorage.clear();
     renderWithProviders(<HomePage />);
-    const toggle = screen.getAllByRole("button", {
-      name: /switch to kinetic maximalist mode/i,
-    })[0];
+    const toggle = screen.getByRole("button", { name: "Kinetic" });
     toggle.focus();
     fireEvent.click(toggle);
     expect(document.documentElement.dataset.paradigm).toBe("kinetic");
     expect(
       await screen.findByRole("region", { name: /kinetic telemetry ticker/i }),
     ).toBeInTheDocument();
-    const back = screen.getAllByRole("button", {
-      name: /switch to studio minimalist mode/i,
-    })[0];
-    expect(back).toHaveFocus();
+    expect(toggle).toHaveFocus();
+    const back = screen.getByRole("button", { name: "Studio" });
+    back.focus();
     fireEvent.click(back);
     expect(document.documentElement.dataset.paradigm).toBe("studio");
     expect(
       screen.queryByRole("region", { name: /kinetic telemetry ticker/i }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getAllByRole("button", {
-        name: /switch to kinetic maximalist mode/i,
-      })[0],
-    ).toHaveFocus();
+    expect(back).toHaveFocus();
     localStorage.clear();
+  });
+});
+
+describe("HomePage section headings", () => {
+  it("mirrors each heading text in data-ghost", () => {
+    const { container } = renderWithProviders(<HomePage />);
+    const wrappers = container.querySelectorAll(".studio-section-heading");
+    expect(wrappers.length).toBeGreaterThan(0);
+    wrappers.forEach((el) => {
+      const heading = el.querySelector("h1, h2, h3")!;
+      const text = Array.from(heading.childNodes)
+        .map((n) => (n.nodeType === 3 ? n.textContent : " "))
+        .join("")
+        .replace(/\s+/g, " ")
+        .trim();
+      expect(el.getAttribute("data-ghost")).toBe(text);
+    });
   });
 });

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { PrefetchNavLink as NavLink } from "./PrefetchLink";
-import ParadigmToggle from "./ParadigmToggle";
 import { useAuth } from "@/auth/auth";
 import { SiteText } from "@/content/SiteContent";
 import { useSiteContent } from "@/content/siteContentContext";
@@ -369,11 +368,6 @@ function MobileMenuClient() {
           className="pt-4 border-t mt-3 space-y-3 shrink-0"
           style={{ borderTopColor: cv.border }}
         >
-          {/* Paradigm */}
-          <div className="flex justify-center">
-            <ParadigmToggle />
-          </div>
-
           {/* Appearance */}
           <div
             className="flex items-center justify-between gap-3 p-2.5 rounded-xl border"
