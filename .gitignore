@@ -58,3 +58,10 @@ private/
 .understand-anything/
 docs/superpowers/
 
+
+# Legacy repo backup and local tool artifacts
+.git.bak/
+.firebase/
+profile-ui/artifacts/
+profile-ui/premium-audit.json
+**/.impeccable/hook.cache.json
