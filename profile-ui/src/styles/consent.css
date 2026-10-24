@@ -36,15 +36,16 @@
 }
 .consent-title {
   margin: 0 0 4px;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 500;
 }
 .consent-copy p {
   margin: 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.55;
   color: var(--color-textSecondary);
   max-width: 62ch;
+  text-wrap: pretty;
 }
 .consent-copy a {
   color: var(--color-primary);
@@ -113,6 +114,6 @@
 }
 .legal-prose li {
   margin-bottom: 8px;
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.7;
 }

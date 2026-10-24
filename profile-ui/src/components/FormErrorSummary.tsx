@@ -47,7 +47,7 @@ export default function FormErrorSummary({ errors, formId }: Props) {
         color: cv.error,
       }}
     >
-      <div className="flex items-center gap-2 font-semibold">
+      <div className="flex items-center gap-2 font-bold">
         <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />
         <span id="error-summary-heading">
           {errors.length === 1

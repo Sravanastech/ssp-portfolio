@@ -66,7 +66,7 @@ class ErrorBoundary extends React.Component<
             <h1
               ref={(el) => el?.focus()}
               tabIndex={-1}
-              className="text-2xl md:text-3xl font-semibold tracking-tight outline-none"
+              className="text-2xl md:text-3xl font-bold tracking-tight outline-none"
               style={{ color: "var(--color-text, #17243c)" }}
               role="alert"
             >
@@ -90,7 +90,7 @@ class ErrorBoundary extends React.Component<
                   color: "var(--color-textSecondary, #52617c)",
                 }}
               >
-                <summary className="font-semibold cursor-pointer mb-2">
+                <summary className="font-medium cursor-pointer mb-2">
                   Error details
                 </summary>
                 <pre className="overflow-auto whitespace-pre-wrap">
@@ -102,23 +102,23 @@ class ErrorBoundary extends React.Component<
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
               <button
                 onClick={this.resetError}
-                className="px-6 py-3 rounded-lg font-semibold text-base transition-opacity hover:opacity-90"
+                className="px-6 py-3 rounded-lg font-bold text-base transition-opacity hover:opacity-90"
                 style={{
                   backgroundColor: "var(--color-primary, #244ce4)",
                   color: "var(--color-accent, #fff)",
                 }}
               >
-                Try Again
+                Try again
               </button>
               <a
                 href="/"
-                className="px-6 py-3 rounded-lg font-semibold text-base border transition-opacity hover:opacity-80"
+                className="px-6 py-3 rounded-lg font-medium text-base border transition-opacity hover:opacity-80"
                 style={{
                   borderColor: "var(--color-border, #ccd3e1)",
                   color: "var(--color-text, #17243c)",
                 }}
               >
-                Go Home
+                Go home
               </a>
             </div>
           </div>

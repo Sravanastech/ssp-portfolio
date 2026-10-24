@@ -124,25 +124,26 @@
 }
 .page-title-2 {
   margin: 0;
-  font-size: clamp(28px, 3.2vw, 40px);
+  font-size: clamp(1.75rem, 1rem + 2.1vw, 2.5rem);
   font-weight: 500;
 }
 .page-title-3 {
   margin: 40px 0 12px;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 500;
 }
 .page-copy {
   margin: 0;
   max-width: 68ch;
   color: var(--color-textSecondary);
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 1.7;
+  text-wrap: pretty;
 }
 .page-small {
   margin: 0;
   color: var(--color-textSecondary);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .page-head-row {
   display: flex;
@@ -192,7 +193,7 @@
   align-items: center;
   gap: 10px;
   margin: 0 0 24px;
-  font-size: 22px;
+  font-size: 1.375rem;
   font-weight: 500;
 }
 .panel-title svg {
@@ -216,7 +217,7 @@
     var(--color-surface)
   );
   color: var(--color-text);
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.5;
 }
 .page-notice > svg {
@@ -255,7 +256,7 @@
   min-width: 0;
 }
 .field-label {
-  font-size: 15px;
+  font-size: 0.9375rem;
   font-weight: 500;
   color: var(--color-text);
 }
@@ -278,7 +279,7 @@
   border-radius: 6px;
   background: var(--color-background);
   color: var(--color-text);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.5;
   box-shadow: none;
 }
@@ -313,7 +314,7 @@ textarea.field-input,
 .field-input--code {
   min-height: 65dvh;
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.6;
   white-space: pre;
   overflow: auto;
@@ -321,7 +322,7 @@ textarea.field-input,
 .field-hint {
   margin: 0;
   color: var(--color-textSecondary);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 .field-error {
@@ -330,7 +331,7 @@ textarea.field-input,
   gap: 6px;
   margin: 0;
   color: var(--color-error);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 .field-grid {
@@ -358,13 +359,13 @@ textarea.field-input,
   padding: 2px 6px;
   border: 1px solid var(--color-border);
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 
 /* About */
 .about-name {
   margin: 0;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 500;
 }
 .about-role {
@@ -397,14 +398,15 @@ textarea.field-input,
 }
 .legal-prose p {
   margin: 0 0 16px;
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.75;
   color: var(--color-text);
   hyphens: manual;
+  text-wrap: pretty;
 }
 .legal-prose h2 {
   margin: 44px 0 12px;
-  font-size: 24px;
+  font-size: 1.5rem;
   font-weight: 500;
 }
 .legal-prose a {
@@ -423,7 +425,7 @@ textarea.field-input,
   padding: clamp(20px, 3vw, 32px);
 }
 .studio-contact form h2 {
-  font-size: clamp(24px, 2.4vw, 30px);
+  font-size: clamp(1.5rem, 0.875rem + 1.4vw, 1.875rem);
   font-weight: 500;
 }
 .studio-contact form label,
@@ -432,7 +434,7 @@ textarea.field-input,
 }
 .studio-contact form .font-mono {
   font-family: inherit;
-  font-size: 13px;
+  font-size: 0.8125rem;
   opacity: 1;
 }
 .studio-contact form button[type="submit"] {
@@ -442,7 +444,7 @@ textarea.field-input,
 }
 .contact-aside h2 {
   margin: 0 0 20px;
-  font-size: clamp(28px, 3.2vw, 40px);
+  font-size: clamp(1.75rem, 1rem + 2.1vw, 2.5rem);
   font-weight: 500;
 }
 .contact-methods {
@@ -453,7 +455,7 @@ textarea.field-input,
 .contact-methods dt {
   margin-bottom: 4px;
   color: var(--color-textSecondary);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .contact-methods dd {
   margin: 0;
@@ -482,7 +484,7 @@ textarea.field-input,
 }
 .contact-success h2 {
   margin: 0 0 8px;
-  font-size: clamp(24px, 2.4vw, 30px);
+  font-size: clamp(1.5rem, 0.875rem + 1.4vw, 1.875rem);
   font-weight: 500;
 }
 .contact-success > svg {
@@ -494,7 +496,7 @@ textarea.field-input,
   border: 1px solid var(--color-border);
   border-radius: 6px;
   background: var(--color-background);
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 .contact-recap p {
   margin: 0;
@@ -518,7 +520,7 @@ textarea.field-input,
   gap: 12px;
   margin: 0 0 16px;
   color: var(--color-error);
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 500;
   letter-spacing: 0.02em;
 }
@@ -550,7 +552,7 @@ textarea.field-input,
   padding-block: 40px 32px;
 }
 .ops-page .studio-page-heading {
-  font-size: clamp(32px, 4vw, 48px);
+  font-size: clamp(2rem, 1rem + 2.9vw, 3rem);
   margin-bottom: 16px;
 }
 .ops-column {
@@ -576,7 +578,7 @@ textarea.field-input,
   padding: 3px 10px;
   border: 1px solid currentColor;
   border-radius: 4px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
 }
 .ops-badge--ok {
@@ -640,12 +642,12 @@ textarea.field-input,
 }
 .ops-row-head h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 500;
 }
 .ops-row-head time {
   color: var(--color-textSecondary);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
 }
 .ops-message {
@@ -687,7 +689,7 @@ textarea.field-input,
     flex: 1 1 100%;
   }
   .page-copy {
-    font-size: 17px;
+    font-size: 1.0625rem;
   }
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -714,7 +716,7 @@ textarea.field-input,
   align-items: start;
 }
 .studio-proof h2 {
-  font-size: clamp(28px, 3vw, 40px);
+  font-size: clamp(1.75rem, 1rem + 1.9vw, 2.5rem);
   font-weight: 500;
   margin-bottom: 8px;
 }
@@ -730,7 +732,7 @@ textarea.field-input,
   align-items: baseline;
   padding-block: 14px;
   border-top: 1px solid var(--color-border);
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 .employer-timeline li:first-child {
   border-top: 0;
@@ -739,10 +741,10 @@ textarea.field-input,
 .employer-dates {
   color: var(--color-primary);
   font-variant-numeric: tabular-nums;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .employer-name {
-  font-weight: 600;
+  font-weight: 700;
 }
 .employer-title {
   color: var(--color-textSecondary);
@@ -755,8 +757,8 @@ textarea.field-input,
   gap: 12px 28px;
 }
 .studio-proof-tools h3 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
 }
 .studio-proof-tools ul {
   display: flex;
@@ -770,15 +772,16 @@ textarea.field-input,
   padding: 4px 12px;
   border: 1px solid var(--color-border);
   border-radius: 20px;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--color-textSecondary);
 }
 .studio-approach .studio-principles span,
 .studio-project-stack {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .studio-principles p {
   max-width: 62ch;
+  text-wrap: pretty;
 }
 @media (max-width: 900px) {
   .studio-proof-employers {
@@ -814,7 +817,7 @@ html:has(.studio-case-nav) {
 }
 .studio-case-nav a {
   flex: none;
-  font-size: 15px;
+  font-size: 0.9375rem;
   white-space: nowrap;
 }
 .studio-case-nav a[aria-current] {
@@ -825,17 +828,19 @@ html:has(.studio-case-nav) {
 .work-note {
   margin-top: 24px;
   max-width: 62ch;
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--color-textSecondary);
+  text-wrap: pretty;
 }
 .work-stack {
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: var(--color-textSecondary);
 }
 .studio-case-body p,
 .studio-case-flow li {
-  font-size: 16px;
+  font-size: 1rem;
+  text-wrap: pretty;
 }
 @media (max-width: 700px) {
   .studio-case-nav {
@@ -865,14 +870,14 @@ html:has(.studio-case-nav) {
   color: var(--color-textSecondary);
   text-decoration: none;
   border-top: 1px solid var(--color-border);
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 .about-toc a:hover {
   color: var(--color-primary);
 }
 .about-aside-note {
   margin: 4px 0 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--color-textSecondary);
 }
 @media (max-width: 900px) {

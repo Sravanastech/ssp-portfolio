@@ -104,7 +104,7 @@ export default function HomePage() {
           <h3>
             <SiteText id="pages.HomePage.text.27" />
           </h3>
-          <ul>
+          <ul role="list">
             {tools.map((tool) => (
               <li key={tool}>{tool}</li>
             ))}

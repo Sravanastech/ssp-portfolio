@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link, useInRouterContext } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormErrorSummary from "./FormErrorSummary";
@@ -13,7 +14,7 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { cv as colors, tint } from "@/theme/cssVars";
-import { User, Mail, Phone, MessageSquare, Send, Loader2 } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 
 const contactFormSchema = z
   .object({
@@ -65,6 +66,7 @@ type Props = {
 const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
   const submitting = useRef(false);
   const [showErrorSummary, setShowErrorSummary] = useState(false);
+  const inRouter = useInRouterContext();
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -121,7 +123,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
         onSubmit={form.handleSubmit(submitOnce, onInvalid)}
         aria-busy={isLoading || form.formState.isSubmitting}
         onKeyDown={handleKeyDown}
-        className="space-y-6 w-full p-6 md:p-8 rounded-xl border shadow-xs"
+        className="space-y-6 w-full p-6 md:p-8 rounded-[6px] border"
         style={{
           backgroundColor: colors.surface,
           borderColor: colors.border,
@@ -129,7 +131,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
       >
         <div className="space-y-2 mb-6">
           <h2
-            className="text-2xl md:text-3xl font-semibold tracking-tight"
+            className="text-2xl md:text-3xl font-bold tracking-tight"
             style={{ color: colors.primary }}
           >
             Send a message
@@ -149,9 +151,9 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                   key === "name"
                     ? "Name"
                     : key === "email"
-                      ? "Email Address"
+                      ? "Email address"
                       : key === "phone"
-                        ? "Phone Number"
+                        ? "Phone number"
                         : key === "message"
                           ? "Message"
                           : key,
@@ -177,10 +179,9 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
           render={({ field }) => (
             <FormItem className="space-y-1.5">
               <FormLabel
-                className="text-sm font-bold flex items-center gap-1.5"
+                className="text-sm font-medium flex items-center gap-1"
                 style={{ color: colors.text }}
               >
-                <User className="w-4 h-4" style={{ color: colors.primary }} />
                 Name <span style={{ color: colors.error }}>*</span>
               </FormLabel>
               <FormControl>
@@ -192,7 +193,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                     aria-describedby={
                       form.formState.errors.name ? "name-error" : undefined
                     }
-                    className="h-12 px-4 rounded-lg text-sm md:text-base border transition-all focus-visible:ring-2"
+                    className="h-12 px-4 rounded-[6px] text-sm md:text-base border transition-all focus-visible:ring-2"
                     style={inputStyle}
                     placeholder="Your name"
                     autoComplete="name"
@@ -207,7 +208,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
         <div className="space-y-3 pt-1">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
             <span
-              className="text-sm font-bold flex items-center gap-1.5"
+              className="text-sm font-medium flex items-center gap-1.5"
               style={{ color: colors.text }}
             >
               Contact methods
@@ -228,11 +229,10 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
               render={({ field }) => (
                 <FormItem className="space-y-1.5">
                   <FormLabel
-                    className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5"
-                    style={{ color: colors.textSecondary }}
+                    className="text-sm font-medium flex items-center gap-1.5"
+                    style={{ color: colors.text }}
                   >
-                    <Mail className="w-3.5 h-3.5 opacity-70" />
-                    Email Address
+                    Email address
                   </FormLabel>
                   <FormControl>
                     <div className="relative flex items-center">
@@ -244,7 +244,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                           field.onChange(e);
                           handleContactChange();
                         }}
-                        className={`h-12 pl-4 pr-12 rounded-lg text-sm md:text-base border transition-all focus-visible:ring-2 ${
+                        className={`h-12 pl-4 pr-12 rounded-[6px] text-sm md:text-base border transition-all focus-visible:ring-2 ${
                           form.formState.errors.email
                             ? "ring-2 ring-red-500"
                             : ""
@@ -281,11 +281,10 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
               render={({ field }) => (
                 <FormItem className="space-y-1.5">
                   <FormLabel
-                    className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5"
-                    style={{ color: colors.textSecondary }}
+                    className="text-sm font-medium flex items-center gap-1.5"
+                    style={{ color: colors.text }}
                   >
-                    <Phone className="w-3.5 h-3.5 opacity-70" />
-                    Phone Number
+                    Phone number
                   </FormLabel>
                   <FormControl>
                     <div className="relative flex items-center">
@@ -297,7 +296,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                           field.onChange(e);
                           handleContactChange();
                         }}
-                        className={`h-12 pl-4 pr-12 rounded-lg text-sm md:text-base border transition-all focus-visible:ring-2 ${
+                        className={`h-12 pl-4 pr-12 rounded-[6px] text-sm md:text-base border transition-all focus-visible:ring-2 ${
                           form.formState.errors.phone
                             ? "ring-2 ring-red-500"
                             : ""
@@ -335,13 +334,9 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
           render={({ field }) => (
             <FormItem className="space-y-1.5">
               <FormLabel
-                className="text-sm font-bold flex items-center gap-1.5"
+                className="text-sm font-medium flex items-center gap-1"
                 style={{ color: colors.text }}
               >
-                <MessageSquare
-                  className="w-4 h-4"
-                  style={{ color: colors.primary }}
-                />
                 Message <span style={{ color: colors.error }}>*</span>
               </FormLabel>
               <FormControl>
@@ -353,7 +348,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                   aria-describedby={
                     form.formState.errors.message ? "message-error" : undefined
                   }
-                  className="w-full rounded-lg border p-4 text-sm md:text-base focus-visible:outline-none focus-visible:ring-2 transition-all"
+                  className="w-full rounded-[6px] border p-4 text-sm md:text-base focus-visible:outline-none focus-visible:ring-2 transition-all"
                   style={{
                     ...inputStyle,
                     resize: "vertical",
@@ -372,20 +367,24 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
         >
           <p>
             Your message is processed securely.{" "}
-            <a href="/privacy" className="underline underline-offset-4">
-              How your information is handled
-            </a>
+            {inRouter ? (
+              <Link to="/privacy" className="underline underline-offset-4">
+                How your information is handled
+              </Link>
+            ) : (
+              <a href="/privacy" className="underline underline-offset-4">
+                How your information is handled
+              </a>
+            )}
           </p>
-          <p className="font-mono text-[11px] opacity-75">
-            Press ⌘+Enter to send
-          </p>
+          <p className="text-[0.8125rem]">Press ⌘+Enter to send</p>
         </div>
 
         <div className="pt-2">
           <button
             type="submit"
             disabled={isLoading || form.formState.isSubmitting}
-            className="studio-button w-full h-12 rounded-lg flex items-center justify-center gap-2 font-bold text-base shadow-xs transition-all hover:opacity-95 active:scale-[0.99] disabled:opacity-60"
+            className="studio-button w-full h-12 rounded-[6px] flex items-center justify-center gap-2 font-medium text-base transition-all hover:opacity-95 active:scale-[0.99] disabled:opacity-60"
             style={{
               backgroundColor: colors.primary,
               color: colors.accent,

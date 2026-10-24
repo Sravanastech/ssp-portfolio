@@ -16,7 +16,7 @@ const EvidenceBadge = ({ label, value, className }: EvidenceBadgeProps) => {
       }}
     >
       <span>{label}</span>
-      {value && <span className="font-semibold">{value}</span>}
+      {value && <span className="font-bold">{value}</span>}
     </div>
   );
 };

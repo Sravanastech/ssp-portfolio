@@ -140,7 +140,7 @@ const AuthDropdownClient = () => {
                   navigate("/account");
                   setIsOpen(false);
                 }}
-                className="w-full px-4 py-3 text-left font-semibold focus:outline-none focus:ring-2"
+                className="w-full px-4 py-3 text-left font-medium focus:outline-none focus:ring-2"
                 style={{ color: cv.text }}
                 role="menuitem"
               >
@@ -163,7 +163,7 @@ const AuthDropdownClient = () => {
                 role="menuitem"
               >
                 <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
-                <span className="font-semibold">Logout</span>
+                <span className="font-medium">Logout</span>
               </button>
             </>
           }

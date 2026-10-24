@@ -48,7 +48,7 @@ export default function ProjectPage() {
               <dd>{study.role}</dd>
             </div>
           </dl>
-          <ul className="project-stack" aria-label="Technologies">
+          <ul className="project-stack" role="list" aria-label="Technologies">
             {study.technologies.map((technology) => (
               <li key={technology}>{technology}</li>
             ))}
@@ -74,7 +74,7 @@ export default function ProjectPage() {
         </div>
         <section className="project-related" aria-labelledby="project-related">
           <h2 id="project-related">Related work</h2>
-          <ul>
+          <ul role="list">
             {related.map((item) => (
               <li key={item.id}>
                 <Link to={`/work/${item.slug}`}>

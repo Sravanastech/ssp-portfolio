@@ -411,7 +411,7 @@ function MobileMenuClient() {
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all hover:bg-red-500/10 active:scale-98"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border text-sm font-medium transition-all hover:bg-red-500/10 active:scale-98"
               style={{
                 borderColor: tint("error", 31),
                 color: cv.error,

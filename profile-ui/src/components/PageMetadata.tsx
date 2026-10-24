@@ -11,6 +11,14 @@ import { useLocation } from "react-router-dom";
 /** Route rendered into dist/404.html. Never indexable. */
 export const NOT_FOUND_ROUTE = "/404";
 
+const NON_INDEXED_APP_ROUTES = new Set<string>([
+  "/resume",
+  "/auth-callback",
+  "/account",
+  "/admin",
+  "/admin/inquiries",
+]);
+
 export default function PageMetadata() {
   const content = useSiteContent();
   const { profile } = content;
@@ -20,7 +28,7 @@ export default function PageMetadata() {
   if (!metadata)
     return (
       <Helmet>
-        {route === NOT_FOUND_ROUTE && (
+        {!NON_INDEXED_APP_ROUTES.has(route) && (
           <title>{`Page Not Found | ${profile.name}`}</title>
         )}
         <meta name="robots" content="noindex, noarchive" />

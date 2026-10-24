@@ -43,6 +43,7 @@
   --color-cta-bg: var(--color-primary);
   --color-cta-text: var(--color-accent);
   --color-cta-hover: var(--color-primary);
+  accent-color: var(--color-primary);
   font-synthesis: none;
 }
 
@@ -150,14 +151,14 @@ button:disabled {
   align-items: center;
   gap: 13px;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.35;
   text-decoration: none;
 }
 .studio-monogram {
   display: flex;
   align-items: baseline;
-  font-size: 34px;
+  font-size: 2.125rem;
   letter-spacing: -0.04em;
   color: var(--color-primary);
 }
@@ -167,7 +168,7 @@ button:disabled {
 .studio-brand-caption {
   display: block;
   color: var(--color-textSecondary);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 400;
   margin-top: 3px;
 }
@@ -180,7 +181,7 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 25px;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .studio-navigation a {
   display: inline-flex;
@@ -245,7 +246,7 @@ button:disabled {
   align-items: center;
   gap: 7px;
   padding: 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .composition-choice b {
   opacity: 0.65;
@@ -284,7 +285,7 @@ button:disabled {
   border: 1px solid var(--studio-ink-line);
   border-radius: 8px;
   color: var(--studio-on-ink);
-  font-size: 13px;
+  font-size: 0.8125rem;
   cursor: pointer;
 }
 .theme-choice:hover {
@@ -336,7 +337,7 @@ button:disabled {
     gap 0.6s;
 }
 .studio-hero h1 {
-  font-size: clamp(48px, 5.65vw, 82px);
+  font-size: clamp(3rem, 1rem + 4.5vw, 5.125rem);
   font-weight: 700;
   line-height: 1.02;
   max-width: 700px;
@@ -347,20 +348,21 @@ button:disabled {
 .studio-hero-name {
   margin: 28px 0 0;
   font-weight: 700;
-  font-size: 17px;
+  font-size: 1.0625rem;
 }
 .studio-hero-name span {
   display: block;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 400;
   margin-top: 4px;
 }
 .studio-hero-description {
   max-width: 52ch;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.7;
   margin: 20px 0 0;
   color: var(--studio-on-blue-muted);
+  text-wrap: pretty;
 }
 .studio-actions {
   display: flex;
@@ -429,7 +431,7 @@ button:disabled {
   margin-top: 62px;
   padding-block: 22px;
   border-top: 1px solid var(--studio-blue-line);
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--studio-on-blue-muted);
 }
 .studio-hero-foot a {
@@ -456,7 +458,7 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 .system-model {
@@ -495,7 +497,7 @@ button:disabled {
   border: 1px solid var(--color-border);
   border-radius: 12px;
   background: var(--color-surface);
-  font-size: 12px;
+  font-size: 0.75rem;
   transition:
     background-color 0.35s,
     transform 0.45s var(--studio-ease);
@@ -529,7 +531,7 @@ button:disabled {
 .system-controls button {
   border-bottom: 2px solid transparent;
   padding: 10px 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--color-textSecondary);
 }
 .system-controls button[aria-pressed="true"] {
@@ -545,22 +547,23 @@ button:disabled {
   padding-top: 22px;
 }
 .system-detail h2 {
-  font-size: 20px;
+  font-size: 1.25rem;
   letter-spacing: -0.02em;
   margin: 0 0 9px;
 }
 .system-detail p {
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--color-textSecondary);
   margin: 0 0 12px;
+  text-wrap: pretty;
 }
 .system-detail > span {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--color-primary);
 }
 .system-caption {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--color-textSecondary);
   margin: 8px 0 0;
 }
@@ -574,15 +577,16 @@ button:disabled {
 .studio-section-heading h2,
 .studio-approach h2,
 .studio-closing h2 {
-  font-size: clamp(32px, 3.5vw, 48px);
+  font-size: clamp(2rem, 1rem + 2.4vw, 3rem);
   font-weight: 500;
   margin: 0;
 }
 .studio-section-heading > p {
   max-width: 380px;
-  font-size: 16px;
+  font-size: 1rem;
   color: var(--color-textSecondary);
   margin: 0;
+  text-wrap: pretty;
 }
 .studio-project-grid {
   display: grid;
@@ -616,7 +620,7 @@ button:disabled {
   transform: rotate(45deg);
 }
 .studio-project h3 {
-  font-size: 27px;
+  font-size: 1.6875rem;
   font-weight: 500;
   margin: 10px 0 14px;
 }
@@ -628,14 +632,16 @@ button:disabled {
 }
 .studio-project > p:not(.studio-project-meta) {
   color: var(--color-textSecondary);
-  font-size: 15px;
+  font-size: 0.9375rem;
   max-width: 46ch;
+  text-wrap: pretty;
 }
 .studio-project-meta {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
   margin: 22px 0 0;
   color: var(--color-textSecondary);
 }
@@ -695,7 +701,7 @@ a:hover .project-art-sheet {
   display: flex;
   gap: 10px;
   align-items: center;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   margin-bottom: 20px;
 }
@@ -703,7 +709,8 @@ a:hover .project-art-sheet {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
   padding: 9px 0;
   border-top: 1px solid var(--art-rule);
 }
@@ -731,7 +738,7 @@ a:hover .project-art-sheet {
   position: absolute;
   bottom: 10px;
   left: 16px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--art-note-lime);
 }
 .art-workforce .project-art-note {
@@ -759,10 +766,11 @@ a:hover .project-art-sheet {
   background: var(--color-surface);
 }
 .studio-lede {
-  font-size: clamp(18px, 1.5vw, 21px);
+  font-size: clamp(1.125rem, 0.875rem + 0.5vw, 1.3125rem);
   line-height: 1.7;
   color: var(--color-textSecondary);
   max-width: 62ch;
+  text-wrap: pretty;
 }
 .studio-approach .studio-lede {
   margin-block: 24px;
@@ -777,16 +785,16 @@ a:hover .project-art-sheet {
   border: 0;
 }
 .studio-principles h3 {
-  font-size: 23px;
+  font-size: 1.4375rem;
   font-weight: 500;
 }
 .studio-principles p {
   color: var(--color-textSecondary);
-  font-size: 15px;
+  font-size: 0.9375rem;
   margin-block: 15px;
 }
 .studio-principles span {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--color-primary);
 }
 .studio-closing {
@@ -799,6 +807,7 @@ a:hover .project-art-sheet {
   max-width: 55ch;
   color: var(--color-textSecondary);
   margin: 24px 0 0;
+  text-wrap: pretty;
 }
 .studio-closing .studio-button {
   flex-shrink: 0;
@@ -816,7 +825,7 @@ a:hover .project-art-sheet {
   padding-bottom: 32px;
 }
 .studio-footer-name {
-  font-size: clamp(40px, 5vw, 64px);
+  font-size: clamp(2.5rem, 1rem + 3.8vw, 4rem);
   line-height: 1;
   letter-spacing: -0.04em;
   font-weight: 500;
@@ -827,7 +836,7 @@ a:hover .project-art-sheet {
 }
 .studio-footer-main > div p {
   margin: 0 0 25px;
-  font-size: 19px;
+  font-size: 1.1875rem;
   line-height: 1.5;
 }
 .studio-footer-main > div a {
@@ -837,7 +846,7 @@ a:hover .project-art-sheet {
   min-height: 44px;
   margin-block: -12px;
   margin-right: 24px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-underline-offset: 5px;
 }
 .studio-palette {
@@ -845,7 +854,7 @@ a:hover .project-art-sheet {
   align-items: center;
   justify-content: end;
   gap: 15px;
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-bottom: 24px;
 }
 .studio-palette > div {
@@ -857,7 +866,7 @@ a:hover .project-art-sheet {
   justify-content: space-between;
   gap: 24px;
   border-top: 1px solid var(--studio-ink-rule);
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--studio-on-ink-soft);
 }
 .studio-footer-bottom nav {
@@ -879,7 +888,7 @@ a:hover .project-art-sheet {
   padding-block: 72px 48px;
 }
 .studio-page-heading {
-  font-size: clamp(42px, 5.5vw, 76px);
+  font-size: clamp(2.625rem, 1rem + 4.3vw, 4.75rem);
   font-weight: 500;
   max-width: 1000px;
   margin: 0 0 28px;
@@ -889,9 +898,10 @@ a:hover .project-art-sheet {
 }
 .studio-prose p {
   line-height: 1.8;
+  text-wrap: pretty;
 }
 .studio-prose h2 {
-  font-size: 28px;
+  font-size: 1.75rem;
   font-weight: 500;
 }
 .studio-contact {
@@ -929,7 +939,7 @@ a:hover .project-art-sheet {
   border: 1px solid var(--color-border);
   border-radius: 24px;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .studio-case-nav a:hover {
   background: var(--color-surface);
@@ -947,7 +957,7 @@ a:hover .project-art-sheet {
   margin-bottom: 48px;
 }
 .studio-case-head h2 {
-  font-size: clamp(36px, 4vw, 56px);
+  font-size: clamp(2.25rem, 1rem + 3vw, 3.5rem);
   font-weight: 500;
   margin-bottom: 16px;
 }
@@ -965,14 +975,15 @@ a:hover .project-art-sheet {
   gap: 40px;
 }
 .studio-case-body h3 {
-  font-size: 21px;
+  font-size: 1.3125rem;
   font-weight: 500;
   margin-bottom: 16px;
 }
 .studio-case-body p {
   color: var(--color-textSecondary);
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.75;
+  text-wrap: pretty;
 }
 .studio-case-flow {
   margin-top: 44px;
@@ -990,11 +1001,12 @@ a:hover .project-art-sheet {
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  font-size: 14px;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
 }
 .studio-case-flow figcaption {
   margin-top: 20px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--color-textSecondary);
 }
 /* A: the bold opening is followed by an ordered project index. */
@@ -1022,26 +1034,28 @@ a:hover .project-art-sheet {
   flex-wrap: wrap;
   gap: 4px 16px;
   margin: 0 0 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .studio-project-copy .studio-project-meta span {
   text-align: left;
 }
 .studio-project-copy h3 {
   margin: 0 0 12px;
-  font-size: clamp(26px, 2.5vw, 34px);
+  font-size: clamp(1.625rem, 1rem + 1.4vw, 2.125rem);
 }
 .studio-project-summary {
   color: var(--color-text);
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 1.5;
   margin-bottom: 10px;
+  text-wrap: pretty;
 }
 .studio-project-contribution {
-  font-size: 15px;
+  font-size: 0.9375rem;
   line-height: 1.7;
   max-width: 66ch;
   color: var(--color-textSecondary);
+  text-wrap: pretty;
 }
 .studio-project-stack {
   display: flex;
@@ -1050,12 +1064,12 @@ a:hover .project-art-sheet {
   padding: 0;
   margin: 16px 0;
   list-style: none;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--color-textSecondary);
 }
 .studio-project-copy > .studio-link {
-  font-size: 14px;
+  font-size: 0.875rem;
   min-height: 44px;
 }
 /* B: paper opening, staggered project studies. */
@@ -1117,7 +1131,7 @@ a:hover .project-art-sheet {
   gap: 48px;
 }
 [data-composition="c"] .studio-hero h1 {
-  font-size: clamp(42px, 3.8vw, 56px);
+  font-size: clamp(2.625rem, 1rem + 2.8vw, 3.5rem);
 }
 [data-composition="c"] .studio-hero-description,
 [data-composition="c"] .studio-hero-foot {
@@ -1200,7 +1214,7 @@ a:hover .project-art-sheet {
     gap: 36px;
   }
   .studio-hero h1 {
-    font-size: 62px;
+    font-size: 3.875rem;
   }
   .studio-container {
     width: calc(100% - 64px);
@@ -1221,7 +1235,7 @@ a:hover .project-art-sheet {
     gap: 28px;
   }
   .studio-hero h1 {
-    font-size: 52px;
+    font-size: 3.25rem;
   }
   .system-studio {
     padding-inline: 20px;
@@ -1261,11 +1275,11 @@ a:hover .project-art-sheet {
     gap: 12px;
   }
   .studio-brand {
-    font-size: 12px;
+    font-size: 0.75rem;
     gap: 9px;
   }
   .studio-monogram {
-    font-size: 29px;
+    font-size: 1.8125rem;
   }
   .studio-brand-caption {
     display: none;
@@ -1284,24 +1298,24 @@ a:hover .project-art-sheet {
   }
   .studio-hero h1,
   [data-composition="c"] .studio-hero h1 {
-    font-size: clamp(44px, 10.8vw, 68px);
+    font-size: clamp(2.75rem, 1rem + 8.5vw, 4.25rem);
     max-width: 580px;
   }
   .studio-hero-name {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .studio-hero-name span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .studio-hero-description {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .studio-actions {
     gap: 22px;
   }
   .studio-hero-foot {
     margin-top: 38px;
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .studio-hero-foot > span {
     max-width: 155px;
@@ -1592,11 +1606,13 @@ a:hover .project-art-sheet {
   margin-bottom: 32px;
   border-bottom: 1px solid var(--color-border);
   align-items: start;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 [data-composition="c"] .studio-rail-nav a {
+  display: inline-flex;
+  align-items: center;
   text-decoration: none;
-  min-height: 30px;
+  min-height: 44px;
 }
 [data-composition="c"] .studio-rail-nav a:hover {
   text-decoration: underline;
@@ -1609,7 +1625,7 @@ a:hover .project-art-sheet {
   padding-block: 10px;
 }
 [data-composition="c"] .studio-hero h1 {
-  font-size: clamp(38px, 3.4vw, 50px);
+  font-size: clamp(2.375rem, 1rem + 2.4vw, 3.125rem);
 }
 [data-composition="c"] .system-studio {
   border-radius: 0;
@@ -1648,7 +1664,7 @@ a:hover .project-art-sheet {
 .project-art-note {
   left: 12px;
   bottom: 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 @media (max-width: 700px) {
   [data-composition="a"] .studio-hero::before {
@@ -1678,7 +1694,7 @@ a:hover .project-art-sheet {
     padding-bottom: 16px;
   }
   [data-composition="c"] .studio-hero h1 {
-    font-size: clamp(44px, 10.8vw, 68px);
+    font-size: clamp(2.75rem, 1rem + 8.5vw, 4.25rem);
   }
   [data-composition="c"] .system-model {
     height: 265px;
@@ -1687,7 +1703,7 @@ a:hover .project-art-sheet {
     padding: 24px;
   }
   [data-composition="a"] .project-art-note {
-    font-size: 12px;
+    font-size: 0.75rem;
     left: 5px;
     bottom: 5px;
   }
@@ -1813,14 +1829,14 @@ a:hover .project-art-sheet {
 }
 .workflow-intro h2 {
   margin: 0;
-  font-size: clamp(24px, 2.2vw, 32px);
+  font-size: clamp(1.5rem, 0.875rem + 1.2vw, 2rem);
   line-height: 1.2;
   letter-spacing: -0.025em;
 }
 .workflow-intro p {
   margin: 10px 0 0;
   color: var(--workflow-muted);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .engineering-workflow .workflow-model {
   height: auto;
@@ -1855,7 +1871,7 @@ a:hover .project-art-sheet {
   cursor: pointer;
 }
 .workflow-number {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--workflow-muted);
   font-variant-numeric: tabular-nums;
 }
@@ -1877,11 +1893,11 @@ a:hover .project-art-sheet {
   stroke-width: 1.6;
 }
 .workflow-name {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 700;
 }
 .workflow-output {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--workflow-muted);
 }
 .workflow-stage[aria-pressed="true"] .workflow-icon {
@@ -1909,7 +1925,7 @@ a:hover .project-art-sheet {
   display: flex;
   justify-content: space-between;
   color: var(--workflow-accent);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
 }
 .workflow-position > span {
@@ -1918,24 +1934,25 @@ a:hover .project-art-sheet {
   font-weight: 400;
 }
 .workflow-detail h3 {
-  font-size: 21px;
+  font-size: 1.3125rem;
   line-height: 1.3;
   letter-spacing: -0.02em;
   margin: 12px 0 10px;
 }
 .workflow-detail p {
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.65;
   color: var(--workflow-muted);
   margin: 0 0 14px;
+  text-wrap: pretty;
 }
 .workflow-tools {
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.6;
   color: var(--workflow-accent);
 }
 .workflow-caption {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--workflow-muted);
   margin: 16px 0 0;
 }
@@ -1984,12 +2001,12 @@ a:hover .project-art-sheet {
   .workflow-name {
     grid-column: 3;
     align-self: end;
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .workflow-output {
     grid-column: 3;
     align-self: start;
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .workflow-detail {
     min-height: 230px;
@@ -2014,7 +2031,7 @@ a:hover .project-art-sheet {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--workflow-muted);
 }
 .workflow-system-icon {
@@ -2092,6 +2109,6 @@ a:hover .project-art-sheet {
     stroke-width: 1;
   }
   .workflow-system-node {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
 }

@@ -15,7 +15,7 @@ const shortCompany = (company: string) =>
 /** Compact, newest-first employer list. Facts come from the experience data. */
 export default function EmployerTimeline({ items }: EmployerTimelineProps) {
   return (
-    <ol className="employer-timeline">
+    <ol className="employer-timeline" role="list">
       {items.map((item) => (
         <li key={`${item.company}-${item.year}`}>
           <span className="employer-dates">{item.year}</span>

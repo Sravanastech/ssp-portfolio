@@ -46,7 +46,7 @@ function ApiContent({ children }: { children: ReactNode }) {
           </span>
           <button
             onClick={() => void query.refetch()}
-            className="underline font-semibold hover:opacity-80 focus:outline-none"
+            className="underline font-medium hover:opacity-80 focus:outline-none"
           >
             Retry live sync
           </button>

@@ -34,7 +34,7 @@ const ExperienceTimeline = ({ items }: ExperienceTimelineProps) => {
             <div className="flex justify-between items-start gap-6">
               <div>
                 <p
-                  className="text-sm font-semibold"
+                  className="text-sm font-medium"
                   style={{ color: cv.primary }}
                 >
                   {item.year}
