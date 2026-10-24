@@ -3,7 +3,7 @@
  * Compositor-only: translate, rotate, scale, opacity, clip-path. No filter, box-shadow or
  * layout animation. Every animation is declared inside prefers-reduced-motion: no-preference.
  * Scroll-driven effects additionally sit behind @supports (animation-timeline).
- * Infinite animations (max 6): ticker, aurora x2, CTA border, card border sweep (hover only).
+ * Infinite animations: ticker only at rest; CTA border and card border sweep run on hover/focus.
  */
 @property --angle {
   syntax: "<angle>";
@@ -23,18 +23,6 @@
 }
 
 /* keyframes */
-@keyframes kinetic-aurora-a {
-  to {
-    translate: 8% 6%;
-    rotate: 40deg;
-  }
-}
-@keyframes kinetic-aurora-b {
-  to {
-    translate: -9% -5%;
-    rotate: -50deg;
-  }
-}
 @keyframes kinetic-progress {
   from {
     scale: 0 1;
@@ -134,7 +122,8 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  /* (a) aurora: two fixed oversized layers, slow drift (will-change on 2 layers only) */
+  /* (a) aurora: two fixed oversized layers. Static: the 48s/60s drift was imperceptible yet
+     cost ~16fps at 4x CPU during scroll (perf-report Round 2). */
   :root[data-paradigm="kinetic"] body::before,
   :root[data-paradigm="kinetic"] body::after {
     content: "";
@@ -152,7 +141,6 @@
         transparent 38%
       ),
       radial-gradient(circle at 70% 60%, rgb(124 58 237 / 0.2), transparent 40%);
-    animation: kinetic-aurora-a 48s ease-in-out infinite alternate;
   }
   :root[data-paradigm="kinetic"] body::after {
     background:
@@ -162,7 +150,6 @@
         transparent 36%
       ),
       radial-gradient(circle at 25% 75%, rgb(212 255 0 / 0.07), transparent 34%);
-    animation: kinetic-aurora-b 60s ease-in-out infinite alternate;
   }
 
   /* (k) hero stagger */
@@ -307,7 +294,13 @@
           var(--kinetic-magenta)
         )
         border-box;
-    animation: kinetic-angle 4s linear infinite;
+  }
+  /* Border spins on intent only: the infinite @property loop cost ~1.9ms/frame at 4x CPU. */
+  :root[data-paradigm="kinetic"] .studio-hero .studio-button-light:hover,
+  :root[data-paradigm="kinetic"]
+    .studio-hero
+    .studio-button-light:focus-visible {
+    animation: kinetic-angle 1.6s linear infinite;
   }
   :root[data-paradigm="kinetic"]
     .studio-hero
