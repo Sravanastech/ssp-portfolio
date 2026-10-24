@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -79,5 +79,36 @@ describe("HomePage Integration Tests", () => {
       name: /more about my approach/i,
     });
     expect(aboutLink).toHaveAttribute("href", "/about");
+  });
+});
+
+describe("HomePage paradigm toggle", () => {
+  it("switches to kinetic, mounts ticker, returns to studio, keeps focus", async () => {
+    localStorage.clear();
+    renderWithProviders(<HomePage />);
+    const toggle = screen.getAllByRole("button", {
+      name: /switch to kinetic maximalist mode/i,
+    })[0];
+    toggle.focus();
+    fireEvent.click(toggle);
+    expect(document.documentElement.dataset.paradigm).toBe("kinetic");
+    expect(
+      await screen.findByRole("region", { name: /kinetic telemetry ticker/i }),
+    ).toBeInTheDocument();
+    const back = screen.getAllByRole("button", {
+      name: /switch to studio minimalist mode/i,
+    })[0];
+    expect(back).toHaveFocus();
+    fireEvent.click(back);
+    expect(document.documentElement.dataset.paradigm).toBe("studio");
+    expect(
+      screen.queryByRole("region", { name: /kinetic telemetry ticker/i }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getAllByRole("button", {
+        name: /switch to kinetic maximalist mode/i,
+      })[0],
+    ).toHaveFocus();
+    localStorage.clear();
   });
 });

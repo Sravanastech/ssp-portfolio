@@ -10,6 +10,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "./theme/ThemeContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { LazyMotion, MotionConfig } from "framer-motion";
+import { prefetchKineticStyles } from "./theme/ParadigmContext";
 import { startMonitoring } from "./lib/monitoring";
 
 // Animation features load async so they stay off the critical path.
@@ -17,6 +18,17 @@ const loadMotionFeatures = () =>
   import("./lib/motionFeatures").then((module) => module.default);
 
 startMonitoring();
+
+// Apply a saved Kinetic choice before first paint of React and warm its CSS chunk.
+// Module code only: the CSP forbids inline scripts.
+try {
+  if (localStorage.getItem("portfolio-paradigm") === "kinetic") {
+    document.documentElement.dataset.paradigm = "kinetic";
+    void prefetchKineticStyles();
+  }
+} catch {
+  /* Storage can be disabled; Studio stays the default. */
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -79,4 +79,21 @@ describe("LayoutRoute", () => {
     await screen.findByText("Page B");
     await waitFor(() => expect(document.activeElement).toBe(main));
   });
+
+  it.each(["studio", "kinetic"])(
+    "keeps header and footer nodes across navigation in %s paradigm",
+    async (paradigm) => {
+      localStorage.setItem("portfolio-paradigm", paradigm);
+      const { container } = setup();
+      expect(document.documentElement.dataset.paradigm).toBe(paradigm);
+      const header = container.querySelector("header");
+      const footer = container.querySelector("footer");
+      expect(header && footer).toBeTruthy();
+      act(() => void nav("/b"));
+      expect(await screen.findByText("Page B")).toBeInTheDocument();
+      expect(container.querySelector("header")).toBe(header);
+      expect(container.querySelector("footer")).toBe(footer);
+      localStorage.clear();
+    },
+  );
 });

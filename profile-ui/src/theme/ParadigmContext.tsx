@@ -92,7 +92,7 @@ const kineticStyleLoaders = import.meta.glob(
 );
 let kineticLoad: Promise<void> | null = null;
 
-function prefetchKineticStyles(): Promise<void> {
+export function prefetchKineticStyles(): Promise<void> {
   if (typeof window === "undefined") return Promise.resolve();
   if (!kineticLoad) {
     kineticLoad = (async () => {
