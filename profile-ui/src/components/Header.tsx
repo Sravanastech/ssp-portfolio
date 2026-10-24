@@ -3,6 +3,7 @@ import PrefetchLink from "@/components/PrefetchLink";
 import MainMenu from "./MainMenu";
 import MobileMenu from "./MobileMenu";
 import ModeToggle from "./ModeToggle";
+import ParadigmToggle from "./ParadigmToggle";
 import AuthDropdown from "./AuthDropdown";
 
 export default function Header() {
@@ -30,10 +31,12 @@ export default function Header() {
         </PrefetchLink>
         <div className="studio-desktop-nav">
           <MainMenu />
+          <ParadigmToggle />
           <ModeToggle />
           <AuthDropdown />
         </div>
         <div className="studio-mobile-nav">
+          <ParadigmToggle compact />
           <ModeToggle />
           <MobileMenu />
         </div>

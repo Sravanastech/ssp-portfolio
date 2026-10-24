@@ -39,7 +39,15 @@ const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const SHOCKWAVE_MS = 680;
 const SHOCKWAVE_EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
 
-const ParadigmContext = createContext<ParadigmContextValue | null>(null);
+// Default value keeps components usable outside a provider (no-op controls, Studio).
+const noop = () => undefined;
+const ParadigmContext = createContext<ParadigmContextValue>({
+  paradigm: "studio",
+  isKinetic: false,
+  setParadigm: noop,
+  toggleParadigm: noop,
+  prefetchKinetic: noop,
+});
 
 function readStoredParadigm(): Paradigm {
   try {
@@ -256,7 +264,5 @@ export function ParadigmProvider({ children }: { children: ReactNode }) {
 }
 
 export function useParadigm(): ParadigmContextValue {
-  const ctx = useContext(ParadigmContext);
-  if (!ctx) throw new Error("useParadigm must be used within ParadigmProvider");
-  return ctx;
+  return useContext(ParadigmContext);
 }
