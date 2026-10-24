@@ -1,0 +1,33 @@
+name: UI quality
+
+on:
+  pull_request:
+    paths: ["profile-ui/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: profile-ui
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: profile-ui/package-lock.json
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_AUTH0_DOMAIN: example.us.auth0.com
+          VITE_AUTH0_CLIENT_ID: ci
+          VITE_AUTH0_CALLBACK_URL: http://127.0.0.1/auth-callback
+          VITE_AUTH0_AUDIENCE: https://ci.invalid
+      - run: npx --yes @lhci/cli@0.14.0 autorun
+
