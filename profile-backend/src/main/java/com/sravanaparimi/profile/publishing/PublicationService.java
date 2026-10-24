@@ -1,17 +1,18 @@
 package com.sravanaparimi.profile.publishing;
 import com.sravanaparimi.profile.accounts.AdminAuthorization;
-import com.sravanaparimi.profile.content.ContentEditorService;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.core.env.Environment;
 import java.util.*;
 @Service public class PublicationService {
- private final JdbcTemplate db;private final AdminAuthorization admin;
- public PublicationService(JdbcTemplate db,AdminAuthorization admin){this.db=db;this.admin=admin;}
+ private final JdbcTemplate db;private final AdminAuthorization admin;private final Environment env;
+ public PublicationService(JdbcTemplate db,AdminAuthorization admin,Environment env){this.db=db;this.admin=admin;this.env=env;}
  @Transactional public Map<String,Object> publish(Jwt jwt,long id,long version){var actor=admin.require(jwt);
+  if(!env.getProperty("profile.publishing.enabled",Boolean.class,true))throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,"Publishing is disabled in this environment");
   // Lock draft and singleton to serialize publication intent, independent of render completion order.
   db.queryForObject("SELECT revision_id FROM site_state FOR UPDATE",Long.class);
   var rows=db.queryForList("SELECT content::text FROM content_revision WHERE id=? AND version=? AND state='draft' FOR UPDATE",id,version);

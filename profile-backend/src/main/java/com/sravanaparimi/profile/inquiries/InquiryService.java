@@ -14,7 +14,7 @@ import org.springframework.core.env.Environment;
  public record Contact(@NotBlank @Size(max=120) String name,@Email @Size(max=254) String email,@Size(max=32) String phone,@NotBlank @Size(min=10,max=8000) String message,@Size(max=200) String website){}
  public record Receipt(UUID receipt,String status){}
  private final JdbcTemplate db;private final JsonMapper json;private final String salt;
- public InquiryService(JdbcTemplate db,JsonMapper json,Environment env){this.db=db;this.json=json;this.salt=env.getRequiredProperty("spring.datasource.password");}
+ public InquiryService(JdbcTemplate db,JsonMapper json,Environment env){this.db=db;this.json=json;this.salt=env.getRequiredProperty("profile.inquiries.ip-salt");}
  public static String hash(String s){try{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(s.getBytes(StandardCharsets.UTF_8)));}catch(Exception ex){throw new IllegalStateException(ex);}}
  @Transactional public Receipt accept(String key,Contact c,String address){
   if(key==null||!key.matches("[a-zA-Z0-9_-]{16,128}"))throw new IllegalArgumentException("Idempotency key required");

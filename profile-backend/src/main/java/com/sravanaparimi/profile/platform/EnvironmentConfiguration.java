@@ -1,1 +1,0 @@
-package com.sravanaparimi.profile.platform; import org.springframework.context.annotation.Configuration; import org.springframework.core.env.Environment; import java.util.Set; @Configuration public class EnvironmentConfiguration {public EnvironmentConfiguration(Environment env){EnvironmentPolicy.validate(Set.of(env.getActiveProfiles()),env);}}

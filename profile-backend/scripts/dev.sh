@@ -20,6 +20,12 @@ fi
 
 export SPRING_PROFILES_ACTIVE=dev
 
+# Ensure private resume PDF is available in local media root if present in profile-ui
+if [ ! -f .local/media/private/resume.pdf ] && [ -f ../profile-ui/private/Sravana_Parimi.pdf ]; then
+  mkdir -p .local/media/private
+  cp ../profile-ui/private/Sravana_Parimi.pdf .local/media/private/resume.pdf
+fi
+
 # Check database availability
 if ! nc -z 127.0.0.1 55432 2>/dev/null; then
   echo "==> PostgreSQL is not reachable on 127.0.0.1:55432."

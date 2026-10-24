@@ -1,6 +1,5 @@
 package com.sravanaparimi.profile.platform;
 import java.util.Set;
-import java.net.URI;
 import org.springframework.core.env.Environment;
 public final class EnvironmentPolicy {
  public static void validate(Set<String> profiles, Environment env) {
@@ -15,6 +14,10 @@ public final class EnvironmentPolicy {
     String value=env.getProperty(key,"");
     if(value.isBlank() || value.contains("example") || value.contains("CHANGEME") || value.contains("localhost")) throw new IllegalStateException("Production requires configured " +key);
    }
+   boolean contact=env.getProperty("profile.contact.enabled",Boolean.class,true);
+   if(contact && !"provider".equals(env.getProperty("profile.email.mode"))) throw new IllegalStateException("Production contact API requires profile.email.mode=provider");
+   if(contact && !env.getProperty("profile.notifications.enabled",Boolean.class,true)) throw new IllegalStateException("Production contact API requires notifications enabled");
+   if(contact && env.getProperty("profile.inquiries.ip-salt","").length()<16) throw new IllegalStateException("Production requires profile.inquiries.ip-salt of at least 16 characters");
    if("provider".equals(env.getProperty("profile.email.mode"))) {
     for(String key:Set.of("profile.email.endpoint","profile.email.key","profile.email.recipient","profile.email.from")) {
      String value=env.getProperty(key,"");
@@ -24,7 +27,6 @@ public final class EnvironmentPolicy {
    if(!env.getProperty("profile.auth.issuer", "").startsWith("https://")) throw new IllegalStateException("Production identity must use HTTPS");
    if(!env.getProperty("spring.datasource.url", "").contains("sslmode=verify-full") && !env.getProperty("spring.datasource.url", "").contains("sslmode=require")) throw new IllegalStateException("Production database must verify TLS");
    if(!env.getProperty("profile.admin.require-mfa","true").equals("true")) throw new IllegalStateException("Production administration requires MFA");
-   if(env.getProperty("spring.flyway.enabled","true").equals("true")) throw new IllegalStateException("Production migrations require a separate release identity");
   }
  }
 }

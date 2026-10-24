@@ -9,6 +9,7 @@ import java.net.http.*;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 class ContentIntegrationTest {
+ @SuppressWarnings("resource") // stopped in @AfterAll
  static PostgreSQLContainer db=new PostgreSQLContainer("postgres:17.9-alpine").withDatabaseName("test_content");
  static ConfigurableApplicationContext app; static String base;
  @BeforeAll static void start(){

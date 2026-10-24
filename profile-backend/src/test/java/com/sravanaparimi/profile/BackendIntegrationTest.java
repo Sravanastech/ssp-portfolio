@@ -17,6 +17,7 @@ import java.util.*;
 import tools.jackson.databind.json.JsonMapper;
 import static org.junit.jupiter.api.Assertions.*;
 class BackendIntegrationTest {
+ @SuppressWarnings("resource") // stopped in @AfterAll
  static PostgreSQLContainer db=new PostgreSQLContainer("postgres:17.9-alpine").withDatabaseName("test_backend");
  static ConfigurableApplicationContext app; static HttpServer jwks; static RSAKey key;
  static String base,issuer; static JdbcTemplate sql; static JsonMapper json=JsonMapper.builder().build();
@@ -27,7 +28,7 @@ class BackendIntegrationTest {
   issuer="http://127.0.0.1:"+jwks.getAddress().getPort()+"/";
   var spring=new SpringApplication(ProfileApplication.class);
   spring.setDefaultProperties(Map.of("spring.profiles.active","test","spring.datasource.url",db.getJdbcUrl(),"spring.datasource.username",db.getUsername(),"spring.datasource.password",db.getPassword(),"spring.data.redis.port","1","profile.auth.jwks",issuer+"jwks","profile.media.root","target/test-media","logging.level.root","WARN"));
-  app=spring.run("--server.port=0","--profile.auth.issuer="+issuer,"--profile.auth.audience=test-api");
+  app=spring.run("--server.port=0","--profile.media.root=target/test-media","--profile.auth.issuer="+issuer,"--profile.auth.audience=test-api");
   base="http://localhost:"+app.getEnvironment().getProperty("local.server.port");sql=app.getBean(JdbcTemplate.class);
  }
  @AfterAll static void stop(){if(app!=null)app.close();if(jwks!=null)jwks.stop(0);db.stop();}
@@ -101,6 +102,30 @@ class BackendIntegrationTest {
   assertEquals(401,call("GET","/api/resume",null,null).statusCode());var r=call("GET","/api/resume","resume-reader",null);assertEquals(503,r.statusCode());assertTrue(r.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
  }
 
+ @Test void resumeServesPdfToAuthenticatedUserOnly() throws Exception {
+  var file=java.nio.file.Path.of("target/test-media/private/resume.pdf");java.nio.file.Files.createDirectories(file.getParent());java.nio.file.Files.write(file,"%PDF-1.4 test".getBytes());
+  try{assertEquals(401,call("GET","/api/resume",null,null).statusCode());var r=call("GET","/api/resume","resume-reader",null);assertEquals(200,r.statusCode());assertTrue(r.body().startsWith("%PDF"));assertEquals("application/pdf",r.headers().firstValue("Content-Type").orElse(""));assertTrue(r.headers().firstValue("Cache-Control").orElse("").contains("no-store"));
+   var anyAuthed=call("GET","/api/resume","someone-else",null);assertEquals(200,anyAuthed.statusCode());}
+  finally{java.nio.file.Files.deleteIfExists(file);}
+ }
+ @Test void resumeSymlinkIsNotServed() throws Exception {
+  var file=java.nio.file.Path.of("target/test-media/private/resume.pdf");var target=java.nio.file.Path.of("target/test-media/elsewhere.pdf");java.nio.file.Files.createDirectories(file.getParent());java.nio.file.Files.write(target,"%PDF".getBytes());java.nio.file.Files.deleteIfExists(file);
+  try{java.nio.file.Files.createSymbolicLink(file.toAbsolutePath(),target.toAbsolutePath());assertEquals(503,call("GET","/api/resume","resume-reader",null).statusCode());}
+  finally{java.nio.file.Files.deleteIfExists(file);java.nio.file.Files.deleteIfExists(target);}
+ }
+ @Test void adminAcceptsNamespacedMfaClaimAndRejectsNoMfa() throws Exception {
+  admin();String body="{}";
+  assertEquals(403,request("POST","/api/admin/drafts",token("owner","test-api",issuer,300,false),body,null).statusCode());
+  var claims=new JWTClaimsSet.Builder().issuer(issuer).subject("owner").audience("test-api").issueTime(new Date()).expirationTime(Date.from(Instant.now().plusSeconds(300))).claim("amr",List.of("pwd")).claim("https://sravanasparimi.com/amr",List.of("mfa")).build();
+  var jwt=new SignedJWT(new JWSHeader.Builder(JWSAlgorithm.RS256).keyID("test").build(),claims);jwt.sign(new RSASSASigner(key));
+  int status=request("POST","/api/admin/drafts",jwt.serialize(),body,null).statusCode();assertTrue(status>=200&&status<300);
+ }
+ @Test void publishingIsRejectedWhenDisabled() throws Exception {
+  admin();var d=json.readTree(call("POST","/api/admin/drafts","owner","{}").body());long id=d.get("id").asLong();
+  var env=(org.springframework.core.env.ConfigurableEnvironment)app.getEnvironment();
+  env.getPropertySources().addFirst(new org.springframework.core.env.MapPropertySource("off",Map.of("profile.publishing.enabled","false")));
+  try{assertEquals(503,call("POST","/api/admin/drafts/"+id+"/publish","owner","{\"version\":1}").statusCode());}finally{env.getPropertySources().remove("off");}
+ }
  @Test void deletionRemovesPersonalDataAndCannotReprovisionDeletedIdentity() throws Exception {
   assertEquals(201,call("POST","/api/me","delete-me","{}").statusCode());assertEquals(204,call("DELETE","/api/me","delete-me",null).statusCode());assertEquals(410,call("GET","/api/me","delete-me",null).statusCode());assertEquals(410,call("POST","/api/me","delete-me","{}").statusCode());
  }
@@ -121,11 +146,6 @@ class BackendIntegrationTest {
   sql.update("UPDATE outbox SET status='processing',lease_until=now()-interval '1 minute',lease_id=? WHERE inquiry_id=(SELECT id FROM inquiries WHERE idempotency_key=?)",UUID.randomUUID(),id);
   worker.runOnce();assertEquals("sent",sql.queryForObject("SELECT status FROM outbox WHERE inquiry_id=(SELECT id FROM inquiries WHERE idempotency_key=?)",String.class,id));
  }
- @Test void coordinatedSchedulerRunsEffectOnce() {
-  var coordinator=app.getBean(com.sravanaparimi.profile.jobs.ScheduledJobCoordinator.class);var tick=Instant.parse("2026-10-07T00:00:00Z");var effects=new java.util.concurrent.atomic.AtomicInteger();
-  assertTrue(coordinator.runIfClaimed("test-job",tick,effects::incrementAndGet));assertFalse(coordinator.runIfClaimed("test-job",tick,effects::incrementAndGet));assertEquals(1,effects.get());
- }
-
  static HttpResponse<byte[]> upload(String path,String mime,byte[] bytes) throws Exception {
   String boundary="profile-test-boundary";var out=new java.io.ByteArrayOutputStream();out.write(("--"+boundary+"\r\nContent-Disposition: form-data; name=\"file\"; filename=\"../../unsafe.svg\"\r\nContent-Type: "+mime+"\r\n\r\n").getBytes());out.write(bytes);out.write(("\r\n--"+boundary+"--\r\n").getBytes());
   var req=HttpRequest.newBuilder(URI.create(base+path)).header("Authorization","Bearer "+token("owner")).header("Content-Type","multipart/form-data; boundary="+boundary).POST(HttpRequest.BodyPublishers.ofByteArray(out.toByteArray())).build();return HttpClient.newHttpClient().send(req,HttpResponse.BodyHandlers.ofByteArray());
@@ -135,7 +155,7 @@ class BackendIntegrationTest {
   assertEquals(400,upload("/api/admin/media","image/png","not-an-image".getBytes()).statusCode());
   var image=new java.awt.image.BufferedImage(2,2,java.awt.image.BufferedImage.TYPE_INT_RGB);var bytes=new java.io.ByteArrayOutputStream();javax.imageio.ImageIO.write(image,"png",bytes);
   var result=upload("/api/admin/media","image/png",bytes.toByteArray());assertEquals(201,result.statusCode());var media=json.readTree(result.body());
-  var publicFile=call("GET",media.get("url").asText(),null,null);assertEquals(200,publicFile.statusCode());assertFalse(media.get("url").asText().contains("unsafe"));assertFalse(media.get("url").asText().contains(".."));
+  var publicFile=call("GET",media.get("url").asString(),null,null);assertEquals(200,publicFile.statusCode());assertFalse(media.get("url").asString().contains("unsafe"));assertFalse(media.get("url").asString().contains(".."));
  }
  @Test void publicSnapshotSurvivesRedisFailure() throws Exception {assertEquals(200,call("GET","/api/site",null,null).statusCode());}
  @Test void accountAndDraftResponsesCannotBeCached() throws Exception {

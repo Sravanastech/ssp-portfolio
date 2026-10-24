@@ -6,15 +6,35 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   flyway:
-    enabled: false
+    enabled: true
+    user: ${DB_MIGRATION_USERNAME:${DB_USERNAME}}
+    password: ${DB_MIGRATION_PASSWORD:${DB_PASSWORD}}
+    baseline-on-migrate: true
+    baseline-version: 8
+server:
+  forward-headers-strategy: framework
+management:
+  health:
+    redis:
+      enabled: false
 profile:
+  publishing:
+    enabled: ${PUBLISHING_ENABLED:false}
+  notifications:
+    enabled: ${NOTIFICATIONS_ENABLED:false}
+  cache:
+    enabled: ${CACHE_ENABLED:false}
+  contact:
+    enabled: ${CONTACT_ENABLED:false}
+  inquiries:
+    ip-salt: ${INQUIRY_IP_SALT:}
   auth:
     issuer: ${AUTH_ISSUER}
     audience: ${AUTH_AUDIENCE}
   media:
     root: ${PROFILE_MEDIA_ROOT:/var/lib/profile/media}
   email:
-    mode: ${EMAIL_MODE:capture}
+    mode: ${EMAIL_MODE:provider}
     endpoint: ${EMAIL_ENDPOINT:https://api.resend.com/emails}
     key: ${EMAIL_KEY:none}
     recipient: ${EMAIL_RECIPIENT:admin@sravanaparimi.com}

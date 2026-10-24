@@ -1,16 +1,16 @@
 package com.sravanaparimi.profile.publishing;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
-import tools.jackson.databind.json.JsonMapper;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import java.util.*;
-@Component public class PublicationWorker {
- private final JdbcTemplate db;private final HtmlRenderer renderer;private final Environment env;private final TransactionTemplate tx;private final JsonMapper json;private final StringRedisTemplate redis;
- public PublicationWorker(JdbcTemplate db,HtmlRenderer renderer,Environment env,PlatformTransactionManager tm,JsonMapper json,StringRedisTemplate redis){this.db=db;this.renderer=renderer;this.env=env;this.tx=new TransactionTemplate(tm);this.json=json;this.redis=redis;}
+@ConditionalOnProperty(name="profile.publishing.enabled",havingValue="true",matchIfMissing=true) @Component public class PublicationWorker {
+ private final JdbcTemplate db;private final HtmlRenderer renderer;private final Environment env;private final TransactionTemplate tx;private final StringRedisTemplate redis;
+ public PublicationWorker(JdbcTemplate db,HtmlRenderer renderer,Environment env,PlatformTransactionManager tm,StringRedisTemplate redis){this.db=db;this.renderer=renderer;this.env=env;this.tx=new TransactionTemplate(tm);this.redis=redis;}
  @Scheduled(fixedDelayString="${profile.jobs.interval-ms:3000}") public void tick(){if(env.getProperty("profile.jobs.enabled",Boolean.class,true))runOnce();}
  public void runOnce(){UUID lease=UUID.randomUUID();
   var jobs=db.queryForList("WITH claim AS (SELECT id FROM publication_jobs WHERE status='pending' OR (status='processing' AND lease_until<now()) ORDER BY created_at FOR UPDATE SKIP LOCKED LIMIT 1) UPDATE publication_jobs j SET status='processing',lease_id=?,lease_until=now()+interval '90 seconds' FROM claim WHERE j.id=claim.id RETURNING j.id,j.revision_id",lease);

@@ -43,9 +43,9 @@ Use synthetic test inquiries. Never place a real résumé in public assets; loca
 
 ## Environments
 
-Activate exactly one profile: `dev`, `test`, or `prod`. Dev uses local Compose and email capture. Tests use a disposable database and fake local files. Production reads mounted secret files, requires verified database TLS and MFA, and disables application migrations. Apply Flyway as a separate release step.
+Activate exactly one profile: `dev`, `test`, or `prod`. Dev uses local Compose and email capture. Tests use a disposable database and fake local files. Production reads env vars or mounted secret files, requires verified database TLS and MFA, and runs Flyway with `baseline-on-migrate` at baseline version 8 (a DB bootstrapped from `scripts/supabase_init.sql` only gets V9+). Hybrid prod flags (all default off in prod): `PUBLISHING_ENABLED`, `NOTIFICATIONS_ENABLED`, `CACHE_ENABLED`, `CONTACT_ENABLED`; contact is handled by Web3Forms in the UI. Set `INQUIRY_IP_SALT` when enabling contact.
 
-`Dockerfile` and `compose.prod.yaml` are templates, not a deployed service. Set up the identity tenant, secret files, renderer, API domain routing, backups, monitoring, and restore evidence before production. No DNS or cloud service has been changed.
+`Dockerfile` is the Cloud Run image (JRE only, no renderer). See `infra/cloud-run/README.md` for deploy steps and `infra/auth0/post-login-action.js` for the MFA claim. No DNS or cloud service has been changed.
 
 ## Teaching notes
 

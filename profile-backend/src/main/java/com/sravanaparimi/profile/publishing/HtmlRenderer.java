@@ -1,9 +1,10 @@
 package com.sravanaparimi.profile.publishing;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.env.Environment;
 import java.nio.file.*;
 import java.util.concurrent.TimeUnit;
-@Component public class HtmlRenderer {
+@ConditionalOnProperty(name="profile.publishing.enabled",havingValue="true",matchIfMissing=true) @Component public class HtmlRenderer {
  private final Environment env;
  public HtmlRenderer(Environment env){this.env=env;}
  public Path release(long revision){return Path.of(env.getRequiredProperty("profile.media.root")).toAbsolutePath().resolve("releases").resolve(Long.toString(revision));}

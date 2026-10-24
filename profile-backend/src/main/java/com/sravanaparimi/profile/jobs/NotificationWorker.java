@@ -1,11 +1,12 @@
 package com.sravanaparimi.profile.jobs;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.core.env.Environment;
 import com.sravanaparimi.profile.platform.EmailGateway;
 import java.util.*;
-@Component public class NotificationWorker {
+@ConditionalOnProperty(name="profile.notifications.enabled",havingValue="true",matchIfMissing=true) @Component public class NotificationWorker {
  private final JdbcTemplate db;private final EmailGateway email;private final Environment env;
  public NotificationWorker(JdbcTemplate db,EmailGateway email,Environment env){this.db=db;this.email=email;this.env=env;}
  @Scheduled(fixedDelayString="${profile.jobs.interval-ms:3000}") public void tick(){if(env.getProperty("profile.jobs.enabled",Boolean.class,true))runOnce();}

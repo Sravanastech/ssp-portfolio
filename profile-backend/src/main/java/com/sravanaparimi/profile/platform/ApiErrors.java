@@ -11,5 +11,5 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
   return ResponseEntity.status(ex.getStatusCode()).cacheControl(CacheControl.noStore()).body(p);
  }
  @ExceptionHandler({MethodArgumentNotValidException.class,HttpMessageNotReadableException.class,IllegalArgumentException.class}) ResponseEntity<ProblemDetail> invalid(Exception ex){return ResponseEntity.badRequest().cacheControl(CacheControl.noStore()).body(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,"Check the submitted fields"));}
- @ExceptionHandler(MaxUploadSizeExceededException.class) ResponseEntity<ProblemDetail> tooLarge(){return ResponseEntity.status(413).body(ProblemDetail.forStatus(413));}
+ @ExceptionHandler(MaxUploadSizeExceededException.class) ResponseEntity<ProblemDetail> tooLarge(){return ResponseEntity.status(413).cacheControl(CacheControl.noStore()).body(ProblemDetail.forStatus(413));}
 }
