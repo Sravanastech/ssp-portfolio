@@ -501,7 +501,16 @@
   overflow: hidden;
   display: flex;
   align-items: center;
-  mask-image: linear-gradient(90deg, #000 88%, transparent);
+  mask-image: linear-gradient(
+    90deg,
+    #000 calc(100% - 128px),
+    transparent calc(100% - 64px),
+    #000 calc(100% - 64px)
+  );
+}
+:root[data-paradigm="kinetic"] .mode-strip-lead > .kinetic-stage {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 :root[data-paradigm="kinetic"] .mode-switch {
   display: flex;
@@ -572,6 +581,7 @@
 
 /* ------------------------------------------------------------- ticker */
 :root[data-paradigm="kinetic"] .kinetic-ticker {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -583,21 +593,21 @@
 }
 :root[data-paradigm="kinetic"] .kinetic-ticker-track {
   display: flex;
-  flex: 1 1 auto;
+  flex: none;
   gap: 48px;
   width: max-content;
-  min-width: 0;
   white-space: nowrap;
 }
 :root[data-paradigm="kinetic"] .kinetic-pause {
-  flex: 0 0 auto;
+  position: absolute;
+  inset: 0 0 0 auto;
   display: inline-grid;
   place-items: center;
   min-width: 32px;
   min-height: 32px;
   padding: 0 8px;
   border: 0;
-  background: none;
+  background: var(--kinetic-void);
   color: var(--kinetic-lime);
   font: inherit;
   cursor: pointer;
@@ -681,7 +691,15 @@
     scale: none;
   }
   :root[data-paradigm="kinetic"] .kinetic-ticker-track {
+    flex: 1 1 auto;
+    min-width: 0;
     width: auto;
     overflow-x: auto;
+    padding-inline-end: 64px;
   }
+}
+
+/* Perspective card entrance must not widen the page. */
+:root[data-paradigm="kinetic"] #main-content {
+  overflow-x: clip;
 }
