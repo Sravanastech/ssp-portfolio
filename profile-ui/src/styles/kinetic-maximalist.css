@@ -1,3 +1,4 @@
+@import "./kinetic-motion.css";
 /*
  * Kinetic maximalist paradigm.
  * Lazy-loaded via import("@/styles/kinetic-maximalist.css"); never imported by index.css.
@@ -233,36 +234,12 @@
   background-color: var(--kinetic-void);
   color: var(--color-text);
 }
-:root[data-paradigm="kinetic"] body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    radial-gradient(circle at 15% 15%, rgb(255 42 133 / 0.22), transparent 45%),
-    radial-gradient(circle at 85% 25%, rgb(0 240 255 / 0.18), transparent 45%),
-    radial-gradient(rgb(247 244 255 / 0.07) 1px, transparent 1px);
-  background-size:
-    auto,
-    auto,
-    22px 22px;
-}
-@supports (background: linear-gradient(in oklch, red, blue)) {
-  :root[data-paradigm="kinetic"] body::before {
-    background-image:
-      radial-gradient(
-        circle at 15% 15% in oklch,
-        rgb(255 42 133 / 0.22),
-        transparent 45%
-      ),
-      radial-gradient(
-        circle at 85% 25% in oklch,
-        rgb(0 240 255 / 0.18),
-        transparent 45%
-      ),
-      radial-gradient(rgb(247 244 255 / 0.07) 1px, transparent 1px);
-  }
+:root[data-paradigm="kinetic"] body {
+  background-image: radial-gradient(
+    rgb(247 244 255 / 0.07) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
 }
 :root[data-paradigm="kinetic"] ::selection {
   background: var(--kinetic-magenta);
@@ -295,12 +272,8 @@
 :root[data-paradigm="kinetic"] .studio-header button {
   color: var(--color-text);
 }
-:root[data-paradigm="kinetic"] .studio-desktop-nav a,
-:root[data-paradigm="kinetic"] .studio-mobile-sheet a {
-  transition: translate 0.45s var(--kinetic-spring);
-}
-:root[data-paradigm="kinetic"] .studio-desktop-nav a:hover {
-  translate: 0 -2px;
+:root[data-paradigm="kinetic"] .studio-desktop-nav a:hover,
+:root[data-paradigm="kinetic"] .studio-desktop-nav a:focus-visible {
   color: var(--kinetic-lime);
 }
 :root[data-paradigm="kinetic"] .studio-mobile-sheet {
@@ -436,11 +409,6 @@
   border-radius: 4px;
   border: 2px solid var(--kinetic-cyan);
 }
-:root[data-paradigm="kinetic"]
-  .studio-project-image:hover
-  .studio-project-open {
-  background: var(--kinetic-lime);
-}
 :root[data-paradigm="kinetic"] .studio-project h3 a,
 :root[data-paradigm="kinetic"] .project-related-name {
   color: var(--color-text);
@@ -473,181 +441,145 @@
   scale: none;
 }
 
-/* ------------------------------------------------------- entrance animations */
-@keyframes kinetic-hero-in {
-  from {
-    opacity: 0;
-    translate: 0 36px;
-    scale: 0.96;
-    clip-path: inset(0 0 40% 0);
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-    clip-path: inset(0);
-  }
+/* ------------------------------------------------ arrows: bare glyphs, no chips */
+:root[data-paradigm="kinetic"] .studio-project-open {
+  right: 14px;
+  bottom: 14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 0;
+  background: none;
+  color: var(--kinetic-lime);
+  transform: none;
+  transition: translate 0.55s var(--kinetic-spring);
+  z-index: 2;
 }
-@keyframes kinetic-fade-up {
-  from {
-    opacity: 0;
-    translate: 0 20px;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
+:root[data-paradigm="kinetic"] .studio-project-open svg {
+  width: 28px;
+  height: 28px;
+  stroke-width: 2.5;
+  filter: drop-shadow(0 1px 3px rgb(6 3 13 / 0.85));
 }
-@keyframes kinetic-page-in {
-  from {
-    opacity: 0;
-    translate: 0 28px;
-    scale: 0.985;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-    scale: 1;
-  }
+:root[data-paradigm="kinetic"] .studio-project-image:hover .studio-project-open,
+:root[data-paradigm="kinetic"]
+  .studio-project-image:focus-visible
+  .studio-project-open {
+  background: none;
+  transform: none;
+  translate: 4px -4px;
 }
-@keyframes kinetic-page-out {
-  to {
-    opacity: 0;
-    translate: 0 -12px;
-    scale: 0.99;
-  }
+:root[data-paradigm="kinetic"] .lucide-arrow-up-right,
+:root[data-paradigm="kinetic"] .lucide-arrow-right {
+  flex: none;
+  transition: translate 0.5s var(--kinetic-spring);
 }
-@keyframes kinetic-ticker-slide {
-  from {
-    translate: 0 0;
-  }
-  to {
-    translate: -50% 0;
-  }
+:root[data-paradigm="kinetic"] a:hover > .lucide-arrow-up-right,
+:root[data-paradigm="kinetic"] a:focus-visible > .lucide-arrow-up-right {
+  translate: 3px -3px;
 }
-@keyframes kinetic-card-in {
-  from {
-    opacity: 0;
-    scale: 0.92;
-    translate: 0 40px;
-  }
-}
-@keyframes kinetic-pulse {
-  0%,
-  100% {
-    opacity: 1;
-    scale: 1;
-  }
-  50% {
-    opacity: 0.55;
-    scale: 0.8;
-  }
+:root[data-paradigm="kinetic"] a:hover > .lucide-arrow-right,
+:root[data-paradigm="kinetic"] a:focus-visible > .lucide-arrow-right {
+  translate: 4px 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  :root[data-paradigm="kinetic"] .studio-hero h1 {
-    animation: kinetic-hero-in 0.9s var(--kinetic-spring) both;
-  }
-  :root[data-paradigm="kinetic"] .studio-hero-name,
-  :root[data-paradigm="kinetic"] .studio-hero-description,
-  :root[data-paradigm="kinetic"] .studio-actions,
-  :root[data-paradigm="kinetic"] .studio-hero-foot {
-    animation: kinetic-fade-up 0.7s var(--kinetic-spring) both;
-  }
-  :root[data-paradigm="kinetic"] .studio-hero-name {
-    animation-delay: 0.1s;
-  }
-  :root[data-paradigm="kinetic"] .studio-hero-description {
-    animation-delay: 0.18s;
-  }
-  :root[data-paradigm="kinetic"] .studio-actions {
-    animation-delay: 0.26s;
-  }
-  :root[data-paradigm="kinetic"] .studio-hero-foot {
-    animation-delay: 0.34s;
-  }
-  :root[data-paradigm="kinetic"] .studio-page-heading {
-    animation: kinetic-hero-in 0.8s var(--kinetic-spring) both;
-  }
-
-  /* Page enter/exit: the router names the content wrapper `page`. */
-  :root[data-paradigm="kinetic"]::view-transition-old(page) {
-    animation: kinetic-page-out 0.2s ease-in both;
-  }
-  :root[data-paradigm="kinetic"]::view-transition-new(page) {
-    animation: kinetic-page-in 0.6s var(--kinetic-spring) both;
-  }
-  /* The portal transition owns the root layers while it runs. */
-  :root[data-paradigm-transition="portal"]::view-transition-old(root),
-  :root[data-paradigm-transition="portal"]::view-transition-new(root) {
-    animation: none;
-  }
-}
-
-/* Scroll-driven card entrance */
-@media (prefers-reduced-motion: no-preference) {
-  @supports ((animation-timeline: view()) and (animation-range: entry)) {
-    :root[data-paradigm="kinetic"] .studio-project,
-    :root[data-paradigm="kinetic"] .studio-case,
-    :root[data-paradigm="kinetic"] .project-related a {
-      animation: kinetic-card-in linear both;
-      animation-timeline: view(block);
-      animation-range: entry 0% entry 30%;
-    }
-  }
-}
-
-/* ------------------------------------------------------------ paradigm toggle */
-:root[data-paradigm="kinetic"] .paradigm-toggle {
-  border: 2px solid var(--kinetic-lime);
-  border-radius: 999px;
-  background: var(--kinetic-magenta);
-  color: #fff;
-  font-weight: 700;
+/* ------------------------------------------------------------- mode strip */
+:root[data-paradigm="kinetic"] .mode-strip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: stretch;
+  min-height: 32px;
+  background: var(--kinetic-void);
+  color: var(--kinetic-lime);
+  border-bottom: 1px solid var(--color-borderLight);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  box-shadow: 0 0 18px rgb(212 255 0 / 0.45);
+}
+:root[data-paradigm="kinetic"] .mode-strip-lead {
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  mask-image: linear-gradient(90deg, #000 88%, transparent);
+}
+:root[data-paradigm="kinetic"] .mode-switch {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  padding-inline: 4px;
+}
+:root[data-paradigm="kinetic"] .mode-switch button[data-mode] {
+  position: relative;
+  isolation: isolate;
+  padding-inline: 12px;
+  border: 0;
+  background: none;
+  color: var(--color-textSecondary);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+:root[data-paradigm="kinetic"] .mode-switch button[data-mode]:hover {
+  color: var(--color-text);
+}
+:root[data-paradigm="kinetic"]
+  .mode-switch
+  button[data-mode][aria-pressed="true"] {
+  color: var(--kinetic-lime);
+}
+:root[data-paradigm="kinetic"] .mode-switch button[data-mode]::before,
+:root[data-paradigm="kinetic"] .mode-switch button[data-mode]::after {
+  content: "";
+  position: absolute;
+  inset: auto 6px 0;
+  pointer-events: none;
+  opacity: 0;
   transition:
-    translate 0.5s var(--kinetic-spring),
-    scale 0.5s var(--kinetic-spring);
+    opacity 0.3s,
+    scale 0.45s var(--kinetic-spring);
 }
-:root[data-paradigm="kinetic"] .paradigm-toggle[aria-pressed="true"] {
+:root[data-paradigm="kinetic"] .mode-switch button[data-mode]::after {
+  height: 2px;
   background: var(--kinetic-lime);
-  color: var(--kinetic-void);
-  border-color: var(--kinetic-magenta);
+  scale: 0 1;
 }
-:root[data-paradigm="kinetic"] .paradigm-toggle:hover {
-  translate: 0 -2px;
-  scale: 1.06;
+:root[data-paradigm="kinetic"] .mode-switch button[data-mode]::before {
+  z-index: -1;
+  top: 0;
+  background: linear-gradient(to top, rgb(212 255 0 / 0.22), transparent);
 }
-:root[data-paradigm="kinetic"] .paradigm-toggle:active {
-  scale: 0.95;
+:root[data-paradigm="kinetic"]
+  .mode-switch
+  button[data-mode][aria-pressed="true"]::before,
+:root[data-paradigm="kinetic"]
+  .mode-switch
+  button[data-mode][aria-pressed="true"]::after {
+  opacity: 1;
+  scale: 1 1;
 }
-:root[data-paradigm="kinetic"] .paradigm-toggle:focus-visible {
-  outline: 3px solid var(--kinetic-cyan);
-  outline-offset: 4px;
+:root[data-paradigm="kinetic"] .mode-switch button[data-mode]:focus-visible {
+  outline: 2px solid var(--kinetic-cyan);
+  outline-offset: -3px;
+}
+@media (pointer: coarse) {
+  :root[data-paradigm="kinetic"] .mode-strip {
+    min-height: 44px;
+  }
 }
 
-/* ------------------------------------------------------------- stage */
-:root[data-paradigm="kinetic"] .kinetic-stage {
-  position: relative;
-  z-index: 45;
-  pointer-events: none;
-}
+/* ------------------------------------------------------------- ticker */
 :root[data-paradigm="kinetic"] .kinetic-ticker {
   display: flex;
   align-items: center;
   gap: 8px;
-  min-height: 44px;
+  min-width: 0;
+  width: 100%;
   overflow: hidden;
-  background: var(--kinetic-lime);
-  color: var(--kinetic-void);
-  border-bottom: 2px solid var(--kinetic-void);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  pointer-events: auto;
+  color: var(--kinetic-lime);
+  font-weight: 600;
 }
 :root[data-paradigm="kinetic"] .kinetic-ticker-track {
   display: flex;
@@ -656,44 +588,36 @@
   width: max-content;
   min-width: 0;
   white-space: nowrap;
-  will-change: translate;
-  animation: kinetic-ticker-slide 32s linear infinite;
-}
-:root[data-paradigm="kinetic"]
-  .kinetic-ticker[data-paused="true"]
-  .kinetic-ticker-track,
-:root[data-paradigm="kinetic"] .kinetic-ticker.is-paused .kinetic-ticker-track,
-:root[data-paradigm="kinetic"] .kinetic-ticker:hover .kinetic-ticker-track,
-:root[data-paradigm="kinetic"]
-  .kinetic-ticker:focus-within
-  .kinetic-ticker-track {
-  animation-play-state: paused;
 }
 :root[data-paradigm="kinetic"] .kinetic-pause {
   flex: 0 0 auto;
   display: inline-grid;
   place-items: center;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0 12px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0 8px;
   border: 0;
-  border-left: 2px solid var(--kinetic-void);
-  background: var(--kinetic-void);
+  background: none;
   color: var(--kinetic-lime);
   font: inherit;
   cursor: pointer;
   touch-action: manipulation;
-  transition: background-color 0.2s;
 }
 :root[data-paradigm="kinetic"] .kinetic-pause:hover {
-  background: var(--kinetic-magenta);
-  color: #fff;
+  color: var(--kinetic-magenta);
 }
 :root[data-paradigm="kinetic"] .kinetic-pause:focus-visible {
-  outline: 3px solid var(--kinetic-cyan);
-  outline-offset: -5px;
+  outline: 2px solid var(--kinetic-cyan);
+  outline-offset: -3px;
 }
-/* Reticle: translate-driven (set --kinetic-x / --kinetic-y or style.translate), fine pointers only. */
+@media (pointer: coarse) {
+  :root[data-paradigm="kinetic"] .kinetic-pause {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Reticle: translate-driven, fine pointers only. */
 :root[data-paradigm="kinetic"] .kinetic-reticle {
   display: none;
 }
@@ -711,8 +635,15 @@
     mix-blend-mode: difference;
     pointer-events: none;
     translate: var(--kinetic-x, -100px) var(--kinetic-y, -100px);
-    transition: scale 0.4s var(--kinetic-spring);
     will-change: translate;
+  }
+  :root[data-paradigm="kinetic"] .kinetic-reticle::before {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border: 2px solid var(--kinetic-magenta);
+    border-radius: 50%;
+    opacity: 0;
   }
   :root[data-paradigm="kinetic"] .kinetic-reticle::after {
     content: "";
@@ -724,9 +655,6 @@
     border-radius: 50%;
     background: var(--kinetic-lime);
   }
-  :root[data-paradigm="kinetic"] .kinetic-reticle[data-active="true"] {
-    scale: 1.6;
-  }
 }
 
 /* ------------------------------------------------------------ reduced motion */
@@ -734,7 +662,13 @@
   :root[data-paradigm="kinetic"] .studio-project,
   :root[data-paradigm="kinetic"] .studio-case,
   :root[data-paradigm="kinetic"] .page-panel,
-  :root[data-paradigm="kinetic"] .project-related a {
+  :root[data-paradigm="kinetic"] .project-related a,
+  :root[data-paradigm="kinetic"] .studio-project-open,
+  :root[data-paradigm="kinetic"] .studio-button,
+  :root[data-paradigm="kinetic"] .studio-button-secondary,
+  :root[data-paradigm="kinetic"] .studio-button-light,
+  :root[data-paradigm="kinetic"] .lucide-arrow-up-right,
+  :root[data-paradigm="kinetic"] .lucide-arrow-right {
     rotate: none;
     transition: none;
     animation: none;
@@ -747,25 +681,7 @@
     scale: none;
   }
   :root[data-paradigm="kinetic"] .kinetic-ticker-track {
-    animation: none;
     width: auto;
     overflow-x: auto;
-  }
-  :root[data-paradigm="kinetic"] .studio-hero h1,
-  :root[data-paradigm="kinetic"] .studio-hero-name,
-  :root[data-paradigm="kinetic"] .studio-hero-description,
-  :root[data-paradigm="kinetic"] .studio-actions,
-  :root[data-paradigm="kinetic"] .studio-hero-foot,
-  :root[data-paradigm="kinetic"] .studio-page-heading {
-    animation: none;
-  }
-  :root[data-paradigm="kinetic"] .studio-button,
-  :root[data-paradigm="kinetic"] .studio-button-secondary,
-  :root[data-paradigm="kinetic"] .paradigm-toggle {
-    transition: none;
-  }
-  :root[data-paradigm="kinetic"]::view-transition-old(page),
-  :root[data-paradigm="kinetic"]::view-transition-new(page) {
-    animation: none !important;
   }
 }
