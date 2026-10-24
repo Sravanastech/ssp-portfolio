@@ -15,7 +15,7 @@ function matches(query: string): boolean {
 }
 
 export default function KineticStage() {
-  const { isKinetic, setParadigm } = useParadigm();
+  const { isKinetic } = useParadigm();
   const { profile, caseStudies } = useSiteContent();
   const [paused, setPaused] = useState(() => matches(REDUCED_MOTION));
   const [finePointer, setFinePointer] = useState(false);
@@ -111,28 +111,6 @@ export default function KineticStage() {
       {finePointer && (
         <div ref={reticleRef} className="kinetic-reticle" aria-hidden="true" />
       )}
-      <div className="kinetic-hud">
-        <span data-live>Kinetic mode</span>{" "}
-        <button
-          type="button"
-          onClick={() => setParadigm("studio")}
-          style={{
-            pointerEvents: "auto",
-            minHeight: 44,
-            minWidth: 44,
-            padding: "0 12px",
-            font: "inherit",
-            letterSpacing: "inherit",
-            textTransform: "inherit",
-            color: "inherit",
-            background: "transparent",
-            border: "1px solid currentColor",
-            cursor: "pointer",
-          }}
-        >
-          Return to Studio
-        </button>
-      </div>
     </>
   );
 }

@@ -71,13 +71,6 @@ describe("KineticStage", () => {
     ).toHaveAttribute("aria-pressed", "true");
   });
 
-  it("Return to Studio switches paradigm back", () => {
-    const { container } = renderKinetic();
-    fireEvent.click(screen.getByRole("button", { name: /return to studio/i }));
-    expect(container.querySelector(".kinetic-stage")).toBeNull();
-    expect(localStorage.getItem("portfolio-paradigm")).toBe("studio");
-  });
-
   it("does not mount reticle or listen for pointermove on coarse pointers", () => {
     const add = vi.spyOn(window, "addEventListener");
     const { container } = renderKinetic();

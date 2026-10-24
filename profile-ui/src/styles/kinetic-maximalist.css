@@ -413,13 +413,11 @@
   padding: clamp(16px, 2.5vw, 28px);
 }
 :root[data-paradigm="kinetic"] .studio-project:nth-child(odd),
-:root[data-paradigm="kinetic"] .studio-case:nth-of-type(odd),
 :root[data-paradigm="kinetic"] .project-related li:nth-child(odd) a,
 :root[data-paradigm="kinetic"] .project-related a:nth-child(odd) {
   rotate: -0.8deg;
 }
 :root[data-paradigm="kinetic"] .studio-project:nth-child(even),
-:root[data-paradigm="kinetic"] .studio-case:nth-of-type(even),
 :root[data-paradigm="kinetic"] .project-related li:nth-child(even) a,
 :root[data-paradigm="kinetic"] .project-related a:nth-child(even) {
   rotate: 0.8deg;
@@ -629,7 +627,7 @@
   outline-offset: 4px;
 }
 
-/* ------------------------------------------------------------- stage / HUD */
+/* ------------------------------------------------------------- stage */
 :root[data-paradigm="kinetic"] .kinetic-stage {
   position: relative;
   z-index: 45;
@@ -695,39 +693,6 @@
   outline: 3px solid var(--kinetic-cyan);
   outline-offset: -5px;
 }
-:root[data-paradigm="kinetic"] .kinetic-hud {
-  position: fixed;
-  inset: auto auto 12px 12px;
-  z-index: 44;
-  padding: 6px 10px;
-  border: 1px solid var(--kinetic-cyan);
-  background: rgb(6 3 13 / 0.88);
-  color: var(--kinetic-cyan);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  pointer-events: none;
-}
-:root[data-paradigm="kinetic"] .kinetic-hud [data-live],
-:root[data-paradigm="kinetic"] .kinetic-hud::before {
-  animation: kinetic-pulse 2.4s ease-in-out infinite;
-}
-:root[data-paradigm="kinetic"] .kinetic-hud::before {
-  content: "";
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  margin-right: 8px;
-  border-radius: 50%;
-  background: var(--kinetic-lime);
-}
-@media (max-width: 700px) {
-  :root[data-paradigm="kinetic"] .kinetic-hud {
-    display: none;
-  }
-}
-
 /* Reticle: translate-driven (set --kinetic-x / --kinetic-y or style.translate), fine pointers only. */
 :root[data-paradigm="kinetic"] .kinetic-reticle {
   display: none;
@@ -785,10 +750,6 @@
     animation: none;
     width: auto;
     overflow-x: auto;
-  }
-  :root[data-paradigm="kinetic"] .kinetic-hud::before,
-  :root[data-paradigm="kinetic"] .kinetic-hud [data-live] {
-    animation: none;
   }
   :root[data-paradigm="kinetic"] .studio-hero h1,
   :root[data-paradigm="kinetic"] .studio-hero-name,
