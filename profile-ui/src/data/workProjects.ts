@@ -4,6 +4,8 @@ export interface ProjectOutcome {
 
 export interface WorkProject {
   id: string;
+  /** URL slug of the dedicated project page; absent when there is none. */
+  slug?: string;
   domain: string;
   technologies: string[];
   description: string;
@@ -13,6 +15,7 @@ export interface WorkProject {
 export const workProjects: WorkProject[] = [
   {
     id: "application-modernization",
+    slug: "enterprise-application-modernization",
     domain: "Full stack",
     technologies: [
       "React",
@@ -37,6 +40,7 @@ export const workProjects: WorkProject[] = [
   },
   {
     id: "quality-inspection",
+    slug: "produce-specifications-inspections",
     domain: "Frontend",
     technologies: ["React", "Next.js", "TypeScript", "Java", "Spring Boot"],
     description:
@@ -53,6 +57,7 @@ export const workProjects: WorkProject[] = [
   },
   {
     id: "workforce-modernization",
+    slug: "employee-timekeeping-leave",
     domain: "Frontend",
     technologies: [
       "React",
@@ -74,6 +79,7 @@ export const workProjects: WorkProject[] = [
   },
   {
     id: "ecommerce-shopify-vue",
+    slug: "retail-ecommerce-storefront",
     domain: "Frontend",
     technologies: ["Vue 3", "Shopify", "Liquid", "TypeScript", "SCSS", "APIs"],
     description:
@@ -108,6 +114,7 @@ export const workProjects: WorkProject[] = [
   },
   {
     id: "business-web-applications",
+    slug: "business-commerce-web-applications",
     domain: "Full stack",
     technologies: [
       "JSF",

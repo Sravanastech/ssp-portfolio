@@ -17,7 +17,7 @@ function openContact() {
       </HelmetProvider>
     </QueryClientProvider>,
   );
-  fireEvent.change(screen.getByPlaceholderText("Your Name"), {
+  fireEvent.change(screen.getByPlaceholderText("Your name"), {
     target: { value: "Test Person" },
   });
   fireEvent.change(screen.getByPlaceholderText("example@mail.com"), {
@@ -25,11 +25,11 @@ function openContact() {
   });
   fireEvent.change(
     screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ),
     { target: { value: "Please discuss this project with me." } },
   );
-  fireEvent.click(screen.getByRole("button", { name: "Send Message" }));
+  fireEvent.click(screen.getByRole("button", { name: "Send message" }));
 }
 
 describe("contact delivery experience", () => {
@@ -45,10 +45,10 @@ describe("contact delivery experience", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Delivery could not be confirmed",
     );
-    expect(screen.getByPlaceholderText("Your Name")).toHaveValue("Test Person");
+    expect(screen.getByPlaceholderText("Your name")).toHaveValue("Test Person");
     expect(
       screen.getByPlaceholderText(
-        "Tell me about your project, idea, or questions...",
+        "Tell me about the role, the team, or your questions…",
       ),
     ).toHaveValue("Please discuss this project with me.");
     expect(
@@ -72,10 +72,10 @@ describe("contact delivery experience", () => {
     );
     expect(screen.queryByText(/Redirecting/)).not.toBeInTheDocument();
     fireEvent.click(
-      screen.getByRole("button", { name: "Send Another Message" }),
+      screen.getByRole("button", { name: "Send another message" }),
     );
     await waitFor(() =>
-      expect(screen.getByPlaceholderText("Your Name")).toHaveValue(""),
+      expect(screen.getByPlaceholderText("Your name")).toHaveValue(""),
     );
     expect(screen.queryByRole("status")).not.toBeInTheDocument();
   });

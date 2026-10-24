@@ -2,6 +2,8 @@
 // See docs/content-accuracy-audit.md for provenance and unresolved dates.
 export const profile = {
   name: "Sravana S Parimi",
+  fullName: "Sravana Subramanyam Parimi",
+  shortName: "Sravan",
   role: "Senior Software Engineer III",
   employer: "Fifth Third Bank",
   location: "Cincinnati, OH",
@@ -15,6 +17,8 @@ export const profile = {
     "At Fifth Third Bank, I contribute to enterprise application modernization with React, TypeScript, Java, and Spring Boot. I built a shared React component library and its Storybook documentation from scratch for reuse across multiple applications. My work also includes data-intensive interfaces, reporting, and document workflows. I also contribute automated tests, quality checks, application packaging, release tooling, and engineering documentation.",
   url: "https://sravanasparimi.com",
   linkedin: "https://www.linkedin.com/in/sravanap/",
+  github: "https://github.com/DevSravana",
+  githubProjects: "https://github.com/SravanasTech",
   email: "contact@sravanasparimi.com",
 };
 

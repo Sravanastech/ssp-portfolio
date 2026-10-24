@@ -1,71 +1,100 @@
 import {
-  createContext,
-  useContext,
-  useState,
+  useCallback,
   useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
   ReactNode,
 } from "react";
-import { Theme, themeConfig } from "./themeConfig";
-import {
-  defaultTheme,
-  defaultValue,
-  ThemeContextType,
-} from "./theme-constants";
+import { Theme, legacyThemeIds, themeConfig, themeScheme } from "./themeConfig";
+import { defaultTheme } from "./theme-constants";
+import { ThemeContext } from "./theme-context";
 
-const ThemeContext = createContext<ThemeContextType>(defaultValue);
+const STORAGE_KEY = "theme";
+const DARK_THEME: Theme = "midnight";
+const DARK_QUERY = "(prefers-color-scheme: dark)";
+
+function readStoredTheme(): Theme | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    if (raw in themeConfig) return raw as Theme;
+    return legacyThemeIds[raw] ?? null;
+  } catch {
+    return null; // Storage can be disabled.
+  }
+}
+
+function systemPrefersDark(): boolean {
+  try {
+    return window.matchMedia?.(DARK_QUERY).matches ?? false;
+  } catch {
+    return false;
+  }
+}
+
+function applyTheme(theme: Theme) {
+  const root = document.documentElement;
+  Object.entries(themeConfig[theme]).forEach(([key, value]) => {
+    root.style.setProperty(`--color-${key}`, value);
+  });
+  root.dataset.theme = theme;
+  root.style.colorScheme = themeScheme[theme];
+}
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  // True once the visitor picked a theme (now or in an earlier visit).
+  const chosen = useRef<boolean>(false);
   const [currentTheme, setCurrentTheme] = useState<Theme>(() => {
     if (typeof window === "undefined") return defaultTheme;
-    let stored: Theme | null = null;
-    try {
-      stored = localStorage.getItem("theme") as Theme | null;
-    } catch {
-      /* Storage can be disabled. */
+    const stored = readStoredTheme();
+    if (stored) {
+      chosen.current = true;
+      return stored;
     }
-    return stored && Object.keys(themeConfig).includes(stored)
-      ? stored
-      : defaultTheme;
+    return systemPrefersDark() ? DARK_THEME : defaultTheme;
   });
 
-  useEffect(() => {
-    try {
-      localStorage.setItem("theme", currentTheme);
-    } catch {
-      /* Keep in-memory preference. */
-    }
+  useLayoutEffect(() => {
     applyTheme(currentTheme);
   }, [currentTheme]);
 
-  const applyTheme = (theme: Theme) => {
-    const root = document.documentElement;
-    const colors = themeConfig[theme];
+  // Follow OS appearance changes until the visitor chooses a theme.
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    let query: MediaQueryList;
+    try {
+      query = window.matchMedia(DARK_QUERY);
+    } catch {
+      return;
+    }
+    const onChange = (event: MediaQueryListEvent) => {
+      if (chosen.current) return;
+      setCurrentTheme(event.matches ? DARK_THEME : defaultTheme);
+    };
+    query.addEventListener?.("change", onChange);
+    return () => query.removeEventListener?.("change", onChange);
+  }, []);
 
-    Object.entries(colors).forEach(([key, value]) => {
-      root.style.setProperty(`--color-${key}`, value);
-    });
-
-    root.dataset.theme = theme;
-    root.style.colorScheme = theme === "ocean" ? "dark" : "light";
-  };
+  const setTheme = useCallback((theme: Theme) => {
+    chosen.current = true;
+    try {
+      localStorage.setItem(STORAGE_KEY, theme);
+    } catch {
+      /* Keep in-memory preference. */
+    }
+    setCurrentTheme(theme);
+  }, []);
 
   return (
     <ThemeContext.Provider
       value={{
         currentTheme,
         colors: themeConfig[currentTheme] || themeConfig[defaultTheme],
-        setTheme: setCurrentTheme,
+        setTheme,
       }}
     >
       {children}
     </ThemeContext.Provider>
   );
-};
-
-export const useTheme = (): ThemeContextType => {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    return defaultValue;
-  }
-  return context;
 };

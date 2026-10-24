@@ -1,9 +1,11 @@
 import { SiteText } from "@/content/SiteContent";
-import { useSiteContent } from "@/content/SiteContent";
+import { useSiteContent } from "@/content/siteContentContext";
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import ProjectArtwork from "@/components/ProjectArtwork";
+import CaseNav from "@/components/CaseNav";
+import "@/styles/project-page.css";
 
 export default function WorkPage() {
   const { caseStudies } = useSiteContent();
@@ -17,20 +19,22 @@ export default function WorkPage() {
     <div className="studio-page">
       <div className="studio-container">
         <header className="studio-page-intro">
-          <h1 className="studio-page-heading"><SiteText id="pages.WorkPage.text.1" /><br /><SiteText id="pages.WorkPage.text.2" /></h1>
-          <p className="studio-lede"><SiteText id="pages.WorkPage.text.3" /></p>
-          <p
-            className="mt-6 max-w-2xl text-sm"
-            style={{ color: "var(--color-textSecondary)" }}
-          ><SiteText id="pages.WorkPage.text.4" /></p>
+          <h1 className="studio-page-heading">
+            <SiteText id="pages.WorkPage.text.1" />
+            <br />
+            <SiteText id="pages.WorkPage.text.2" />
+          </h1>
+          <p className="studio-lede">
+            <SiteText id="pages.WorkPage.text.3" />
+          </p>
+          <p className="work-note">
+            <SiteText id="pages.WorkPage.text.4" />
+          </p>
         </header>
-        <nav aria-label="Case studies" className="studio-case-nav">
-          {caseStudies.map((study) => (
-            <a key={study.id} href={`#${study.id}`}>
-              {study.name}
-            </a>
-          ))}
-        </nav>
+        <CaseNav
+          label="Case studies"
+          items={caseStudies.map(({ id, name }) => ({ id, name }))}
+        />
         {caseStudies.map((study) => (
           <article
             className="studio-case"
@@ -42,32 +46,43 @@ export default function WorkPage() {
               <div>
                 <h2 id={`${study.id}-title`}>{study.name}</h2>
                 <p className="font-medium">
-                  <span>{study.organization}</span><SiteText id="pages.WorkPage.text.5" />{study.role}
+                  <span>{study.organization}</span>{" "}
+                  <SiteText id="pages.WorkPage.text.5" />
+                  {study.role}
                 </p>
                 <p className="studio-lede">{study.summary}</p>
-                <p
-                  className="text-sm"
-                  style={{ color: "var(--color-textSecondary)" }}
-                >
-                  {study.technologies.join(" · ")}
-                </p>
+                <p className="work-stack">{study.technologies.join(" · ")}</p>
               </div>
               <ProjectArtwork id={study.id} />
             </div>
             <div className="studio-case-body">
               <section>
-                <h3><SiteText id="pages.WorkPage.text.6" /></h3>
+                <h3>
+                  <SiteText id="pages.WorkPage.text.6" />
+                </h3>
                 <p>{study.problem}</p>
               </section>
               <section>
-                <h3><SiteText id="pages.WorkPage.text.7" /></h3>
+                <h3>
+                  <SiteText id="pages.WorkPage.text.7" />
+                </h3>
                 <p>{study.contribution}</p>
               </section>
               <section>
-                <h3><SiteText id="pages.WorkPage.text.8" /></h3>
+                <h3>
+                  <SiteText id="pages.WorkPage.text.8" />
+                </h3>
                 <p>{study.outcome}</p>
               </section>
             </div>
+            <Link
+              className="studio-link studio-case-more"
+              to={`/work/${study.slug}`}
+              aria-label={`Read the full case study: ${study.name}`}
+            >
+              Read the full case study
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
             <figure className="studio-case-flow">
               <ol aria-label={`${study.name} conceptual workflow`}>
                 {study.flow.map((step, index) => (
@@ -83,16 +98,21 @@ export default function WorkPage() {
                   </li>
                 ))}
               </ol>
-              <figcaption>{study.flowNote}</figcaption>
             </figure>
           </article>
         ))}
         <section className="studio-section studio-closing">
           <div>
-            <h2><SiteText id="pages.WorkPage.text.9" /></h2>
-            <p><SiteText id="pages.WorkPage.text.10" /></p>
+            <h2>
+              <SiteText id="pages.WorkPage.text.9" />
+            </h2>
+            <p>
+              <SiteText id="pages.WorkPage.text.10" />
+            </p>
           </div>
-          <Link to="/contact" className="studio-button"><SiteText id="pages.WorkPage.text.11" /><ArrowUpRight size={20} aria-hidden="true" />
+          <Link to="/contact" className="studio-button">
+            <SiteText id="pages.WorkPage.text.11" />
+            <ArrowUpRight size={20} aria-hidden="true" />
           </Link>
         </section>
       </div>

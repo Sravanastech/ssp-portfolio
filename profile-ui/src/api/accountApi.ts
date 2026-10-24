@@ -13,6 +13,15 @@ export type Account = {
   country: string | null;
 };
 
+export class AccountApiError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "AccountApiError";
+    this.status = status;
+  }
+}
+
 function requireToken(token: string | undefined): string {
   if (!token) throw new Error("Your session expired. Sign in again.");
   return token;
@@ -34,11 +43,13 @@ export async function accountRequest<T = Account>(
     cache: "no-store",
   });
   if (!response.ok) {
-    if (response.status === 410) throw new Error("This profile was deleted.");
-    throw new Error(
+    if (response.status === 410)
+      throw new AccountApiError("This profile was deleted.", 410);
+    throw new AccountApiError(
       response.status === 401
         ? "Your session expired. Sign in again."
         : "Could not save your account. Please retry.",
+      response.status,
     );
   }
   return response.status === 204
@@ -88,4 +99,21 @@ export async function adminRequest<T>(
   return response.status === 204
     ? (undefined as T)
     : ((await response.json()) as T);
+}
+
+/** Read the signed-in account; provision it (POST) only when it does not exist yet. */
+export async function ensureAccount(
+  token: string | undefined,
+  names: { firstName?: string; lastName?: string },
+): Promise<Account> {
+  try {
+    return await accountRequest<Account>(token, "GET");
+  } catch (error) {
+    if (!(error instanceof AccountApiError) || error.status !== 404)
+      throw error;
+    return accountRequest<Account>(token, "POST", {
+      firstName: names.firstName ?? "",
+      lastName: names.lastName ?? "",
+    });
+  }
 }

@@ -1,10 +1,10 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/auth/auth";
 import { Navigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import ErrorPage from "./ErrorPage";
 
 const AuthCallback = () => {
-  const { isLoading, isAuthenticated, error } = useAuth0();
+  const { isLoading, isAuthenticated, error } = useAuth();
   // The provider honors appState.returnTo. This route is a fallback for a
   // completed callback without appState; it needs no separate account database.
   if (!isLoading && (error || !isAuthenticated)) {

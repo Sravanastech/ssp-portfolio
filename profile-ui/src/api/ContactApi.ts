@@ -25,17 +25,33 @@ export const submitContactInquiry = async (formData: ContactFormData) => {
     const timeout = setTimeout(() => controller.abort(), CONTACT_TIMEOUT_MS);
     try {
       const response = await fetch("/api/contact", {
-        method: "POST", signal: controller.signal,
-        headers: { "Content-Type": "application/json", Accept: "application/json", "Idempotency-Key": key },
+        method: "POST",
+        signal: controller.signal,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "Idempotency-Key": key,
+        },
         body: fingerprint,
       });
-      if (!response.ok) throw new Error(response.status === 429 ? "Too many messages. Please wait before trying again." : "The message was not accepted. Your text is still here; please retry.");
+      if (!response.ok)
+        throw new Error(
+          response.status === 429
+            ? "Too many messages. Please wait before trying again."
+            : "The message was not accepted. Your text is still here; please retry.",
+        );
       requestKeys.delete(fingerprint);
       return await response.json();
     } catch (error) {
-      if (controller.signal.aborted) throw new Error("The request timed out. Your message may have been accepted; retrying the same text will not create a duplicate.", { cause: error });
+      if (controller.signal.aborted)
+        throw new Error(
+          "The request timed out. Your message may have been accepted; retrying the same text will not create a duplicate.",
+          { cause: error },
+        );
       throw error;
-    } finally { clearTimeout(timeout); }
+    } finally {
+      clearTimeout(timeout);
+    }
   }
   const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY?.trim();
 

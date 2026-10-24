@@ -7,7 +7,7 @@ const auth = vi.hoisted(() => ({
   getAccessTokenSilently: vi.fn(),
   isAuthenticated: true,
 }));
-vi.mock("@auth0/auth0-react", () => ({ useAuth0: () => auth }));
+vi.mock("@/auth/auth", () => ({ useAuth: () => auth }));
 
 function preview() {
   return render(

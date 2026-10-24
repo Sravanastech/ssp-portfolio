@@ -1,0 +1,108 @@
+/* Case-study workflow diagrams: one visual language, distinct structure per project. */
+.pa-art {
+  --pa-bg: var(--art-wash);
+  --pa-card: #f9fbff;
+  --pa-text: #17243c;
+  --pa-muted: #52617c;
+  --pa-line: #8a9ab8;
+  --pa-blue: #244ce4;
+  --pa-flow: #244ce4;
+  --pa-lime: #dce99b;
+  --pa-on-lime: #17243c;
+}
+:root[data-theme="midnight"] .pa-art {
+  --pa-bg: #101a2e;
+  --pa-card: #1f2f4d;
+  --pa-text: #f3f5fa;
+  --pa-muted: #c8d1e3;
+  --pa-line: #6c7d9c;
+  --pa-blue: #3a5be8;
+  --pa-flow: #8da3f5;
+}
+.project-art.pa-art:has(.pa) {
+  background: var(--pa-bg);
+}
+.pa {
+  width: 100%;
+  height: 100%;
+  display: block;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 500;
+}
+.pa text {
+  font-size: 13px;
+  font-weight: 500;
+}
+.pa .pa-kicker,
+.pa .pa-caption {
+  letter-spacing: 0.04em;
+}
+.pa-card {
+  fill: var(--pa-card);
+  stroke: var(--pa-line);
+  stroke-width: 2;
+}
+.pa-blue {
+  fill: var(--pa-blue);
+}
+.pa-lime {
+  fill: var(--pa-lime);
+}
+.pa-dot {
+  fill: var(--pa-line);
+}
+.pa-line,
+.pa-rule,
+.pa-on-blue-line,
+.pa-flow,
+.pa-tick {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pa-line,
+.pa-rule {
+  stroke: var(--pa-line);
+}
+.pa-dash {
+  stroke-dasharray: 4 5;
+}
+.pa-on-blue-line {
+  stroke: #e0e7ff;
+}
+.pa-tick {
+  stroke: #17243c;
+  stroke-width: 3;
+}
+.pa-flow {
+  stroke: var(--pa-flow);
+  stroke-width: 2.5;
+}
+.pa .pa-text {
+  fill: var(--pa-text);
+}
+.pa .pa-muted {
+  fill: var(--pa-muted);
+}
+.pa .pa-on-blue {
+  fill: #fff;
+}
+.pa .pa-on-lime {
+  fill: var(--pa-on-lime);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .project-art:hover .pa-route,
+  .studio-project-image:focus-visible .pa-route {
+    stroke-dasharray: 300;
+    animation: pa-trace 650ms ease-out both;
+  }
+}
+@keyframes pa-trace {
+  from {
+    stroke-dashoffset: 300;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}

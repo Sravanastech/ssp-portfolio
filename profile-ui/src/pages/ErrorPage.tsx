@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useTheme } from "@/theme/ThemeContext";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { AlertCircle, Home } from "lucide-react";
+import "@/styles/pages.css";
 
 interface ErrorPageProps {
   message: string;
@@ -19,7 +19,6 @@ const ErrorPage = ({
   redirectPath = "/",
   autoRedirect = true,
 }: ErrorPageProps) => {
-  const { colors } = useTheme();
   const navigate = useNavigate();
   const [countdown, setCountdown] = useState(COUNTDOWN_SECONDS);
 
@@ -67,89 +66,48 @@ const ErrorPage = ({
   };
 
   return (
-    <div
-      className="flex flex-col items-center justify-center min-h-screen px-4 py-12"
-      style={{ backgroundColor: colors.background, color: colors.text }}
-    >
-      <motion.div
-        className="text-center max-w-md space-y-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* Error Icon */}
-        <div className="flex justify-center">
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            style={{ color: colors.error }}
-          >
-            <AlertCircle size={64} />
-          </motion.div>
-        </div>
-
-        {/* Error Code */}
-        <div
-          className="text-6xl font-bold tracking-tight"
-          style={{
-            color: colors.primary,
-            fontFamily: '"IBM Plex Mono", monospace',
-          }}
+    <div className="studio-page error-page">
+      <div className="studio-container">
+        <m.header
+          className="studio-page-intro"
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          {code}
-        </div>
-
-        {/* Error Message */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold" style={{ color: colors.primary }}>
-            {getErrorTitle()}
-          </h1>
-          <p style={{ color: colors.textSecondary }}>{getErrorDescription()}</p>
-        </div>
-
-        {/* Countdown Timer */}
-        {autoRedirect && (
-          <motion.div
-            className="py-6 rounded-lg border"
-            style={{
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <p style={{ color: colors.textSecondary }} className="text-sm mb-2">
-              Redirecting in{" "}
-              <span data-testid="countdown-number">{countdown}</span>s...
-            </p>
-            <div
-              className="relative w-32 h-1 mx-auto rounded-full overflow-hidden"
-              style={{ backgroundColor: colors.border }}
-            >
-              <motion.div
-                className="h-full rounded-full"
-                style={{ backgroundColor: colors.primary }}
-                animate={{ width: `${(countdown / COUNTDOWN_SECONDS) * 100}%` }}
-                transition={{ duration: 1, ease: "linear" }}
-              />
+          <p className="error-code">
+            <AlertCircle size={24} aria-hidden="true" />
+            {code}
+          </p>
+          <h1 className="studio-page-heading">{getErrorTitle()}</h1>
+          <p className="studio-lede">{getErrorDescription()}</p>
+          {autoRedirect && (
+            <div className="error-countdown">
+              <p>
+                Redirecting in{" "}
+                <span data-testid="countdown-number">{countdown}</span>s...
+              </p>
+              <div className="error-track" aria-hidden="true">
+                <m.span
+                  animate={{
+                    width: `${(countdown / COUNTDOWN_SECONDS) * 100}%`,
+                  }}
+                  transition={{ duration: 1, ease: "linear" }}
+                />
+              </div>
             </div>
-          </motion.div>
-        )}
-
-        {/* Go Home Button */}
-        <button
-          onClick={() => navigate(redirectPath)}
-          className="px-8 py-3 rounded-lg font-bold transition-all hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:outline-none flex items-center justify-center gap-2 mx-auto"
-          style={{
-            backgroundColor: colors.primary,
-            color: colors.accent,
-          }}
-        >
-          <Home size={20} />
-          Go Home
-        </button>
-      </motion.div>
+          )}
+          <div className="studio-actions">
+            <button
+              type="button"
+              onClick={() => navigate(redirectPath)}
+              className="studio-button"
+            >
+              <Home size={18} aria-hidden="true" />
+              Go Home
+            </button>
+          </div>
+        </m.header>
+      </div>
     </div>
   );
 };

@@ -21,6 +21,23 @@
   --studio-ink: #17243c;
   --studio-lime: #dce99b;
   --studio-paper: #f3f5fa;
+  --studio-on-ink: #f3f5fa;
+  --studio-on-ink-soft: #c8d1e3;
+  --studio-ink-line: #65738a;
+  --studio-ink-line-strong: #8793a6;
+  --studio-ink-hover: #283b59;
+  --studio-ink-rule: #41516c;
+  --studio-on-blue: #fff;
+  --studio-on-blue-muted: #e0e7ff;
+  --studio-on-blue-line: #aebfff;
+  --studio-blue-line: #6c87ed;
+  --diagram-line: #a1aecb;
+  /* Project artwork is a fixed light illustration in every theme. */
+  --art-periwinkle: #c3d0f5;
+  --art-sheet: #f9fbff;
+  --art-rule: #dfe4ef;
+  --art-wash: #e6ebf7;
+  --art-note-lime: #344626;
   --studio-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --color-focus-ring: var(--color-primary);
   --color-cta-bg: var(--color-primary);
@@ -28,6 +45,13 @@
   --color-cta-hover: var(--color-primary);
   font-synthesis: none;
 }
+
+/* Midnight: ink surfaces, lifted cobalt, pale lime. Color roles come from themeConfig. */
+:root[data-theme="midnight"] {
+  --studio-paper: #16213a;
+  --diagram-line: #56688a;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -143,7 +167,7 @@ button:disabled {
 .studio-brand-caption {
   display: block;
   color: var(--color-textSecondary);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
   margin-top: 3px;
 }
@@ -192,7 +216,7 @@ button:disabled {
   flex-wrap: wrap;
   gap: 4px;
   padding: 4px;
-  border: 1px solid #65738a;
+  border: 1px solid var(--studio-ink-line);
   border-radius: 12px;
   margin: 0;
   max-width: 100%;
@@ -203,7 +227,7 @@ button:disabled {
   place-items: center;
   min-height: 44px;
   border-radius: 8px;
-  color: #f3f5fa;
+  color: var(--studio-on-ink);
   transition:
     background-color 180ms ease,
     color 180ms ease;
@@ -231,8 +255,8 @@ button:disabled {
   flex-shrink: 0;
 }
 .composition-switcher label:has(input:checked) {
-  background: #dce99b;
-  color: #17243c;
+  background: var(--studio-lime);
+  color: var(--studio-ink);
 }
 .composition-switcher input:checked + span .choice-check,
 .theme-choice[aria-pressed="true"] .choice-check {
@@ -240,7 +264,7 @@ button:disabled {
 }
 .composition-switcher label:has(input:focus-visible),
 .theme-choice:focus-visible {
-  outline: 2px solid #dce99b;
+  outline: 2px solid var(--studio-lime);
   outline-offset: 4px;
 }
 .theme-switcher {
@@ -257,19 +281,19 @@ button:disabled {
   min-height: 48px;
   padding: 10px;
   background: transparent;
-  border: 1px solid #65738a;
+  border: 1px solid var(--studio-ink-line);
   border-radius: 8px;
-  color: #f3f5fa;
+  color: var(--studio-on-ink);
   font-size: 13px;
   cursor: pointer;
 }
 .theme-choice:hover {
-  background: #283b59;
+  background: var(--studio-ink-hover);
 }
 .theme-choice[aria-pressed="true"] {
-  background: #f3f5fa;
-  color: #17243c;
-  border-color: #f3f5fa;
+  background: var(--studio-on-ink);
+  color: var(--studio-ink);
+  border-color: var(--studio-on-ink);
 }
 .palette-swatch {
   display: flex;
@@ -277,7 +301,7 @@ button:disabled {
   height: 20px;
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid #8793a6;
+  border: 1px solid var(--studio-ink-line-strong);
 }
 .palette-swatch i {
   flex: 1;
@@ -295,7 +319,7 @@ button:disabled {
 }
 .studio-hero {
   background: var(--studio-blue);
-  color: white;
+  color: var(--studio-on-blue);
   padding-top: 72px;
   overflow: clip;
   transition:
@@ -336,7 +360,7 @@ button:disabled {
   font-size: 16px;
   line-height: 1.7;
   margin: 20px 0 0;
-  color: #e0e7ff;
+  color: var(--studio-on-blue-muted);
 }
 .studio-actions {
   display: flex;
@@ -404,14 +428,16 @@ button:disabled {
   gap: 24px;
   margin-top: 62px;
   padding-block: 22px;
-  border-top: 1px solid #6c87ed;
+  border-top: 1px solid var(--studio-blue-line);
   font-size: 12px;
-  color: #e0e7ff;
+  color: var(--studio-on-blue-muted);
 }
 .studio-hero-foot a {
   display: inline-flex;
   gap: 10px;
   align-items: center;
+  min-height: 44px;
+  margin-block: -12px;
   text-decoration: none;
 }
 .system-studio {
@@ -443,7 +469,7 @@ button:disabled {
   inset: 0;
   width: 100%;
   height: 100%;
-  stroke: #a1aecb;
+  stroke: var(--diagram-line);
   stroke-width: 1.5;
 }
 .system-connections circle {
@@ -466,10 +492,10 @@ button:disabled {
   justify-content: center;
   flex-direction: column;
   gap: 5px;
-  border: 1px solid #c9d1e3;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: white;
-  font-size: 11px;
+  background: var(--color-surface);
+  font-size: 12px;
   transition:
     background-color 0.35s,
     transform 0.45s var(--studio-ease);
@@ -497,25 +523,25 @@ button:disabled {
 }
 .system-controls {
   display: flex;
-  border-bottom: 1px solid #ccd3e1;
+  border-bottom: 1px solid var(--color-border);
   gap: 20px;
 }
 .system-controls button {
   border-bottom: 2px solid transparent;
   padding: 10px 0;
-  font-size: 13px;
-  color: #52617c;
+  font-size: 14px;
+  color: var(--color-textSecondary);
 }
 .system-controls button[aria-pressed="true"] {
-  border-color: var(--studio-blue);
-  color: var(--studio-blue);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
   font-weight: 700;
 }
 .system-controls button:focus-visible {
-  outline-color: var(--studio-blue);
+  outline-color: var(--color-primary);
 }
 .system-detail {
-  min-height: 151px;
+  min-height: 176px;
   padding-top: 22px;
 }
 .system-detail h2 {
@@ -524,18 +550,18 @@ button:disabled {
   margin: 0 0 9px;
 }
 .system-detail p {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.6;
-  color: #52617c;
+  color: var(--color-textSecondary);
   margin: 0 0 12px;
 }
 .system-detail > span {
-  font-size: 11px;
-  color: #244ce4;
+  font-size: 12px;
+  color: var(--color-primary);
 }
 .system-caption {
-  font-size: 10px;
-  color: #52617c;
+  font-size: 12px;
+  color: var(--color-textSecondary);
   margin: 8px 0 0;
 }
 .studio-section-heading {
@@ -582,7 +608,7 @@ button:disabled {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: white;
+  background: var(--color-surface);
   color: var(--studio-ink);
   transition: transform 0.3s;
 }
@@ -609,7 +635,7 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  font-size: 11px;
+  font-size: 12px;
   margin: 22px 0 0;
   color: var(--color-textSecondary);
 }
@@ -623,36 +649,36 @@ button:disabled {
   place-items: center;
   overflow: hidden;
   isolation: isolate;
-  color: #17243c;
+  color: var(--studio-ink);
 }
 .art-inspection {
-  background: #dce99b;
+  background: var(--studio-lime);
 }
 .art-workforce {
-  background: #c3d0f5;
+  background: var(--art-periwinkle);
 }
 .art-commerce {
-  background: #17243c;
+  background: var(--studio-ink);
 }
 .project-art-orbit {
   position: absolute;
   width: 280px;
   height: 280px;
-  border: 1px solid #17243c30;
+  border: 1px solid color-mix(in srgb, var(--studio-ink) 19%, transparent);
   border-radius: 50%;
   right: -95px;
   top: -95px;
   z-index: -1;
 }
 .art-commerce .project-art-orbit {
-  border-color: #dce99b60;
+  border-color: color-mix(in srgb, var(--studio-lime) 38%, transparent);
 }
 .project-art-sheet {
   width: 72%;
   padding: 21px;
-  background: #f9fbff;
+  background: var(--art-sheet);
   transform: rotate(-6deg);
-  box-shadow: 0 14px 24px #17243c15;
+  box-shadow: 0 14px 24px color-mix(in srgb, var(--studio-ink) 8%, transparent);
   transition: transform 0.5s var(--studio-ease);
   border-radius: 6px;
 }
@@ -677,9 +703,9 @@ a:hover .project-art-sheet {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: 12px;
   padding: 9px 0;
-  border-top: 1px solid #dfe4ef;
+  border-top: 1px solid var(--art-rule);
 }
 .project-art-bars {
   display: flex;
@@ -692,11 +718,11 @@ a:hover .project-art-sheet {
   display: block;
   height: 7px;
   flex: 1;
-  background: #244ce4;
+  background: var(--studio-blue);
 }
 .project-art-bars i:nth-child(2n) {
   height: 14px;
-  background: #c3d0f5;
+  background: var(--art-periwinkle);
 }
 .project-art-bars i:nth-child(3n) {
   height: 22px;
@@ -705,14 +731,14 @@ a:hover .project-art-sheet {
   position: absolute;
   bottom: 10px;
   left: 16px;
-  font-size: 9px;
-  color: #344626;
+  font-size: 12px;
+  color: var(--art-note-lime);
 }
 .art-workforce .project-art-note {
-  color: #17243c;
+  color: var(--studio-ink);
 }
 .art-commerce .project-art-note {
-  color: #e0e7ff;
+  color: var(--studio-on-blue-muted);
 }
 .studio-link {
   display: inline-flex;
@@ -778,8 +804,8 @@ a:hover .project-art-sheet {
   flex-shrink: 0;
 }
 .studio-footer {
-  background: #17243c;
-  color: #f3f5fa;
+  background: var(--studio-ink);
+  color: var(--studio-on-ink);
   padding-top: 64px;
 }
 .studio-footer-main {
@@ -797,7 +823,7 @@ a:hover .project-art-sheet {
   text-decoration: none;
 }
 .studio-footer-name > span {
-  color: #dce99b;
+  color: var(--studio-lime);
 }
 .studio-footer-main > div p {
   margin: 0 0 25px;
@@ -808,6 +834,8 @@ a:hover .project-art-sheet {
   display: inline-flex;
   gap: 5px;
   align-items: center;
+  min-height: 44px;
+  margin-block: -12px;
   margin-right: 24px;
   font-size: 13px;
   text-underline-offset: 5px;
@@ -828,15 +856,19 @@ a:hover .project-art-sheet {
   display: flex;
   justify-content: space-between;
   gap: 24px;
-  border-top: 1px solid #41516c;
-  font-size: 11px;
-  color: #c8d1e3;
+  border-top: 1px solid var(--studio-ink-rule);
+  font-size: 12px;
+  color: var(--studio-on-ink-soft);
 }
 .studio-footer-bottom nav {
   display: flex;
   gap: 25px;
 }
 .studio-footer-bottom a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -12px;
   text-decoration: none;
 }
 .studio-page {
@@ -962,7 +994,7 @@ a:hover .project-art-sheet {
 }
 .studio-case-flow figcaption {
   margin-top: 20px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-textSecondary);
 }
 /* A: the bold opening is followed by an ordered project index. */
@@ -1096,7 +1128,7 @@ a:hover .project-art-sheet {
 }
 [data-composition="c"] .system-studio {
   background: var(--studio-blue);
-  color: white;
+  color: var(--studio-on-blue);
   transform: none;
   padding: 30px 40px;
 }
@@ -1112,7 +1144,7 @@ a:hover .project-art-sheet {
 [data-composition="c"] .system-detail > span,
 [data-composition="c"] .system-caption,
 [data-composition="c"] .system-controls button {
-  color: #e0e7ff;
+  color: var(--studio-on-blue-muted);
 }
 [data-composition="c"] .system-controls button[aria-pressed="true"] {
   color: var(--studio-lime);
@@ -1269,7 +1301,7 @@ a:hover .project-art-sheet {
   }
   .studio-hero-foot {
     margin-top: 38px;
-    font-size: 11px;
+    font-size: 12px;
   }
   .studio-hero-foot > span {
     max-width: 155px;
@@ -1455,8 +1487,8 @@ a:hover .project-art-sheet {
   }
 }
 .project-art-note {
-  background: #f9fbff;
-  color: #17243c !important;
+  background: var(--art-sheet);
+  color: var(--studio-ink) !important;
   padding: 2px 5px;
   border-radius: 3px;
 }
@@ -1501,7 +1533,7 @@ a:hover .project-art-sheet {
 }
 .system-node-delivery {
   background: var(--studio-ink);
-  color: white;
+  color: var(--studio-on-blue);
 }
 .system-node-delivery.is-active {
   color: var(--studio-ink);
@@ -1616,7 +1648,7 @@ a:hover .project-art-sheet {
 .project-art-note {
   left: 12px;
   bottom: 10px;
-  font-size: 9px;
+  font-size: 12px;
 }
 @media (max-width: 700px) {
   [data-composition="a"] .studio-hero::before {
@@ -1655,44 +1687,10 @@ a:hover .project-art-sheet {
     padding: 24px;
   }
   [data-composition="a"] .project-art-note {
-    font-size: 8px;
+    font-size: 12px;
     left: 5px;
     bottom: 5px;
   }
-}
-
-/* Appearance choices stay out of the primary reading path. */
-.appearance-settings {
-  border-top: 1px solid var(--color-border);
-  padding-block: 24px;
-}
-.appearance-settings summary {
-  cursor: pointer;
-  width: fit-content;
-  padding: 12px 0;
-  text-underline-offset: 5px;
-}
-.appearance-settings summary:hover {
-  text-decoration: underline;
-}
-.appearance-settings summary:focus-visible {
-  outline: 2px solid #dce99b;
-  outline-offset: 5px;
-}
-.appearance-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 28px 48px;
-  padding-block: 20px;
-}
-.appearance-options h2 {
-  font-size: 1rem;
-  font-weight: 700;
-}
-.appearance-options p {
-  max-width: 36ch;
-  margin: 8px 0 16px;
-  color: var(--color-textSecondary);
 }
 
 .mode-toggle {
@@ -1710,9 +1708,6 @@ a:hover .project-art-sheet {
   }
   .system-planes {
     animation: studio-plane-reveal 650ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .appearance-settings[open] .appearance-options {
-    animation: studio-settings-open 200ms ease-out;
   }
 }
 @keyframes studio-draw {
@@ -1739,18 +1734,6 @@ a:hover .project-art-sheet {
     clip-path: inset(0);
   }
 }
-@keyframes studio-settings-open {
-  from {
-    opacity: 0.6;
-  }
-  to {
-    opacity: 1;
-  }
-}
-.studio-footer .appearance-options p {
-  color: #c3cddd;
-}
-
 /* Domain diagrams share the studio palette and illustrate workflows, never client UI. */
 .project-art .project-workflow {
   width: 100%;
@@ -1762,10 +1745,10 @@ a:hover .project-art-sheet {
   font-weight: 500;
 }
 .project-art:has(.project-workflow) {
-  background: #e6ebf7;
+  background: var(--art-wash);
 }
 .project-workflow .workflow-route {
-  stroke: #244ce4;
+  stroke: var(--studio-blue);
   stroke-width: 3;
 }
 .studio-project-image:focus-visible {
@@ -1788,10 +1771,6 @@ a:hover .project-art-sheet {
   }
 }
 @media (max-width: 700px) {
-  .appearance-options {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-  }
   .composition-choice {
     gap: 5px;
     padding-inline: 8px;
@@ -1805,10 +1784,10 @@ a:hover .project-art-sheet {
 /* Five responsibilities, one connected engineering workflow. */
 .engineering-workflow {
   --workflow-surface: var(--studio-paper);
-  --workflow-text: var(--studio-ink);
-  --workflow-muted: #52617c;
-  --workflow-line: #a1aecb;
-  --workflow-accent: var(--studio-blue);
+  --workflow-text: var(--color-text);
+  --workflow-muted: var(--color-textSecondary);
+  --workflow-line: var(--diagram-line);
+  --workflow-accent: var(--color-primary);
   color: var(--workflow-text);
 }
 [data-composition="a"] .engineering-workflow,
@@ -1826,9 +1805,9 @@ a:hover .project-art-sheet {
 }
 [data-composition="c"] .engineering-workflow {
   --workflow-surface: var(--studio-blue);
-  --workflow-text: #fff;
-  --workflow-muted: #e0e7ff;
-  --workflow-line: #aebfff;
+  --workflow-text: var(--studio-on-blue);
+  --workflow-muted: var(--studio-on-blue-muted);
+  --workflow-line: var(--studio-on-blue-line);
   --workflow-accent: var(--studio-lime);
   padding: 36px 28px;
 }
@@ -1902,7 +1881,7 @@ a:hover .project-art-sheet {
   font-weight: 700;
 }
 .workflow-output {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--workflow-muted);
 }
 .workflow-stage[aria-pressed="true"] .workflow-icon {
@@ -2113,6 +2092,6 @@ a:hover .project-art-sheet {
     stroke-width: 1;
   }
   .workflow-system-node {
-    font-size: 11px;
+    font-size: 12px;
   }
 }

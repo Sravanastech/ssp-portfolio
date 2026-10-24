@@ -1,23 +1,5 @@
 import { vi } from "vitest";
-import { LucideIcon } from "lucide-react";
 import { ThemeColors } from "@/theme/themeConfig";
-
-export interface ServiceCardProps {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  index?: number;
-}
-
-// Mock icon component that matches LucideIcon interface
-const mockIcon = (() => null) as unknown as LucideIcon;
-
-export const mockServiceCard: ServiceCardProps = {
-  icon: mockIcon,
-  title: "Example Service",
-  description:
-    "Example service description that demonstrates the component behavior.",
-};
 
 export const mockThemeColors: ThemeColors = {
   primary: "#000000",
@@ -38,7 +20,7 @@ export const mockThemeColors: ThemeColors = {
 
 export interface ThemeContextType {
   colors: ThemeColors;
-  currentTheme: "woodland" | "sunrise" | "ocean";
+  currentTheme: "woodland" | "sunrise" | "midnight";
   setTheme: ReturnType<typeof vi.fn>;
 }
 

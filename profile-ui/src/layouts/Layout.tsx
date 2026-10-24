@@ -4,6 +4,8 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import PageMetadata from "@/components/PageMetadata";
 import OfflineBanner from "@/components/OfflineBanner";
+import ConsentBanner from "@/components/ConsentBanner";
+import { initAnalytics, trackPageView } from "@/lib/analytics";
 import {
   CompositionContext,
   type Composition,
@@ -22,6 +24,13 @@ export default function Layout({ children }: Props) {
       /* The switch remains usable without storage. */
     }
   }, []);
+  useEffect(() => {
+    // No-op unless VITE_GA_MEASUREMENT_ID is set.
+    initAnalytics();
+  }, []);
+  useEffect(() => {
+    trackPageView();
+  }, [pathname]);
   useEffect(() => {
     if (!hash) window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname, hash]);
@@ -51,6 +60,7 @@ export default function Layout({ children }: Props) {
         </main>
         <Footer />
         <OfflineBanner />
+        <ConsentBanner />
       </div>
     </CompositionContext.Provider>
   );

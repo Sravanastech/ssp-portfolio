@@ -1,11 +1,12 @@
 import { SiteText } from "@/content/SiteContent";
-import { useSiteContent } from "@/content/SiteContent";
+import { useSiteContent } from "@/content/siteContentContext";
 import { useState, useEffect } from "react";
 import ContactForm, { ContactFormData } from "@/components/ContactForm";
 import { useSubmitContactInquiry } from "@/api/ContactApi";
 import { CheckCircle2, AlertTriangle, CloudOff } from "lucide-react";
-import { useTheme } from "@/theme/ThemeContext";
 import { reportEvent } from "@/lib/monitoring";
+import { trackEvent } from "@/lib/analytics";
+import "@/styles/pages.css";
 import {
   saveOfflineDraft,
   getPendingDrafts,
@@ -22,58 +23,35 @@ const SuccessBanner = ({
   isOfflineQueued?: boolean;
   onReset: () => void;
 }) => {
-  const { colors } = useTheme();
-
   return (
-    <div
-      role="status"
-      className="p-6 md:p-10 w-full space-y-6 rounded-xl border shadow-xs"
-      style={{ backgroundColor: colors.surface, borderColor: colors.border }}
-    >
-      <div className="flex justify-center" style={{ color: colors.success }}>
-        <CheckCircle2 size={56} />
-      </div>
-      <div className="space-y-2 text-center">
-        <h2
-          className="text-2xl md:text-3xl font-semibold tracking-tight"
-          style={{ color: colors.primary }}
-        >
-          {isOfflineQueued
-            ? `Thanks, ${submittedData?.name || ""}. Draft saved locally.`
-            : (
-              <>
-                <SiteText id="pages.ContactPage.text.1" />
-                {submittedData?.name}
-                <SiteText id="pages.ContactPage.text.2" />
-              </>
-            )}
+    <div role="status" className="page-panel contact-success">
+      <CheckCircle2 size={40} aria-hidden="true" />
+      <div>
+        <h2>
+          {isOfflineQueued ? (
+            `Thanks, ${submittedData?.name || ""}. Draft saved locally.`
+          ) : (
+            <>
+              <SiteText id="pages.ContactPage.text.1" />
+              {submittedData?.name}
+              <SiteText id="pages.ContactPage.text.2" />
+            </>
+          )}
         </h2>
-        <p
-          className="text-base leading-relaxed"
-          style={{ color: colors.textSecondary }}
-        >
+        <p className="page-copy">
           {isOfflineQueued ? (
             "Your message is saved on this device only. Use the Retry button to send it when you're back online. Clearing browser data will remove saved drafts."
           ) : (
             <>
               <SiteText id="pages.ContactPage.text.3" />{" "}
-              <span className="font-bold" style={{ color: colors.text }}>
-                {submittedData?.email || submittedData?.phone}
-              </span>
+              <strong>{submittedData?.email || submittedData?.phone}</strong>
               <SiteText id="pages.ContactPage.text.4" />
             </>
           )}
         </p>
       </div>
 
-      <div
-        className="p-4 rounded-lg border text-left text-sm space-y-2"
-        style={{
-          backgroundColor: colors.background,
-          borderColor: colors.border,
-          color: colors.text,
-        }}
-      >
+      <div className="contact-recap">
         <p>
           <strong>
             <SiteText id="pages.ContactPage.text.5" />
@@ -92,25 +70,15 @@ const SuccessBanner = ({
         )}
       </div>
 
-      <div className="pt-2 flex flex-col items-center gap-3">
-        <button
-          onClick={onReset}
-          className="studio-button w-full h-12 rounded-lg font-semibold flex items-center justify-center transition-all"
-          style={{
-            backgroundColor: colors.primary,
-            color: colors.accent,
-          }}
-        >
-          <SiteText id="pages.ContactPage.text.9" />
-        </button>
-      </div>
+      <button onClick={onReset} className="studio-button">
+        <SiteText id="pages.ContactPage.text.9" />
+      </button>
     </div>
   );
 };
 
 const ContactPage = () => {
   const { profile } = useSiteContent();
-  const { colors } = useTheme();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isOfflineQueued, setIsOfflineQueued] = useState(false);
   const [submittedData, setSubmittedData] = useState<ContactFormData | null>(
@@ -133,6 +101,7 @@ const ContactPage = () => {
     try {
       await submitInquiry(data);
       reportEvent("contact_success");
+      trackEvent("contact_submit", { method: "web3forms" });
       setSubmittedData(data);
       setIsOfflineQueued(false);
       setIsSubmitted(true);
@@ -191,52 +160,36 @@ const ContactPage = () => {
   };
 
   return (
-    <>
-      <div
-        className="studio-page"
-        style={{ backgroundColor: colors.background, color: colors.text }}
-      >
-        <div className="studio-container">
-          <header className="studio-page-intro">
-            <h1 className="studio-page-heading">
-              <SiteText id="pages.ContactPage.text.11" />
-              <br />
-              <SiteText id="pages.ContactPage.text.12" />
-            </h1>
-          </header>
-          <div
-            className="studio-contact studio-section border-t"
-            style={{ borderColor: colors.border }}
-          >
-            <aside>
-              <h2 className="text-3xl font-semibold mb-5">
-                <SiteText id="pages.ContactPage.text.13" />
-              </h2>
-              <p className="studio-lede">
-                <SiteText id="pages.ContactPage.text.14" />
-              </p>
-              <div className="mt-10 space-y-7">
-                <div>
-                  <p
-                    className="text-sm mb-2"
-                    style={{ color: colors.textSecondary }}
-                  >
-                    <SiteText id="pages.ContactPage.text.15" />
-                  </p>
-                  <a
-                    className="studio-link break-all"
-                    href={`mailto:${profile.email}`}
-                  >
+    <div className="studio-page">
+      <div className="studio-container">
+        <header className="studio-page-intro">
+          <h1 className="studio-page-heading">
+            <SiteText id="pages.ContactPage.text.11" />
+            <br />
+            <SiteText id="pages.ContactPage.text.12" />
+          </h1>
+        </header>
+        <div className="studio-contact studio-section studio-rule">
+          <aside className="contact-aside">
+            <p className="studio-lede">
+              <SiteText id="pages.ContactPage.text.14" />
+            </p>
+            <dl className="contact-methods">
+              <div>
+                <dt>
+                  <SiteText id="pages.ContactPage.text.15" />
+                </dt>
+                <dd>
+                  <a className="studio-link" href={`mailto:${profile.email}`}>
                     {profile.email}
                   </a>
-                </div>
-                <div>
-                  <p
-                    className="text-sm mb-2"
-                    style={{ color: colors.textSecondary }}
-                  >
-                    <SiteText id="pages.ContactPage.text.16" />
-                  </p>
+                </dd>
+              </div>
+              <div>
+                <dt>
+                  <SiteText id="pages.ContactPage.text.16" />
+                </dt>
+                <dd>
                   <a
                     className="studio-link"
                     href={profile.linkedin}
@@ -245,141 +198,99 @@ const ContactPage = () => {
                   >
                     <SiteText id="pages.ContactPage.text.17" />
                   </a>
-                </div>
-                <p style={{ color: colors.textSecondary }}>
-                  {profile.location}
-                </p>
+                </dd>
               </div>
-            </aside>
-            <div className="min-w-0 space-y-6">
-              {pendingDrafts.length > 0 && !isSubmitted && (
-                <div
-                  className="p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm shadow-xs"
-                  style={{
-                    backgroundColor: colors.surface,
-                    borderColor: colors.border,
-                    color: colors.text,
-                  }}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <CloudOff className="w-5 h-5 text-amber-500 shrink-0" />
-                    <div>
-                      <p className="font-semibold text-xs sm:text-sm">
-                        {pendingDrafts.length} offline draft
-                        {pendingDrafts.length > 1 ? "s" : ""} saved locally.
-                      </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: colors.textSecondary }}
-                      >
-                        Personal details stored on your device only.
-                      </p>
-                    </div>
+              <div>
+                <dd className="page-small">{profile.location}</dd>
+              </div>
+            </dl>
+          </aside>
+          <div className="contact-main">
+            {pendingDrafts.length > 0 && !isSubmitted && (
+              <div className="page-notice page-notice--warning">
+                <CloudOff size={20} aria-hidden="true" />
+                <div className="notice-body">
+                  <div>
+                    <strong>
+                      {pendingDrafts.length} offline draft
+                      {pendingDrafts.length > 1 ? "s" : ""} saved locally.
+                    </strong>
+                    <p className="page-small">
+                      Personal details stored on your device only.
+                    </p>
                   </div>
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <div className="notice-actions">
                     <button
                       onClick={() => handleRetryPendingDraft(pendingDrafts[0])}
                       disabled={isPending}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold"
-                      style={{
-                        backgroundColor: colors.primary,
-                        color: colors.accent,
-                      }}
+                      className="studio-button studio-button--sm"
                     >
-                      Retry Send
+                      Retry send
                     </button>
                     <button
                       onClick={() => handleDiscardDraft(pendingDrafts[0].id)}
-                      className="px-3 py-1.5 rounded-lg text-xs font-medium border"
-                      style={{
-                        borderColor: colors.border,
-                        color: colors.textSecondary,
-                      }}
+                      className="studio-button-secondary studio-button--sm"
                     >
                       Discard
                     </button>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {isError && (
-                <div
-                  role="alert"
-                  className="flex flex-col gap-3 p-4 border rounded-lg text-sm font-medium w-full max-w-4xl mx-auto"
-                  style={{
-                    borderColor: colors.error,
-                    backgroundColor: `${colors.error}20`,
-                    color: colors.error,
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <AlertTriangle className="shrink-0" size={20} />
-                    <span>
-                      {error?.message ||
-                        "Something went wrong. Please try again later."}
-                    </span>
-                  </div>
+            {isError && (
+              <div role="alert" className="page-notice page-notice--error">
+                <AlertTriangle size={20} aria-hidden="true" />
+                <div className="notice-body">
+                  <span>
+                    {error?.message ||
+                      "Something went wrong. Please try again later."}
+                  </span>
                   {lastAttemptedData && (
-                    <div
-                      className="pt-2 border-t flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-normal"
-                      style={{ borderColor: `${colors.error}40` }}
-                    >
-                      <span style={{ color: colors.text }}>
+                    <>
+                      <span className="page-small">
                         Save draft locally to send when you are back online?
                       </span>
-                      <button
-                        onClick={handleSaveOffline}
-                        className="self-start sm:self-auto px-3 py-1.5 rounded-md font-semibold border"
-                        style={{
-                          backgroundColor: colors.surface,
-                          borderColor: colors.border,
-                          color: colors.primary,
-                        }}
-                      >
-                        Save to send when online
-                      </button>
-                    </div>
+                      <div className="notice-actions">
+                        <button
+                          onClick={handleSaveOffline}
+                          className="studio-button-secondary studio-button--sm"
+                        >
+                          Save to send when online
+                        </button>
+                      </div>
+                    </>
                   )}
                 </div>
-              )}
+              </div>
+            )}
 
-              {draftError && (
-                <div
-                  role="alert"
-                  className="flex flex-col gap-3 p-4 border rounded-lg text-sm font-medium w-full max-w-4xl mx-auto"
-                  style={{
-                    borderColor: colors.error,
-                    backgroundColor: `${colors.error}20`,
-                    color: colors.error,
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <AlertTriangle className="shrink-0" size={20} />
-                    <span>{draftError}</span>
-                  </div>
-                </div>
-              )}
+            {draftError && (
+              <div role="alert" className="page-notice page-notice--error">
+                <AlertTriangle size={20} aria-hidden="true" />
+                <span>{draftError}</span>
+              </div>
+            )}
 
-              {!isSubmitted ? (
-                <ContactForm onSubmit={handleSubmit} isLoading={isPending} />
-              ) : (
-                <SuccessBanner
-                  submittedData={submittedData}
-                  isOfflineQueued={isOfflineQueued}
-                  onReset={() => {
-                    setIsSubmitted(false);
-                    setSubmittedData(null);
-                    setLastAttemptedData(null);
-                    setIsOfflineQueued(false);
-                    reset();
-                  }}
-                />
-              )}
-            </div>
+            {!isSubmitted ? (
+              <ContactForm onSubmit={handleSubmit} isLoading={isPending} />
+            ) : (
+              <SuccessBanner
+                submittedData={submittedData}
+                isOfflineQueued={isOfflineQueued}
+                onReset={() => {
+                  setIsSubmitted(false);
+                  setSubmittedData(null);
+                  setLastAttemptedData(null);
+                  setIsOfflineQueued(false);
+                  reset();
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

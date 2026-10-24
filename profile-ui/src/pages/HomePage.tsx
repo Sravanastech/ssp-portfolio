@@ -1,28 +1,26 @@
 import { SiteText } from "@/content/SiteContent";
-import { useSiteContent } from "@/content/SiteContent";
-import { Helmet } from "react-helmet-async";
+import { useSiteContent } from "@/content/siteContentContext";
 import { Link } from "react-router-dom";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import HeroSection from "@/components/HeroSection";
 import ProjectArtwork from "@/components/ProjectArtwork";
+import EmployerTimeline from "@/components/EmployerTimeline";
 
 export default function HomePage() {
-  const { caseStudies, profile } = useSiteContent();
+  const { caseStudies, experiences } = useSiteContent();
+  // Tools derived from the stacks already listed on the case studies, most-used first.
+  const tallies = new Map<string, number>();
+  caseStudies.forEach((study) =>
+    study.technologies.forEach((tech) =>
+      tallies.set(tech, (tallies.get(tech) ?? 0) + 1),
+    ),
+  );
+  const tools = [...tallies.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12)
+    .map(([tech]) => tech);
   return (
     <>
-      <Helmet>
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Person",
-            name: profile.name,
-            url: profile.url,
-            jobTitle: profile.role,
-            sameAs: [profile.linkedin],
-            worksFor: { "@type": "Organization", name: profile.employer },
-          })}
-        </script>
-      </Helmet>
       <HeroSection />
       <section
         id="selected-work"
@@ -30,15 +28,21 @@ export default function HomePage() {
         aria-labelledby="selected-work-title"
       >
         <div className="studio-section-heading">
-          <h2 id="selected-work-title"><SiteText id="pages.HomePage.text.1" /><br /><SiteText id="pages.HomePage.text.2" /></h2>
-          <p><SiteText id="pages.HomePage.text.3" /></p>
+          <h2 id="selected-work-title">
+            <SiteText id="pages.HomePage.text.1" />
+            <br />
+            <SiteText id="pages.HomePage.text.2" />
+          </h2>
+          <p>
+            <SiteText id="pages.HomePage.text.3" />
+          </p>
         </div>
         <div className="studio-project-grid">
           {caseStudies.map((study) => (
             <article className="studio-project" key={study.id}>
               <Link
                 className="studio-project-image"
-                to={`/work#${study.id}`}
+                to={`/work/${study.slug}`}
                 aria-label={`Read the ${study.name} case study`}
               >
                 <ProjectArtwork id={study.id} />
@@ -52,7 +56,7 @@ export default function HomePage() {
                   <span>{study.role}</span>
                 </p>
                 <h3>
-                  <Link to={`/work#${study.id}`}>
+                  <Link to={`/work/${study.slug}`}>
                     {study.name}
                     <ArrowUpRight size={22} aria-hidden="true" />
                   </Link>
@@ -67,14 +71,45 @@ export default function HomePage() {
                     <li key={technology}>{technology}</li>
                   ))}
                 </ul>
-                <Link className="studio-link" to={`/work#${study.id}`}><SiteText id="pages.HomePage.text.4" /><ArrowRight size={16} aria-hidden="true" />
+                <Link className="studio-link" to={`/work/${study.slug}`}>
+                  <SiteText id="pages.HomePage.text.4" />
+                  <ArrowRight size={16} aria-hidden="true" />
                 </Link>
               </div>
             </article>
           ))}
         </div>
-        <Link className="studio-link" to="/work"><SiteText id="pages.HomePage.text.5" /><ArrowRight size={18} aria-hidden="true" />
+        <Link className="studio-link" to="/work">
+          <SiteText id="pages.HomePage.text.5" />
+          <ArrowRight size={18} aria-hidden="true" />
         </Link>
+      </section>
+      <section
+        className="studio-container studio-proof"
+        aria-labelledby="employers-title"
+      >
+        <div className="studio-proof-employers">
+          <div>
+            <h2 id="employers-title">
+              <SiteText id="pages.HomePage.text.25" />
+            </h2>
+            <Link className="studio-link" to="/about#experience">
+              <SiteText id="pages.HomePage.text.26" />
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
+          <EmployerTimeline items={experiences} />
+        </div>
+        <div className="studio-proof-tools">
+          <h3>
+            <SiteText id="pages.HomePage.text.27" />
+          </h3>
+          <ul>
+            {tools.map((tool) => (
+              <li key={tool}>{tool}</li>
+            ))}
+          </ul>
+        </div>
       </section>
       <section
         className="studio-approach studio-section"
@@ -82,42 +117,79 @@ export default function HomePage() {
       >
         <div className="studio-container studio-split">
           <div>
-            <h2 id="approach-title"><SiteText id="pages.HomePage.text.6" /><br /><SiteText id="pages.HomePage.text.7" /></h2>
-            <p className="studio-lede"><SiteText id="pages.HomePage.text.8" /></p>
-            <Link className="studio-link" to="/about"><SiteText id="pages.HomePage.text.9" />{" "}
+            <h2 id="approach-title">
+              <SiteText id="pages.HomePage.text.6" />
+              <br />
+              <SiteText id="pages.HomePage.text.7" />
+            </h2>
+            <p className="studio-lede">
+              <SiteText id="pages.HomePage.text.8" />
+            </p>
+            <Link className="studio-link" to="/about">
+              <SiteText id="pages.HomePage.text.9" />{" "}
               <ArrowUpRight size={18} aria-hidden="true" />
             </Link>
           </div>
           <div className="studio-principles">
             <section>
-              <h3><SiteText id="pages.HomePage.text.10" /></h3>
-              <p><SiteText id="pages.HomePage.text.11" /></p>
-              <span><SiteText id="pages.HomePage.text.12" /></span>
+              <h3>
+                <SiteText id="pages.HomePage.text.10" />
+              </h3>
+              <p>
+                <SiteText id="pages.HomePage.text.11" />
+              </p>
+              <span>
+                <SiteText id="pages.HomePage.text.12" />
+              </span>
             </section>
             <section>
-              <h3><SiteText id="pages.HomePage.text.13" /></h3>
-              <p>{profile.currentWork}</p>
-              <span><SiteText id="pages.HomePage.text.14" /></span>
+              <h3>
+                <SiteText id="pages.HomePage.text.13" />
+              </h3>
+              <p>
+                <SiteText id="pages.HomePage.text.23" />
+              </p>
+              <span>
+                <SiteText id="pages.HomePage.text.14" />
+              </span>
             </section>
             <section>
-              <h3><SiteText id="pages.HomePage.text.15" /></h3>
-              <p><SiteText id="pages.HomePage.text.16" /></p>
-              <span><SiteText id="pages.HomePage.text.17" /></span>
+              <h3>
+                <SiteText id="pages.HomePage.text.15" />
+              </h3>
+              <p>
+                <SiteText id="pages.HomePage.text.16" />
+              </p>
+              <span>
+                <SiteText id="pages.HomePage.text.17" />
+              </span>
             </section>
             <section>
-              <h3><SiteText id="pages.HomePage.text.18" /></h3>
-              <p>{profile.leadership}</p>
-              <span><SiteText id="pages.HomePage.text.19" /></span>
+              <h3>
+                <SiteText id="pages.HomePage.text.18" />
+              </h3>
+              <p>
+                <SiteText id="pages.HomePage.text.24" />
+              </p>
+              <span>
+                <SiteText id="pages.HomePage.text.19" />
+              </span>
             </section>
           </div>
         </div>
       </section>
       <section className="studio-container studio-section studio-closing">
         <div>
-          <h2><SiteText id="pages.HomePage.text.20" /></h2>
-          <p><SiteText id="pages.HomePage.text.21" /></p>
+          <h2>
+            <SiteText id="pages.HomePage.text.20" />
+          </h2>
+          <p>
+            <SiteText id="pages.HomePage.text.21" />
+          </p>
         </div>
-        <Link className="studio-button" to="/contact"><SiteText id="pages.HomePage.text.22" /><ArrowUpRight size={20} aria-hidden="true" />
+        <Link className="studio-button" to="/contact">
+          <SiteText id="pages.HomePage.text.22" />
+          <ArrowUpRight size={20} aria-hidden="true" />
         </Link>
       </section>
     </>

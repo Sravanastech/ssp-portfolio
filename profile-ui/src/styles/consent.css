@@ -1,0 +1,118 @@
+/* Consent banner: non-blocking, sits above page content without trapping focus. */
+.has-consent body {
+  padding-bottom: var(--consent-height, 0px);
+}
+.has-consent {
+  scroll-padding-bottom: var(--consent-height, 0px);
+}
+.consent-banner {
+  position: fixed;
+  z-index: 40;
+  inset: auto 16px 16px 16px;
+  max-width: 760px;
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 24px;
+  padding: 16px 20px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.14);
+}
+.consent-banner:focus {
+  outline: none;
+}
+.consent-banner:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+.consent-copy {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+.consent-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.consent-copy p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--color-textSecondary);
+  max-width: 62ch;
+}
+.consent-copy a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.consent-actions {
+  display: flex;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+.consent-button {
+  min-height: 44px;
+  padding: 10px 18px;
+  font: inherit;
+  font-weight: 500;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid var(--color-text);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.consent-button:hover {
+  background: var(--color-borderLight);
+}
+.consent-button:focus-visible,
+.consent-link:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 3px;
+}
+@media (max-width: 520px) {
+  .consent-banner {
+    inset: auto 8px 8px 8px;
+    padding: 14px;
+  }
+  .consent-actions {
+    width: 100%;
+  }
+  .consent-button {
+    flex: 1 1 0;
+  }
+}
+/* Inline text-style buttons that reopen the banner. */
+.consent-link {
+  display: inline;
+  padding: 0;
+  font: inherit;
+  color: var(--color-primary);
+  background: none;
+  border: 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+.studio-footer-bottom .consent-link {
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -12px;
+}
+.legal-prose ul {
+  margin: 0 0 16px;
+  padding-left: 1.25em;
+  list-style: disc;
+}
+.legal-prose li {
+  margin-bottom: 8px;
+  font-size: 17px;
+  line-height: 1.7;
+}

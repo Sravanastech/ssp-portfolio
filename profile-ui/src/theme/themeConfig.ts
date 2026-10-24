@@ -1,4 +1,16 @@
-export type Theme = "woodland" | "sunrise" | "ocean";
+export type Theme = "woodland" | "sunrise" | "midnight";
+
+/** Color scheme each theme declares on the root (drives native controls and scrollbars). */
+export const themeScheme: Record<Theme, "light" | "dark"> = {
+  woodland: "light",
+  sunrise: "light",
+  midnight: "dark",
+};
+
+/** Theme ids that were persisted by earlier versions, mapped to their replacement. */
+export const legacyThemeIds: Record<string, Theme> = {
+  ocean: "midnight",
+};
 
 export interface ThemeColors {
   primary: string;
@@ -52,22 +64,24 @@ export const themeConfig: Record<Theme, ThemeColors> = {
     info: "#244CE4",
     shadow: "rgba(23, 36, 60, 0.12)",
   },
-  ocean: {
-    // Turquoise & Black
-    primary: "#1DB5D8",
-    secondary: "#000000",
-    accent: "#0F1419",
-    background: "#0F1419",
-    surface: "#1A1F2E",
-    text: "#E8EAED",
-    textSecondary: "#9CA3AF",
-    border: "#2D2E35",
-    borderLight: "#3F414B",
-    success: "#10B981",
-    warning: "#F59E0B",
-    error: "#FF6B6B",
-    info: "#1DB5D8",
-    shadow: "rgba(29, 181, 216, 0.2)",
+  midnight: {
+    // Studio night: ink surfaces, lifted cobalt for contrast, pale lime accent.
+    // Text on background #0E1628 / surface #16213A: text 15.96/14.15, textSecondary 8.93/7.92,
+    // primary #8AA4FF 7.59/6.73, accent (text on primary) #0E1628 on #8AA4FF 7.59.
+    primary: "#8AA4FF",
+    secondary: "#DCE99B",
+    accent: "#0E1628",
+    background: "#0E1628",
+    surface: "#16213A",
+    text: "#EEF1F8",
+    textSecondary: "#AAB7D0",
+    border: "#56688A",
+    borderLight: "#2A3956",
+    success: "#4FD195",
+    warning: "#F0B44C",
+    error: "#FF8D98",
+    info: "#8AA4FF",
+    shadow: "rgba(0, 0, 0, 0.4)",
   },
 };
 
@@ -89,14 +103,10 @@ export const typographyConfig = {
     "5xl": "3rem",
   },
   fontWeight: {
-    thin: 100,
-    light: 300,
+    // Only Space Grotesk 400/500/700 are loaded (font-synthesis: none), so nothing above 700.
     normal: 400,
     medium: 500,
-    semibold: 600,
     bold: 700,
-    extrabold: 800,
-    black: 900,
   },
 };
 

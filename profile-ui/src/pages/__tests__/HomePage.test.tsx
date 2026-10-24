@@ -57,8 +57,10 @@ describe("HomePage Integration Tests", () => {
   it("should render call to action section", () => {
     renderWithProviders(<HomePage />);
 
-    expect(screen.getByText("Let's Work Together")).toBeInTheDocument();
-    expect(screen.getByText(/Have a product to build/i)).toBeInTheDocument();
+    expect(
+      screen.getByText("Hiring for a senior engineering role?"),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Tell me about the role/i)).toBeInTheDocument();
   });
 
   it("should have link to contact page", () => {

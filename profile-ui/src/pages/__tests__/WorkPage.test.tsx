@@ -78,13 +78,13 @@ describe("WorkPage", () => {
   it("should render CTA section", () => {
     renderWithProviders(<WorkPage />);
     expect(
-      screen.getByText("Interested in Collaborating?"),
+      screen.getByText("Hiring for an engineering role?"),
     ).toBeInTheDocument();
   });
 
-  it("should have Get in Touch link with correct href", () => {
+  it("should have Get in touch link with correct href", () => {
     renderWithProviders(<WorkPage />);
-    const link = screen.getByText("Get in Touch");
+    const link = screen.getByText("Get in touch");
     expect(link).toHaveAttribute("href", "/contact");
   });
 

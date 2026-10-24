@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const WorkPage = lazy(() => import("./pages/WorkPage"));
+const ProjectPage = lazy(() => import("./pages/ProjectPage"));
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const TermsAndConditionsPage = lazy(() => import("./pages/TermsAndConditions"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
@@ -14,29 +15,32 @@ const AccountPage = lazy(() => import("./pages/AccountPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const InquiriesPage = lazy(() => import("./pages/InquiriesPage"));
 import ErrorPage from "./pages/ErrorPage";
-
-// Defined application routes whitelist
-export const DEFINED_ROUTES = {
-  HOME: "/",
-  AUTH_CALLBACK: "/auth-callback",
-  RESUME: "/resume",
-  ABOUT: "/about",
-  WORK: "/work",
-  CONTACT: "/contact",
-  PRIVACY: "/privacy",
-  TERMS: "/termsconditions",
-  ACCOUNT: "/account",
-  ADMIN: "/admin",
-  INQUIRIES: "/admin/inquiries",
-} as const;
+import { DEFINED_ROUTES } from "./routes";
+import "./styles/pages.css";
 
 const AppRoutes = () => {
   return (
     <Suspense
       fallback={
-        <p role="status" className="p-8">
-          Loading page…
-        </p>
+        <div className="studio-page page-skeleton" aria-busy="true">
+          <div className="studio-container studio-page-intro">
+            <p role="status" className="sr-only">
+              Loading page…
+            </p>
+            <span
+              className="skeleton-bar skeleton-bar--title"
+              aria-hidden="true"
+            />
+            <span
+              className="skeleton-bar skeleton-bar--line"
+              aria-hidden="true"
+            />
+            <span
+              className="skeleton-bar skeleton-bar--line"
+              aria-hidden="true"
+            />
+          </div>
+        </div>
       }
     >
       <Routes>
@@ -63,6 +67,14 @@ const AppRoutes = () => {
           element={
             <Layout>
               <WorkPage />
+            </Layout>
+          }
+        />
+        <Route
+          path={DEFINED_ROUTES.WORK_PROJECT}
+          element={
+            <Layout>
+              <ProjectPage />
             </Layout>
           }
         />
@@ -102,9 +114,36 @@ const AppRoutes = () => {
             </Layout>
           }
         />
-        <Route path={DEFINED_ROUTES.ACCOUNT} element={<Layout><ProtectedRoute><AccountPage /></ProtectedRoute></Layout>} />
-        <Route path={DEFINED_ROUTES.ADMIN} element={<Layout><ProtectedRoute><AdminPage /></ProtectedRoute></Layout>} />
-        <Route path={DEFINED_ROUTES.INQUIRIES} element={<Layout><ProtectedRoute><InquiriesPage /></ProtectedRoute></Layout>} />
+        <Route
+          path={DEFINED_ROUTES.ACCOUNT}
+          element={
+            <Layout>
+              <ProtectedRoute>
+                <AccountPage />
+              </ProtectedRoute>
+            </Layout>
+          }
+        />
+        <Route
+          path={DEFINED_ROUTES.ADMIN}
+          element={
+            <Layout>
+              <ProtectedRoute>
+                <AdminPage />
+              </ProtectedRoute>
+            </Layout>
+          }
+        />
+        <Route
+          path={DEFINED_ROUTES.INQUIRIES}
+          element={
+            <Layout>
+              <ProtectedRoute>
+                <InquiriesPage />
+              </ProtectedRoute>
+            </Layout>
+          }
+        />
 
         {/* Catch-all: 404 */}
         <Route

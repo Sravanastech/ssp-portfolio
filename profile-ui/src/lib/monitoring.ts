@@ -7,19 +7,8 @@ export function reportEvent(
   event: EventName,
   metric?: { name: string; value: number },
 ) {
-  if (
-    !import.meta.env.PROD ||
-    import.meta.env.VITE_MONITORING_ENABLED !== "true"
-  )
-    return;
-  void fetch("/api/events", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ event, ...(metric ? { metric } : {}) }),
-    keepalive: true,
-  }).catch(() => {
-    /* Monitoring must never interrupt the visitor. */
-  });
+  // No backend sink: events are only logged in development.
+  if (import.meta.env.DEV) console.debug("[monitoring]", event, metric ?? "");
 }
 let started = false;
 export function startMonitoring() {

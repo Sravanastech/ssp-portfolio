@@ -39,7 +39,8 @@ export async function saveOfflineDraft(
   const db = await openDB();
   const entry: QueuedContactDraft = {
     ...draft,
-    id: crypto.randomUUID?.() ??
+    id:
+      crypto.randomUUID?.() ??
       `draft_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     createdAt: Date.now(),
     status: "pending",

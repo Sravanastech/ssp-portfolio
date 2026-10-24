@@ -4,6 +4,7 @@ import { workProjects } from "./workProjects";
 const stories = [
   {
     id: "application-modernization",
+    slug: "enterprise-application-modernization",
     name: "Enterprise application modernization",
     preview:
       "Built a shared React component library and Storybook documentation from scratch for reuse across multiple applications.",
@@ -23,6 +24,7 @@ const stories = [
   },
   {
     id: "quality-inspection",
+    slug: "produce-specifications-inspections",
     name: "Produce specifications and inspections",
     preview:
       "Led React and Next.js interface development for produce specifications and produce quality inspection workflows.",
@@ -46,6 +48,7 @@ const stories = [
   },
   {
     id: "workforce-modernization",
+    slug: "employee-timekeeping-leave",
     name: "Employee timekeeping and leave",
     preview:
       "Led a React redesign of employee timekeeping interfaces, translated business requirements, and trained the team while supporting production operations.",
@@ -68,6 +71,7 @@ const stories = [
   },
   {
     id: "ecommerce-shopify-vue",
+    slug: "retail-ecommerce-storefront",
     name: "Retail eCommerce storefront",
     preview:
       "Directed storefront development from account to checkout, built reusable Vue components, and trained the team on Vue and Liquid.",
@@ -86,6 +90,7 @@ const stories = [
   },
   {
     id: "business-web-applications",
+    slug: "business-commerce-web-applications",
     name: "Business and commerce web applications",
     preview:
       "Built web interfaces, integrated Java APIs, and contributed automated tests across client applications.",

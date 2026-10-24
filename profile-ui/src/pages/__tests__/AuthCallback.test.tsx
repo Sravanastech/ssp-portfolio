@@ -4,6 +4,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AuthCallback from "../AuthCallback";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LazyMotion, domAnimation } from "framer-motion";
 
 const auth = vi.hoisted(() => ({
   isLoading: false,
@@ -12,20 +13,22 @@ const auth = vi.hoisted(() => ({
   user: { sub: "auth0|recruiter" },
   getAccessTokenSilently: vi.fn(),
 }));
-vi.mock("@auth0/auth0-react", () => ({ useAuth0: () => auth }));
+vi.mock("@/auth/auth", () => ({ useAuth: () => auth }));
 
 function callback() {
   return render(
-    <HelmetProvider>
-      <QueryClientProvider client={new QueryClient()}>
-        <MemoryRouter initialEntries={["/auth-callback"]}>
-          <Routes>
-            <Route path="/auth-callback" element={<AuthCallback />} />
-            <Route path="/resume" element={<h1>Secure resume</h1>} />
-          </Routes>
-        </MemoryRouter>
-      </QueryClientProvider>
-    </HelmetProvider>,
+    <LazyMotion features={domAnimation}>
+      <HelmetProvider>
+        <QueryClientProvider client={new QueryClient()}>
+          <MemoryRouter initialEntries={["/auth-callback"]}>
+            <Routes>
+              <Route path="/auth-callback" element={<AuthCallback />} />
+              <Route path="/resume" element={<h1>Secure resume</h1>} />
+            </Routes>
+          </MemoryRouter>
+        </QueryClientProvider>
+      </HelmetProvider>
+    </LazyMotion>,
   );
 }
 
