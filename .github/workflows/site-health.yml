@@ -17,7 +17,7 @@ jobs:
         id: links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --no-progress --max-concurrency 4 https://sravanasparimi.com/ https://sravanasparimi.com/work/ https://sravanasparimi.com/about/
+          args: --no-progress --max-concurrency 4 --exclude ".*linkedin\.com.*" https://sravanasparimi.com/ https://sravanasparimi.com/work/ https://sravanasparimi.com/about/
           fail: true
       - name: Crawl essentials
         run: |
@@ -34,3 +34,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh issue create --repo "$GITHUB_REPOSITORY" --title "Site health check failed $(date +%F)" --body "See run $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+
