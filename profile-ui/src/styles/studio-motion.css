@@ -1,40 +1,28 @@
 /* Studio motion: restrained, compositor-only (opacity/translate/scale). */
-:root[data-paradigm="studio"],
-:root:not([data-paradigm]) {
+:root:not([data-paradigm="kinetic"]) {
   --sm-ease: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Route enter/exit (main carries view-transition-name: page). */
-  :root[data-paradigm="studio"]::view-transition-old(page),
-  :root:not([data-paradigm])::view-transition-old(page) {
+  :root:not([data-paradigm="kinetic"])::view-transition-old(page) {
     animation: sm-page-out 160ms ease-in both;
   }
-  :root[data-paradigm="studio"]::view-transition-new(page),
-  :root:not([data-paradigm])::view-transition-new(page) {
+  :root:not([data-paradigm="kinetic"])::view-transition-new(page) {
     animation: sm-page-in 220ms var(--sm-ease) both;
   }
 
   /* Hero text stagger; --i set here since markup has no index. */
-  :root[data-paradigm="studio"] .studio-hero-name,
-  :root:not([data-paradigm]) .studio-hero-name {
+  :root:not([data-paradigm="kinetic"]) .studio-hero-name {
     --i: 1;
   }
-  :root[data-paradigm="studio"] .studio-hero-description,
-  :root:not([data-paradigm]) .studio-hero-description {
+  :root:not([data-paradigm="kinetic"]) .studio-hero-description {
     --i: 2;
   }
-  :root[data-paradigm="studio"] .studio-hero .studio-actions,
-  :root:not([data-paradigm]) .studio-hero .studio-actions {
+  :root:not([data-paradigm="kinetic"]) .studio-hero .studio-actions {
     --i: 3;
   }
-  :root[data-paradigm="studio"]
-    :is(
-      .studio-hero-name,
-      .studio-hero-description,
-      .studio-hero .studio-actions
-    ),
-  :root:not([data-paradigm])
+  :root:not([data-paradigm="kinetic"])
     :is(
       .studio-hero-name,
       .studio-hero-description,
@@ -44,41 +32,32 @@
   }
 
   /* Hover/press: translate/scale only. */
-  :root[data-paradigm="studio"]
-    :is(.studio-button, .studio-button-secondary, .studio-hero-link),
-  :root:not([data-paradigm])
+  :root:not([data-paradigm="kinetic"])
     :is(.studio-button, .studio-button-secondary, .studio-hero-link) {
     transition:
       transform 160ms var(--sm-ease),
       translate 160ms var(--sm-ease),
       scale 160ms var(--sm-ease);
   }
-  :root[data-paradigm="studio"]
-    :is(.studio-button, .studio-button-secondary):active,
-  :root:not([data-paradigm])
+  :root:not([data-paradigm="kinetic"])
     :is(.studio-button, .studio-button-secondary):active {
     scale: 0.98;
   }
-  :root[data-paradigm="studio"] .studio-navigation a,
-  :root:not([data-paradigm]) .studio-navigation a {
+  :root:not([data-paradigm="kinetic"]) .studio-navigation a {
     transition: translate 160ms var(--sm-ease);
   }
-  :root[data-paradigm="studio"] .studio-navigation a:hover,
-  :root:not([data-paradigm]) .studio-navigation a:hover {
+  :root:not([data-paradigm="kinetic"]) .studio-navigation a:hover {
     translate: 0 -1px;
   }
-  :root[data-paradigm="studio"] .studio-project,
-  :root:not([data-paradigm]) .studio-project {
+  :root:not([data-paradigm="kinetic"]) .studio-project {
     transition:
       translate 240ms var(--sm-ease),
       scale 240ms var(--sm-ease);
   }
-  :root[data-paradigm="studio"] .studio-project:hover,
-  :root:not([data-paradigm]) .studio-project:hover {
+  :root:not([data-paradigm="kinetic"]) .studio-project:hover {
     translate: 0 -4px;
   }
-  :root[data-paradigm="studio"] .studio-project:active,
-  :root:not([data-paradigm]) .studio-project:active {
+  :root:not([data-paradigm="kinetic"]) .studio-project:active {
     scale: 0.99;
   }
 }
@@ -86,8 +65,7 @@
 /* Scroll reveal: only where supported; otherwise content is simply visible. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    :root[data-paradigm="studio"] :is(.studio-section-heading, .studio-project),
-    :root:not([data-paradigm]) :is(.studio-section-heading, .studio-project) {
+    :root:not([data-paradigm="kinetic"]) :is(.studio-section-heading, .studio-project) {
       animation: sm-reveal linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 35%;
