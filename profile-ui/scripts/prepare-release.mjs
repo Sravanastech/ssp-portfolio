@@ -1,12 +1,15 @@
-import { writeFile } from "node:fs/promises";
+// Fails a release build when the production configuration would ship localhost
+// or incomplete values. Uses Vite's own env resolution so a stray .env.local
+// (which Vite loads for production builds) is caught instead of leaking in.
+import { loadEnv } from "vite";
 import { validateReleaseConfig } from "./release-config.mjs";
 
-validateReleaseConfig(process.env);
-const values = {
-  AUTH0_DOMAIN: process.env.VITE_AUTH0_DOMAIN,
-  AUTH0_AUDIENCE: process.env.VITE_AUTH0_AUDIENCE,
+const env = {
+  FIREBASE_PROJECT_ID: "ssp-profile",
+  ...loadEnv("production", process.cwd(), "VITE_"),
+  ...Object.fromEntries(
+    Object.entries(process.env).filter(([, v]) => v !== undefined),
+  ),
 };
-await writeFile(new URL(`../server/.env.${process.env.FIREBASE_PROJECT_ID}`, import.meta.url),
-  Object.entries(values).map(([key, value]) => `${key}=${JSON.stringify(value)}`).join("\n") + "\n",
-  { mode: 0o600 });
-console.log("Production configuration validated; resume API environment prepared.");
+validateReleaseConfig(env);
+console.log("Production configuration validated.");

@@ -1,21 +1,41 @@
 import { useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { accountRequest } from "@/api/accountApi";
+import { useAuth } from "@/auth/auth";
+import { ensureAccount } from "@/api/accountApi";
 
-/** Provision the app-owned profile as soon as Auth0 finishes signing in. */
+const GUARD_KEY = "account-bootstrapped";
+
+function alreadyBootstrapped(sub: string | undefined): boolean {
+  try {
+    return sessionStorage.getItem(GUARD_KEY) === (sub ?? "anon");
+  } catch {
+    return false;
+  }
+}
+
+function markBootstrapped(sub: string | undefined) {
+  try {
+    sessionStorage.setItem(GUARD_KEY, sub ?? "anon");
+  } catch {
+    /* storage unavailable: worst case we repeat a cheap GET */
+  }
+}
+
+/** Provision the app-owned profile once per browser session after Auth0 sign-in. */
 export default function AccountSessionBootstrap() {
   const { isLoading, isAuthenticated, getAccessTokenSilently, user } =
-    useAuth0();
+    useAuth();
+  const sub = user?.sub;
 
   useEffect(() => {
-    if (isLoading || !isAuthenticated) return;
+    if (isLoading || !isAuthenticated || alreadyBootstrapped(sub)) return;
     void getAccessTokenSilently()
       .then((token) =>
-        accountRequest(token, "POST", {
-          firstName: user?.given_name ?? "",
-          lastName: user?.family_name ?? "",
+        ensureAccount(token, {
+          firstName: user?.given_name,
+          lastName: user?.family_name,
         }),
       )
+      .then(() => markBootstrapped(sub))
       .catch(() => {
         // The account page retries provisioning and presents a useful error if the API is unavailable.
       });
@@ -23,6 +43,7 @@ export default function AccountSessionBootstrap() {
     getAccessTokenSilently,
     isAuthenticated,
     isLoading,
+    sub,
     user?.family_name,
     user?.given_name,
   ]);
