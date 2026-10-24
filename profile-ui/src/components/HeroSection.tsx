@@ -1,5 +1,5 @@
 import { SiteText } from "@/content/SiteContent";
-import { useSiteContent } from "@/content/SiteContent";
+import { useSiteContent } from "@/content/siteContentContext";
 import { Link } from "react-router-dom";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import SystemStudio from "./SystemStudio";
@@ -21,31 +21,52 @@ export default function HeroSection({
       <div className="studio-container">
         <div className="studio-hero-grid">
           <div className="studio-hero-copy">
-            <nav className="studio-rail-nav" aria-label="Studio navigation">
-              <Link to="/work"><SiteText id="components.HeroSection.text.1" /></Link>
-              <Link to="/about"><SiteText id="components.HeroSection.text.2" /></Link>
-              <Link to="/contact"><SiteText id="components.HeroSection.text.3" /></Link>
-            </nav>
+            <div className="studio-rail-nav">
+              <Link to="/work">
+                <SiteText id="components.HeroSection.text.1" />
+              </Link>
+              <Link to="/about">
+                <SiteText id="components.HeroSection.text.2" />
+              </Link>
+              <Link to="/contact">
+                <SiteText id="components.HeroSection.text.3" />
+              </Link>
+            </div>
             <h1>{title ?? profile.headline}</h1>
             <p className="studio-hero-name">
               {profile.name}
               <span>
-                {profile.role}<SiteText id="components.HeroSection.text.4" />{profile.employer}
+                {profile.role} <SiteText id="components.HeroSection.text.4" />
+                {profile.employer}
               </span>
             </p>
-            <p className="studio-hero-description">{description ?? profile.description}</p>
+            <p className="studio-hero-description">
+              {description ?? profile.description}
+            </p>
             <div className="studio-actions">
-              <Link to="/work" className="studio-button studio-button-light"><SiteText id="components.HeroSection.text.5" /><ArrowUpRight size={20} aria-hidden="true" />
+              <Link to="/work" className="studio-button studio-button-light">
+                <SiteText id="components.HeroSection.text.5" />
+                <ArrowUpRight size={20} aria-hidden="true" />
               </Link>
-              <Link to="/contact" className="studio-hero-link"><SiteText id="components.HeroSection.text.6" /><ArrowUpRight size={18} aria-hidden="true" />
+              <Link to="/resume" className="studio-hero-link">
+                <SiteText id="components.HeroSection.text.9" />
+                <ArrowUpRight size={18} aria-hidden="true" />
+              </Link>
+              <Link to="/contact" className="studio-hero-link">
+                <SiteText id="components.HeroSection.text.6" />
+                <ArrowUpRight size={18} aria-hidden="true" />
               </Link>
             </div>
           </div>
           <SystemStudio />
         </div>
         <div className="studio-hero-foot">
-          <span><SiteText id="components.HeroSection.text.7" /></span>
-          <a href="#selected-work"><SiteText id="components.HeroSection.text.8" /><ArrowDown size={16} aria-hidden="true" />
+          <span>
+            <SiteText id="components.HeroSection.text.7" />
+          </span>
+          <a href="#selected-work">
+            <SiteText id="components.HeroSection.text.8" />
+            <ArrowDown size={16} aria-hidden="true" />
           </a>
         </div>
       </div>

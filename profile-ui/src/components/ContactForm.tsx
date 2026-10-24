@@ -12,15 +12,8 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { useTheme } from "@/theme/ThemeContext";
-import {
-  User,
-  Mail,
-  Phone,
-  MessageSquare,
-  Send,
-  Loader2,
-} from "lucide-react";
+import { cv as colors, tint } from "@/theme/cssVars";
+import { User, Mail, Phone, MessageSquare, Send, Loader2 } from "lucide-react";
 
 const contactFormSchema = z
   .object({
@@ -70,7 +63,6 @@ type Props = {
 };
 
 const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
-  const { colors } = useTheme();
   const submitting = useRef(false);
   const [showErrorSummary, setShowErrorSummary] = useState(false);
   const form = useForm<ContactFormData>({
@@ -140,11 +132,10 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
             className="text-2xl md:text-3xl font-semibold tracking-tight"
             style={{ color: colors.primary }}
           >
-            Let's discuss your project.
+            Send a message
           </h2>
           <p className="text-base" style={{ color: colors.textSecondary }}>
-            Share your challenge, project, or opportunity, and include a way to
-            reach you.
+            Share the role or opportunity, and include a way to reach you.
           </p>
         </div>
 
@@ -154,8 +145,19 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
               .filter(([key]) => key !== "botcheck")
               .map(([key, err]) => ({
                 field: key,
-                label: key === "name" ? "Name" : key === "email" ? "Email Address" : key === "phone" ? "Phone Number" : key === "message" ? "Project Details" : key,
-                message: (err as { message?: string })?.message ?? "This field has an error.",
+                label:
+                  key === "name"
+                    ? "Name"
+                    : key === "email"
+                      ? "Email Address"
+                      : key === "phone"
+                        ? "Phone Number"
+                        : key === "message"
+                          ? "Message"
+                          : key,
+                message:
+                  (err as { message?: string })?.message ??
+                  "This field has an error.",
               }))}
           />
         )}
@@ -192,7 +194,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                     }
                     className="h-12 px-4 rounded-lg text-sm md:text-base border transition-all focus-visible:ring-2"
                     style={inputStyle}
-                    placeholder="Your Name"
+                    placeholder="Your name"
                     autoComplete="name"
                   />
                 </div>
@@ -208,13 +210,14 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
               className="text-sm font-bold flex items-center gap-1.5"
               style={{ color: colors.text }}
             >
-              Contact Methods
+              Contact methods
             </span>
             <span
               className="text-xs font-medium"
               style={{ color: colors.textSecondary }}
             >
-              I'll respond at either your email or phone number — whichever you prefer.
+              I'll respond at either your email or phone number — whichever you
+              prefer.
             </span>
           </div>
 
@@ -242,12 +245,14 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                           handleContactChange();
                         }}
                         className={`h-12 pl-4 pr-12 rounded-lg text-sm md:text-base border transition-all focus-visible:ring-2 ${
-                          form.formState.errors.email ? "ring-2 ring-red-500" : ""
+                          form.formState.errors.email
+                            ? "ring-2 ring-red-500"
+                            : ""
                         }`}
                         style={{
                           ...inputStyle,
                           backgroundColor: form.formState.errors.email
-                            ? `${colors.error}20`
+                            ? tint("error", 12)
                             : inputStyle.backgroundColor,
                         }}
                         placeholder="example@mail.com"
@@ -255,12 +260,17 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                         autoComplete="email"
                         aria-invalid={!!form.formState.errors.email}
                         aria-describedby={
-                          form.formState.errors.email ? "email-error" : undefined
+                          form.formState.errors.email
+                            ? "email-error"
+                            : undefined
                         }
                       />
                     </div>
                   </FormControl>
-                  <FormMessage id="email-error" style={{ color: colors.error }} />
+                  <FormMessage
+                    id="email-error"
+                    style={{ color: colors.error }}
+                  />
                 </FormItem>
               )}
             />
@@ -288,24 +298,31 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                           handleContactChange();
                         }}
                         className={`h-12 pl-4 pr-12 rounded-lg text-sm md:text-base border transition-all focus-visible:ring-2 ${
-                          form.formState.errors.phone ? "ring-2 ring-red-500" : ""
+                          form.formState.errors.phone
+                            ? "ring-2 ring-red-500"
+                            : ""
                         }`}
                         style={{
                           ...inputStyle,
                           backgroundColor: form.formState.errors.phone
-                            ? `${colors.error}20`
+                            ? tint("error", 12)
                             : inputStyle.backgroundColor,
                         }}
                         placeholder="(555) 123-4567"
                         autoComplete="tel"
                         aria-invalid={!!form.formState.errors.phone}
                         aria-describedby={
-                          form.formState.errors.phone ? "phone-error" : undefined
+                          form.formState.errors.phone
+                            ? "phone-error"
+                            : undefined
                         }
                       />
                     </div>
                   </FormControl>
-                  <FormMessage id="phone-error" style={{ color: colors.error }} />
+                  <FormMessage
+                    id="phone-error"
+                    style={{ color: colors.error }}
+                  />
                 </FormItem>
               )}
             />
@@ -321,8 +338,11 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                 className="text-sm font-bold flex items-center gap-1.5"
                 style={{ color: colors.text }}
               >
-                <MessageSquare className="w-4 h-4" style={{ color: colors.primary }} />
-                Project Details <span style={{ color: colors.error }}>*</span>
+                <MessageSquare
+                  className="w-4 h-4"
+                  style={{ color: colors.primary }}
+                />
+                Message <span style={{ color: colors.error }}>*</span>
               </FormLabel>
               <FormControl>
                 <textarea
@@ -338,7 +358,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
                     ...inputStyle,
                     resize: "vertical",
                   }}
-                  placeholder="Tell me about your project, idea, or questions..."
+                  placeholder="Tell me about the role, the team, or your questions…"
                 />
               </FormControl>
               <FormMessage id="message-error" style={{ color: colors.error }} />
@@ -346,7 +366,10 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
           )}
         />
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs" style={{ color: colors.textSecondary }}>
+        <div
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs"
+          style={{ color: colors.textSecondary }}
+        >
           <p>
             Your message is processed securely.{" "}
             <a href="/privacy" className="underline underline-offset-4">
@@ -371,12 +394,12 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
             {isLoading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                Sending Message...
+                Sending message…
               </>
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                Send Message
+                Send message
               </>
             )}
           </button>

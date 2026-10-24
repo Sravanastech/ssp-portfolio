@@ -54,7 +54,8 @@ class ErrorBoundary extends React.Component<
             <div
               className="mx-auto w-14 h-14 rounded-full flex items-center justify-center text-2xl"
               style={{
-                backgroundColor: "var(--color-error, #b52d3a)" + "18",
+                backgroundColor:
+                  "color-mix(in srgb, var(--color-error, #b52d3a) 9%, transparent)",
                 color: "var(--color-error, #b52d3a)",
               }}
               aria-hidden="true"

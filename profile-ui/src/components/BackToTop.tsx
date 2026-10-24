@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
-import { useTheme } from "@/theme/ThemeContext";
-import { motion, AnimatePresence } from "framer-motion";
+import { cv } from "@/theme/cssVars";
+import { m, AnimatePresence } from "framer-motion";
 import { ChevronUp } from "lucide-react";
 
 const BackToTop = () => {
-  const { colors } = useTheme();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -37,12 +36,12 @@ const BackToTop = () => {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.button
+        <m.button
           onClick={scrollToTop}
           className="fixed bottom-8 right-8 p-3 rounded-full shadow-lg transition-all hover:scale-110 focus:ring-2 focus:ring-offset-2 focus:outline-none"
           style={{
-            backgroundColor: colors.primary,
-            color: colors.accent,
+            backgroundColor: cv.primary,
+            color: cv.accent,
           }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -51,7 +50,7 @@ const BackToTop = () => {
           aria-label="Scroll to top"
         >
           <ChevronUp size={24} />
-        </motion.button>
+        </m.button>
       )}
     </AnimatePresence>
   );

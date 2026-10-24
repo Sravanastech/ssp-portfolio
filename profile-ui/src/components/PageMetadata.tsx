@@ -1,22 +1,37 @@
-import { useSiteContent } from "@/content/SiteContent";
+import { useSiteContent } from "@/content/siteContentContext";
+import {
+  buildJsonLd,
+  canonicalUrl,
+  normalizeRoute,
+  resolveMetadata,
+} from "@/data/siteSettings";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 
-export { publicMetadata } from "@/data/siteSettings";
+/** Route rendered into dist/404.html. Never indexable. */
+export const NOT_FOUND_ROUTE = "/404";
 
 export default function PageMetadata() {
-  const { profile, seo } = useSiteContent();
+  const content = useSiteContent();
+  const { profile } = content;
   const { pathname } = useLocation();
-  const route = pathname.replace(/\/$/, "") || "/";
-  const metadata = seo[route];
+  const route = normalizeRoute(pathname);
+  const metadata = resolveMetadata(route, content);
   if (!metadata)
     return (
       <Helmet>
+        {route === NOT_FOUND_ROUTE && (
+          <title>{`Page Not Found | ${profile.name}`}</title>
+        )}
         <meta name="robots" content="noindex, noarchive" />
       </Helmet>
     );
-  const url = `${profile.url}${route === "/" ? "/" : route}`;
+  const url = canonicalUrl(route, profile.url);
   const image = `${profile.url}/social-preview.png`;
+  const jsonLd = buildJsonLd(route, metadata, {
+    profile,
+    caseStudies: content.caseStudies,
+  });
   return (
     <Helmet>
       <title>{metadata.title}</title>
@@ -38,6 +53,7 @@ export default function PageMetadata() {
       <meta name="twitter:title" content={metadata.title} />
       <meta name="twitter:description" content={metadata.description} />
       <meta name="twitter:image" content={image} />
+      <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
     </Helmet>
   );
 }

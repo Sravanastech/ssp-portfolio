@@ -1,4 +1,4 @@
-import { useTheme } from "@/theme/ThemeContext";
+import { cv } from "@/theme/cssVars";
 
 interface EvidenceBadgeProps {
   label: string;
@@ -7,14 +7,12 @@ interface EvidenceBadgeProps {
 }
 
 const EvidenceBadge = ({ label, value, className }: EvidenceBadgeProps) => {
-  const { colors } = useTheme();
-
   return (
     <div
       className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${className || ""}`}
       style={{
-        backgroundColor: colors.surface,
-        color: colors.text,
+        backgroundColor: cv.surface,
+        color: cv.text,
       }}
     >
       <span>{label}</span>

@@ -15,9 +15,17 @@ export default function Header() {
           aria-label="Sravana S Parimi - Home"
           data-testid="logo-link"
         >
-          <span className="studio-monogram" aria-hidden="true"><SiteText id="components.Header.text.1" /><span><SiteText id="components.Header.text.2" /></span>
+          <span className="studio-monogram" aria-hidden="true">
+            <SiteText id="components.Header.text.1" />
+            <span>
+              <SiteText id="components.Header.text.2" />
+            </span>
           </span>
-          <span><SiteText id="components.Header.text.3" /><span className="studio-brand-caption"><SiteText id="components.Header.text.4" /></span>
+          <span>
+            <SiteText id="components.Header.text.3" />
+            <span className="studio-brand-caption">
+              <SiteText id="components.Header.text.4" />
+            </span>
           </span>
         </Link>
         <div className="studio-desktop-nav">

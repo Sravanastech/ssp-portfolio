@@ -1,12 +1,12 @@
-import { useSiteContent } from "@/content/SiteContent";
+import { useSiteContent } from "@/content/siteContentContext";
 import { SiteText } from "@/content/SiteContent";
 import { NavLink } from "react-router-dom";
 import { LockKeyhole } from "lucide-react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/auth/auth";
 
 function MainMenuClient() {
   const { navigation } = useSiteContent();
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated } = useAuth();
   return (
     <nav className="studio-navigation" aria-label="Main navigation">
       {navigation.map(({ href: path, label }) => (

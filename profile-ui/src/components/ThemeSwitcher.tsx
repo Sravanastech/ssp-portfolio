@@ -1,11 +1,11 @@
 import { Check } from "lucide-react";
-import { useTheme } from "@/theme/ThemeContext";
+import { useTheme } from "@/theme/theme-context";
 import { themeConfig } from "@/theme/themeConfig";
 
 const themes = [
-  { value: "woodland", label: "Woodland" },
-  { value: "sunrise", label: "Sunrise" },
-  { value: "ocean", label: "Ocean" },
+  { value: "woodland", label: "Green" },
+  { value: "sunrise", label: "Light" },
+  { value: "midnight", label: "Dark" },
 ] as const;
 
 export default function ThemeSwitcher() {

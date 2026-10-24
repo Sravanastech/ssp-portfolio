@@ -21,18 +21,18 @@ describe("ContactForm", () => {
   it("should render form title", () => {
     const onSubmit = vi.fn();
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
-    expect(screen.getByText("Let's discuss your project.")).toBeInTheDocument();
+    expect(screen.getByText("Send a message")).toBeInTheDocument();
   });
 
   it("should render all form fields", () => {
     const onSubmit = vi.fn();
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
-    expect(screen.getByPlaceholderText("Your Name")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Your name")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("example@mail.com")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("(555) 123-4567")).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText(
-        "Tell me about your project, idea, or questions...",
+        "Tell me about the role, the team, or your questions…",
       ),
     ).toBeInTheDocument();
   });
@@ -48,14 +48,14 @@ describe("ContactForm", () => {
   it("should render submit button", () => {
     const onSubmit = vi.fn();
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
-    expect(screen.getByText("Send Message")).toBeInTheDocument();
+    expect(screen.getByText("Send message")).toBeInTheDocument();
   });
 
   // Validation tests
   it("should show error when name is empty", async () => {
     const onSubmit = vi.fn();
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
 
     fireEvent.click(submitButton);
 
@@ -70,7 +70,7 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     fireEvent.change(nameInput, { target: { value: "J" } });
     fireEvent.blur(nameInput);
@@ -85,7 +85,7 @@ describe("ContactForm", () => {
   it("should show error when message is empty", async () => {
     const onSubmit = vi.fn();
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
 
     fireEvent.click(submitButton);
 
@@ -115,10 +115,10 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     const messageInput = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ) as HTMLTextAreaElement;
 
     fireEvent.change(nameInput, { target: { value: "John Doe" } });
@@ -126,7 +126,7 @@ describe("ContactForm", () => {
       target: { value: "This is a test message with enough characters" },
     });
 
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -140,7 +140,7 @@ describe("ContactForm", () => {
   it("should show accessible error summary with error links on invalid submit", async () => {
     const onSubmit = vi.fn();
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
 
     fireEvent.click(submitButton);
 
@@ -154,7 +154,7 @@ describe("ContactForm", () => {
     const nameErrorButton = screen.getByRole("button", { name: "Name" });
     fireEvent.click(nameErrorButton);
 
-    const nameInput = screen.getByPlaceholderText("Your Name");
+    const nameInput = screen.getByPlaceholderText("Your name");
     expect(document.activeElement).toBe(nameInput);
   });
 
@@ -164,13 +164,13 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     const emailInput = screen.getByPlaceholderText(
       "example@mail.com",
     ) as HTMLInputElement;
     const messageInput = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ) as HTMLTextAreaElement;
 
     fireEvent.change(nameInput, { target: { value: "John Doe" } });
@@ -193,7 +193,7 @@ describe("ContactForm", () => {
       );
     });
 
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
 
     // Verify button is not disabled (indicating no validation errors)
     expect(submitButton).not.toBeDisabled();
@@ -204,13 +204,13 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     const phoneInput = screen.getByPlaceholderText(
       "(555) 123-4567",
     ) as HTMLInputElement;
     const messageInput = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ) as HTMLTextAreaElement;
 
     fireEvent.change(nameInput, { target: { value: "John Doe" } });
@@ -229,7 +229,7 @@ describe("ContactForm", () => {
       expect(nameInput.value).toBe("John Doe");
     });
 
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
     expect(submitButton).not.toBeDisabled();
   });
 
@@ -238,13 +238,13 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     const emailInput = screen.getByPlaceholderText(
       "example@mail.com",
     ) as HTMLInputElement;
     const messageInput = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ) as HTMLTextAreaElement;
 
     fireEvent.change(nameInput, { target: { value: "Jane Smith" } });
@@ -263,7 +263,7 @@ describe("ContactForm", () => {
       expect(nameInput.value).toBe("Jane Smith");
     });
 
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
     expect(submitButton).not.toBeDisabled();
   });
 
@@ -300,14 +300,14 @@ describe("ContactForm", () => {
   it("should show loading state", () => {
     const onSubmit = vi.fn();
     renderWithTheme(<ContactForm onSubmit={onSubmit} isLoading={true} />);
-    expect(screen.getByText("Sending Message...")).toBeInTheDocument();
+    expect(screen.getByText("Sending message…")).toBeInTheDocument();
   });
 
   it("should disable submit button when loading", () => {
     const onSubmit = vi.fn();
     renderWithTheme(<ContactForm onSubmit={onSubmit} isLoading={true} />);
     const submitButton = screen.getByText(
-      "Sending Message...",
+      "Sending message…",
     ) as HTMLButtonElement;
     expect(submitButton).toBeDisabled();
   });
@@ -316,7 +316,7 @@ describe("ContactForm", () => {
     const onSubmit = vi.fn();
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -329,7 +329,7 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     const emailInput = screen.getByPlaceholderText(
       "example@mail.com",
@@ -338,7 +338,7 @@ describe("ContactForm", () => {
       "(555) 123-4567",
     ) as HTMLInputElement;
     const messageInput = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ) as HTMLTextAreaElement;
 
     fireEvent.change(nameInput, { target: { value: "John Doe" } });
@@ -360,7 +360,7 @@ describe("ContactForm", () => {
       expect(phoneInput.value).toBe("555-1234");
     });
 
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
     expect(submitButton).not.toBeDisabled();
   });
 
@@ -384,12 +384,12 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     const messageInput = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ) as HTMLTextAreaElement;
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
 
     fireEvent.change(nameInput, { target: { value: "John Doe" } });
     fireEvent.change(messageInput, {
@@ -410,13 +410,13 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     const emailInput = screen.getByPlaceholderText(
       "example@mail.com",
     ) as HTMLInputElement;
     const messageInput = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ) as HTMLTextAreaElement;
 
     const longMessage =
@@ -434,7 +434,7 @@ describe("ContactForm", () => {
       expect(messageInput.value).toBe(longMessage);
     });
 
-    const submitButton = screen.getByText("Send Message");
+    const submitButton = screen.getByText("Send message");
     expect(submitButton).not.toBeDisabled();
   });
 
@@ -448,14 +448,14 @@ describe("ContactForm", () => {
         }),
     );
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
-    fireEvent.change(screen.getByPlaceholderText("Your Name"), {
+    fireEvent.change(screen.getByPlaceholderText("Your name"), {
       target: { value: "Test Person" },
     });
     fireEvent.change(screen.getByPlaceholderText("example@mail.com"), {
       target: { value: "test@example.com" },
     });
     const message = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     );
     fireEvent.change(message, {
       target: { value: "A sufficiently detailed project request." },
@@ -465,12 +465,12 @@ describe("ContactForm", () => {
     fireEvent.keyDown(message, { key: "Enter", metaKey: true });
     fireEvent.keyDown(message, { key: "Enter", ctrlKey: true });
     await waitFor(() =>
-      expect(screen.getByText("Send Message")).toBeDisabled(),
+      expect(screen.getByText("Send message")).toBeDisabled(),
     );
     expect(onSubmit).toHaveBeenCalledTimes(1);
     complete();
     await waitFor(() =>
-      expect(screen.getByText("Send Message")).not.toBeDisabled(),
+      expect(screen.getByText("Send message")).not.toBeDisabled(),
     );
   });
 
@@ -479,13 +479,13 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     const emailInput = screen.getByPlaceholderText(
       "example@mail.com",
     ) as HTMLInputElement;
     const messageInput = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ) as HTMLTextAreaElement;
 
     fireEvent.change(nameInput, { target: { value: "John Doe" } });
@@ -516,13 +516,13 @@ describe("ContactForm", () => {
     renderWithTheme(<ContactForm onSubmit={onSubmit} />);
 
     const nameInput = screen.getByPlaceholderText(
-      "Your Name",
+      "Your name",
     ) as HTMLInputElement;
     const emailInput = screen.getByPlaceholderText(
       "example@mail.com",
     ) as HTMLInputElement;
     const messageInput = screen.getByPlaceholderText(
-      "Tell me about your project, idea, or questions...",
+      "Tell me about the role, the team, or your questions…",
     ) as HTMLTextAreaElement;
 
     fireEvent.change(nameInput, { target: { value: "Jane Smith" } });

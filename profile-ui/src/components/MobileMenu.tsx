@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAuth0 } from "@auth0/auth0-react";
-import { useSiteContent, SiteText } from "@/content/SiteContent";
-import { useTheme } from "@/theme/ThemeContext";
+import { useAuth } from "@/auth/auth";
+import { SiteText } from "@/content/SiteContent";
+import { useSiteContent } from "@/content/siteContentContext";
+import { useTheme } from "@/theme/theme-context";
+import { cv, tint } from "@/theme/cssVars";
+import "@/styles/menu.css";
+import { trackEvent } from "@/lib/analytics";
 import {
   Menu,
   Home,
@@ -15,11 +19,9 @@ import {
   ShieldCheck,
   LogOut,
   LogIn,
-  UserPlus,
   ChevronRight,
   Sun,
   Moon,
-  Sparkles,
   Settings,
   Compass,
 } from "lucide-react";
@@ -35,10 +37,10 @@ function MobileMenuClient() {
   const { navigation } = useSiteContent();
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const { colors, currentTheme, setTheme } = useTheme();
-  const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
+  const { currentTheme, setTheme } = useTheme();
+  const { isAuthenticated, user, loginWithRedirect, logout } = useAuth();
 
-  const isDark = currentTheme === "ocean";
+  const isDark = currentTheme === "midnight";
 
   const initials =
     (
@@ -48,23 +50,8 @@ function MobileMenuClient() {
 
   const handleSignIn = () => {
     setOpen(false);
-    const returnTo =
-      location.pathname === "/auth-callback"
-        ? "/"
-        : location.pathname + location.search;
-    void loginWithRedirect({ appState: { returnTo } });
-  };
-
-  const handleSignUp = () => {
-    setOpen(false);
-    const returnTo =
-      location.pathname === "/auth-callback"
-        ? "/"
-        : location.pathname + location.search;
-    void loginWithRedirect({
-      authorizationParams: { screen_hint: "signup" },
-      appState: { returnTo },
-    });
+    trackEvent("resume_sign_in_click");
+    void loginWithRedirect({ appState: { returnTo: "/resume" } });
   };
 
   const handleLogout = () => {
@@ -117,18 +104,27 @@ function MobileMenuClient() {
         side="right"
         className="studio-mobile-sheet flex flex-col justify-between h-[calc(100dvh-4.5rem)] w-[88vw] sm:w-[400px] max-w-md p-5 sm:p-6 overflow-hidden border-l"
         style={{
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-          color: colors.text,
+          backgroundColor: cv.surface,
+          borderColor: cv.border,
+          color: cv.text,
         }}
       >
         <div className="flex flex-col flex-1 min-h-0">
           {/* Header & Accessibility Meta */}
-          <div className="pb-3 border-b pr-8" style={{ borderBottomColor: colors.border }}>
-            <SheetTitle className="text-xl font-extrabold tracking-tight" style={{ color: colors.primary }}>
+          <div
+            className="pb-3 border-b pr-8"
+            style={{ borderBottomColor: cv.border }}
+          >
+            <SheetTitle
+              className="text-xl font-bold tracking-tight"
+              style={{ color: cv.primary }}
+            >
               <SiteText id="components.MobileMenu.text.1" />
             </SheetTitle>
-            <SheetDescription className="text-xs mt-0.5" style={{ color: colors.textSecondary }}>
+            <SheetDescription
+              className="text-xs mt-0.5"
+              style={{ color: cv.textSecondary }}
+            >
               <SiteText id="components.MobileMenu.text.2" />
             </SheetDescription>
           </div>
@@ -141,52 +137,45 @@ function MobileMenuClient() {
                 onClick={() => setOpen(false)}
                 className="group flex items-center justify-between p-3.5 rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99] shadow-xs"
                 style={{
-                  backgroundColor: colors.background,
-                  borderColor: colors.border,
+                  backgroundColor: cv.background,
+                  borderColor: cv.border,
                 }}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div
                     className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm select-none shrink-0"
                     style={{
-                      backgroundColor: `${colors.primary}20`,
-                      color: colors.primary,
-                      border: `1.5px solid ${colors.border}`,
+                      backgroundColor: tint("primary", 13),
+                      color: cv.primary,
+                      border: `1.5px solid ${cv.border}`,
                     }}
                   >
                     {initials}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-sm font-bold truncate block" style={{ color: colors.text }}>
+                      <span
+                        className="text-sm font-bold truncate block"
+                        style={{ color: cv.text }}
+                      >
                         {user?.name || user?.email?.split("@")[0] || "User"}
                       </span>
-                      <ShieldCheck className="w-3.5 h-3.5 shrink-0" style={{ color: colors.success }} />
+                      <ShieldCheck
+                        className="w-3.5 h-3.5 shrink-0"
+                        style={{ color: cv.success }}
+                      />
                     </div>
-                    <p className="text-xs truncate font-medium" style={{ color: colors.textSecondary }}>
+                    <p
+                      className="text-xs truncate font-medium"
+                      style={{ color: cv.textSecondary }}
+                    >
                       {user?.email}
                     </p>
                   </div>
                 </div>
                 <ChevronRight className="w-4 h-4 opacity-50 transition-transform group-hover:translate-x-1" />
               </NavLink>
-            ) : (
-              <div
-                className="p-3.5 rounded-xl border flex items-start gap-3"
-                style={{
-                  backgroundColor: `${colors.primary}0a`,
-                  borderColor: `${colors.primary}25`,
-                }}
-              >
-                <Sparkles className="w-4 h-4 mt-0.5 shrink-0" style={{ color: colors.primary }} />
-                <div className="text-xs leading-relaxed" style={{ color: colors.textSecondary }}>
-                  <span className="font-bold block" style={{ color: colors.primary }}>
-                    Full-Stack Portfolio
-                  </span>
-                  Explore architecture, engineering leadership, and case studies.
-                </div>
-              </div>
-            )}
+            ) : null}
           </div>
 
           {/* Navigation Links Scrollable Area */}
@@ -208,26 +197,32 @@ function MobileMenuClient() {
                   onClick={() => setOpen(false)}
                   className="group flex items-center justify-between p-3 rounded-xl border transition-all active:scale-[0.98]"
                   style={{
-                    backgroundColor: isActive ? `${colors.primary}15` : colors.background,
-                    borderColor: isActive ? colors.primary : colors.border,
-                    color: isActive ? colors.primary : colors.text,
+                    backgroundColor: isActive
+                      ? tint("primary", 8)
+                      : cv.background,
+                    borderColor: isActive ? cv.primary : cv.border,
+                    color: isActive ? cv.primary : cv.text,
                   }}
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
                       style={{
-                        backgroundColor: isActive ? colors.primary : `${colors.border}50`,
-                        color: isActive ? colors.accent : colors.text,
+                        backgroundColor: isActive
+                          ? cv.primary
+                          : tint("border", 31),
+                        color: isActive ? cv.accent : cv.text,
                       }}
                     >
                       <Icon className="w-4 h-4" />
                     </div>
                     <div>
-                      <div className="text-sm font-bold leading-tight">{label}</div>
+                      <div className="text-sm font-bold leading-tight">
+                        {label}
+                      </div>
                       <div
                         className="text-[11px] font-normal mt-0.5"
-                        style={{ color: colors.textSecondary }}
+                        style={{ color: cv.textSecondary }}
                       >
                         {getNavSubtitle(path)}
                       </div>
@@ -248,9 +243,11 @@ function MobileMenuClient() {
               onClick={() => setOpen(false)}
               className="group flex items-center justify-between p-3 rounded-xl border transition-all active:scale-[0.98]"
               style={{
-                backgroundColor: isResumeActive ? `${colors.primary}15` : colors.background,
-                borderColor: isResumeActive ? colors.primary : colors.border,
-                color: isResumeActive ? colors.primary : colors.text,
+                backgroundColor: isResumeActive
+                  ? tint("primary", 8)
+                  : cv.background,
+                borderColor: isResumeActive ? cv.primary : cv.border,
+                color: isResumeActive ? cv.primary : cv.text,
               }}
             >
               <div className="flex items-center gap-3">
@@ -258,15 +255,15 @@ function MobileMenuClient() {
                   className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
                   style={{
                     backgroundColor: isResumeActive
-                      ? colors.primary
+                      ? cv.primary
                       : isAuthenticated
-                      ? `${colors.success}20`
-                      : `${colors.border}50`,
+                        ? tint("success", 13)
+                        : tint("border", 31),
                     color: isResumeActive
-                      ? colors.accent
+                      ? cv.accent
                       : isAuthenticated
-                      ? colors.success
-                      : colors.textSecondary,
+                        ? cv.success
+                        : cv.textSecondary,
                   }}
                 >
                   <FileText className="w-4 h-4" />
@@ -278,20 +275,20 @@ function MobileMenuClient() {
                     </span>
                     {isAuthenticated ? (
                       <span
-                        className="px-2 py-0.5 text-[9px] font-extrabold rounded-full uppercase tracking-wider"
+                        className="px-2 py-0.5 text-[11px] font-bold rounded-full uppercase tracking-wider"
                         style={{
-                          backgroundColor: `${colors.success}20`,
-                          color: colors.success,
+                          backgroundColor: tint("success", 13),
+                          color: cv.success,
                         }}
                       >
                         Unlocked
                       </span>
                     ) : (
                       <span
-                        className="px-2 py-0.5 text-[9px] font-extrabold rounded-full uppercase tracking-wider"
+                        className="px-2 py-0.5 text-[11px] font-bold rounded-full uppercase tracking-wider"
                         style={{
-                          backgroundColor: `${colors.border}60`,
-                          color: colors.textSecondary,
+                          backgroundColor: tint("border", 38),
+                          color: cv.textSecondary,
                         }}
                       >
                         Protected
@@ -300,7 +297,7 @@ function MobileMenuClient() {
                   </div>
                   <div
                     className="text-[11px] font-normal mt-0.5"
-                    style={{ color: colors.textSecondary }}
+                    style={{ color: cv.textSecondary }}
                   >
                     {isAuthenticated
                       ? "View executive credentials"
@@ -309,9 +306,15 @@ function MobileMenuClient() {
                 </div>
               </div>
               {isAuthenticated ? (
-                <Unlock className="w-4 h-4 opacity-70" style={{ color: colors.success }} />
+                <Unlock
+                  className="w-4 h-4 opacity-70"
+                  style={{ color: cv.success }}
+                />
               ) : (
-                <LockKeyhole className="w-4 h-4 opacity-50" style={{ color: colors.textSecondary }} />
+                <LockKeyhole
+                  className="w-4 h-4 opacity-50"
+                  style={{ color: cv.textSecondary }}
+                />
               )}
             </NavLink>
 
@@ -322,26 +325,32 @@ function MobileMenuClient() {
                 onClick={() => setOpen(false)}
                 className="group flex items-center justify-between p-3 rounded-xl border transition-all active:scale-[0.98]"
                 style={{
-                  backgroundColor: isAccountActive ? `${colors.primary}15` : colors.background,
-                  borderColor: isAccountActive ? colors.primary : colors.border,
-                  color: isAccountActive ? colors.primary : colors.text,
+                  backgroundColor: isAccountActive
+                    ? tint("primary", 8)
+                    : cv.background,
+                  borderColor: isAccountActive ? cv.primary : cv.border,
+                  color: isAccountActive ? cv.primary : cv.text,
                 }}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
                     style={{
-                      backgroundColor: isAccountActive ? colors.primary : `${colors.border}50`,
-                      color: isAccountActive ? colors.accent : colors.text,
+                      backgroundColor: isAccountActive
+                        ? cv.primary
+                        : tint("border", 31),
+                      color: isAccountActive ? cv.accent : cv.text,
                     }}
                   >
                     <Settings className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-sm font-bold leading-tight">Account Profile</div>
+                    <div className="text-sm font-bold leading-tight">
+                      Account Profile
+                    </div>
                     <div
                       className="text-[11px] font-normal mt-0.5"
-                      style={{ color: colors.textSecondary }}
+                      style={{ color: cv.textSecondary }}
                     >
                       Manage saved profile & details
                     </div>
@@ -356,36 +365,45 @@ function MobileMenuClient() {
         {/* Footer & Action Center */}
         <div
           className="pt-4 border-t mt-3 space-y-3 shrink-0"
-          style={{ borderTopColor: colors.border }}
+          style={{ borderTopColor: cv.border }}
         >
-          {/* Quick Theme Switcher */}
+          {/* Appearance */}
           <div
-            className="flex items-center justify-between p-2.5 rounded-xl border"
+            className="flex items-center justify-between gap-3 p-2.5 rounded-xl border"
             style={{
-              backgroundColor: colors.background,
-              borderColor: colors.border,
+              backgroundColor: cv.background,
+              borderColor: cv.border,
             }}
           >
-            <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: colors.text }}>
-              {isDark ? (
-                <Moon className="w-3.5 h-3.5 text-cyan-400" />
-              ) : (
-                <Sun className="w-3.5 h-3.5 text-amber-500" />
-              )}
-              <span>{isDark ? "Dark theme (Ocean)" : "Light theme (Sunrise)"}</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => setTheme(isDark ? "sunrise" : "ocean")}
-              className="text-xs font-bold px-2.5 py-1 rounded-lg border transition-all hover:scale-105 active:scale-95"
-              style={{
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                color: colors.primary,
-              }}
+            <span
+              id="mobile-appearance-label"
+              className="text-sm font-bold"
+              style={{ color: cv.text }}
             >
-              Toggle
-            </button>
+              Appearance
+            </span>
+            <div
+              role="group"
+              aria-labelledby="mobile-appearance-label"
+              className="menu-segmented"
+            >
+              <button
+                type="button"
+                aria-pressed={!isDark}
+                onClick={() => setTheme("sunrise")}
+              >
+                <Sun className="w-3.5 h-3.5" aria-hidden="true" />
+                Light
+              </button>
+              <button
+                type="button"
+                aria-pressed={isDark}
+                onClick={() => setTheme("midnight")}
+              >
+                <Moon className="w-3.5 h-3.5" aria-hidden="true" />
+                Dark
+              </button>
+            </div>
           </div>
 
           {/* Dynamic Sign in / Sign out button */}
@@ -395,45 +413,31 @@ function MobileMenuClient() {
               onClick={handleLogout}
               className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border text-sm font-semibold transition-all hover:bg-red-500/10 active:scale-98"
               style={{
-                borderColor: `${colors.error}50`,
-                color: colors.error,
+                borderColor: tint("error", 31),
+                color: cv.error,
               }}
             >
               <LogOut className="w-4 h-4" />
               Sign out
             </button>
           ) : (
-            <div className="space-y-2">
-              <button
-                type="button"
-                onClick={handleSignIn}
-                className="studio-button w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-sm shadow-xs transition-all hover:scale-102 active:scale-98"
-                style={{
-                  backgroundColor: colors.primary,
-                  color: colors.accent,
-                }}
-              >
-                <LogIn className="w-4 h-4" />
-                Sign in
-              </button>
-              <button
-                type="button"
-                onClick={handleSignUp}
-                className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-semibold border transition-all hover:opacity-80 active:scale-98"
-                style={{
-                  borderColor: colors.border,
-                  color: colors.text,
-                }}
-              >
-                <UserPlus className="w-3.5 h-3.5" />
-                Create account
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={handleSignIn}
+              className="studio-button w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm shadow-xs transition-all active:scale-98"
+              style={{
+                backgroundColor: cv.primary,
+                color: cv.accent,
+              }}
+            >
+              <LogIn className="w-4 h-4" aria-hidden="true" />
+              Sign in to view resume
+            </button>
           )}
 
           <p
-            className="text-[10px] text-center opacity-60"
-            style={{ color: colors.textSecondary }}
+            className="text-[11px] text-center opacity-60"
+            style={{ color: cv.textSecondary }}
           >
             © 2026 Sravana S Parimi · Engineering Portfolio
           </p>
@@ -472,8 +476,8 @@ export default function MobileMenu() {
               <LockKeyhole size={18} aria-hidden="true" />
             </NavLink>
           </nav>
-          <NavLink className="studio-button" to="/account">
-            Sign in or create account
+          <NavLink className="studio-button" to="/resume">
+            Sign in to view resume
           </NavLink>
         </SheetContent>
       </Sheet>

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useTheme } from "@/theme/ThemeContext";
+import { cv, tint } from "@/theme/cssVars";
 import { AlertCircle } from "lucide-react";
 
 interface FieldError {
@@ -14,7 +14,6 @@ interface Props {
 }
 
 export default function FormErrorSummary({ errors, formId }: Props) {
-  const { colors } = useTheme();
   const summaryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,9 +42,9 @@ export default function FormErrorSummary({ errors, formId }: Props) {
       tabIndex={-1}
       className="rounded-lg border p-4 space-y-2 outline-none text-sm"
       style={{
-        backgroundColor: colors.error + "10",
-        borderColor: colors.error + "40",
-        color: colors.error,
+        backgroundColor: tint("error", 6),
+        borderColor: tint("error", 25),
+        color: cv.error,
       }}
     >
       <div className="flex items-center gap-2 font-semibold">
@@ -63,7 +62,7 @@ export default function FormErrorSummary({ errors, formId }: Props) {
               type="button"
               onClick={() => scrollToField(err.field)}
               className="underline underline-offset-2 text-left hover:opacity-80 focus:outline-none focus-visible:ring-2 rounded font-medium"
-              style={{ color: colors.error }}
+              style={{ color: cv.error }}
             >
               {err.label}
             </button>

@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { useTheme } from "@/theme/ThemeContext";
+import { cv } from "@/theme/cssVars";
 import { ChevronDown } from "lucide-react";
 
 interface TimelineItem {
@@ -14,18 +14,13 @@ interface ExperienceTimelineProps {
 }
 
 const ExperienceTimeline = ({ items }: ExperienceTimelineProps) => {
-  const { colors } = useTheme();
   const timelineId = useId();
   const [expandedIdx, setExpandedIdx] = useState<number | null>(0);
 
   return (
-    <div className="border-t" style={{ borderColor: colors.border }}>
+    <div className="border-t" style={{ borderColor: cv.border }}>
       {items.map((item, idx) => (
-        <div
-          key={idx}
-          className="border-b"
-          style={{ borderColor: colors.border }}
-        >
+        <div key={idx} className="border-b" style={{ borderColor: cv.border }}>
           <button
             onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
             aria-expanded={expandedIdx === idx}
@@ -40,20 +35,17 @@ const ExperienceTimeline = ({ items }: ExperienceTimelineProps) => {
               <div>
                 <p
                   className="text-sm font-semibold"
-                  style={{ color: colors.primary }}
+                  style={{ color: cv.primary }}
                 >
                   {item.year}
                 </p>
                 <h3
                   className="text-lg font-bold mt-1"
-                  style={{ color: colors.text }}
+                  style={{ color: cv.text }}
                 >
                   {item.title}
                 </h3>
-                <p
-                  className="text-sm mt-1"
-                  style={{ color: colors.textSecondary }}
-                >
+                <p className="text-sm mt-1" style={{ color: cv.textSecondary }}>
                   {item.company}
                 </p>
               </div>
@@ -62,7 +54,7 @@ const ExperienceTimeline = ({ items }: ExperienceTimelineProps) => {
                 aria-hidden="true"
                 className="shrink-0 mt-2"
                 style={{
-                  color: colors.primary,
+                  color: cv.primary,
                   transform:
                     expandedIdx === idx ? "rotate(180deg)" : "rotate(0)",
                   transition: "transform 0.3s ease",
@@ -76,8 +68,8 @@ const ExperienceTimeline = ({ items }: ExperienceTimelineProps) => {
             hidden={expandedIdx !== idx}
             className="pb-8 max-w-3xl text-lg"
             style={{
-              backgroundColor: colors.background,
-              color: colors.textSecondary,
+              backgroundColor: cv.background,
+              color: cv.textSecondary,
               lineHeight: "1.6",
             }}
           >

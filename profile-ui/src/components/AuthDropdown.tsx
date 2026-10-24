@@ -1,19 +1,20 @@
 import { useState, useRef, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "@/auth/auth";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useTheme } from "@/theme/ThemeContext";
+import { cv } from "@/theme/cssVars";
+import "@/styles/menu.css";
+import { trackEvent } from "@/lib/analytics";
 import { useKeyboardNav } from "@/hooks/useKeyboardNav";
 import {
   UserCircleIcon,
-  ArrowLeftStartOnRectangleIcon,
   ArrowRightEndOnRectangleIcon,
 } from "@heroicons/react/24/solid";
 
 const AuthDropdownClient = () => {
-  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const { colors } = useTheme();
+
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -72,23 +73,35 @@ const AuthDropdownClient = () => {
     }
   }, [focusedIndex, isOpen]);
 
+  if (!isAuthenticated) {
+    const currentPath = location.pathname + location.search + location.hash;
+    const returnTo = currentPath === "/auth-callback" ? "/" : currentPath;
+    return (
+      <button
+        type="button"
+        className="auth-ghost-button"
+        onClick={() => {
+          trackEvent("resume_sign_in_click");
+          void loginWithRedirect({ appState: { returnTo } });
+        }}
+      >
+        Sign in
+      </button>
+    );
+  }
+
   return (
     <div className="relative" ref={menuRef}>
       {/* Trigger Button */}
       <button
         ref={buttonRef}
-        className="p-2.5 rounded-lg transition-all hover:scale-110 active:scale-95 focus:ring-2 focus:ring-offset-2"
-        style={{
-          backgroundColor: isOpen ? `${colors.primary}20` : "transparent",
-          color: colors.primary,
-          border: `2px solid ${colors.border}`,
-        }}
+        className="auth-ghost-button auth-ghost-icon"
         aria-label="User account menu"
         aria-expanded={isOpen}
         aria-haspopup="true"
         {...dropdownHandler}
       >
-        <UserCircleIcon className="w-6 h-6" />
+        <UserCircleIcon className="w-6 h-6" aria-hidden="true" />
       </button>
 
       {/* Dropdown Menu */}
@@ -96,39 +109,43 @@ const AuthDropdownClient = () => {
         <div
           className="absolute right-0 mt-2 w-56 rounded-lg shadow-xl z-50 animate-fade-in depth-shadow overflow-hidden"
           style={{
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
-            border: `2px solid ${colors.border}`,
+            backgroundColor: cv.surface,
+            borderColor: cv.border,
+            border: `2px solid ${cv.border}`,
           }}
           role="menu"
           aria-label="Account options"
           onKeyDown={handleKeyDown}
         >
-          {isAuthenticated ? (
+          {
             <>
               {/* User Info */}
               <div
                 className="px-4 py-4 border-b"
-                style={{ borderBottomColor: colors.border }}
+                style={{ borderBottomColor: cv.border }}
               >
-                <p style={{ color: colors.textSecondary }} className="text-sm">
+                <p style={{ color: cv.textSecondary }} className="text-sm">
                   Signed in as
                 </p>
-                <p
-                  className="font-bold truncate"
-                  style={{ color: colors.primary }}
-                >
+                <p className="font-bold truncate" style={{ color: cv.primary }}>
                   {user?.email}
                 </p>
               </div>
 
               <button
-                ref={(el) => { menuItemsRef.current[0] = el; }}
-                onClick={() => { navigate("/account"); setIsOpen(false); }}
+                ref={(el) => {
+                  menuItemsRef.current[0] = el;
+                }}
+                onClick={() => {
+                  navigate("/account");
+                  setIsOpen(false);
+                }}
                 className="w-full px-4 py-3 text-left font-semibold focus:outline-none focus:ring-2"
-                style={{ color: colors.text }}
+                style={{ color: cv.text }}
                 role="menuitem"
-              >Account</button>
+              >
+                Account
+              </button>
 
               {/* Menu Items */}
               <button
@@ -142,27 +159,14 @@ const AuthDropdownClient = () => {
                   setIsOpen(false);
                 }}
                 className="w-full px-4 py-3 flex items-center gap-3 transition-all hover:opacity-75 border-t focus:outline-none focus:ring-2"
-                style={{ color: colors.error, borderTopColor: colors.border }}
+                style={{ color: cv.error, borderTopColor: cv.border }}
                 role="menuitem"
               >
                 <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
                 <span className="font-semibold">Logout</span>
               </button>
             </>
-          ) : (
-            <>
-              {(() => {
-                const currentPath = location.pathname + location.search + location.hash;
-                const returnTo = currentPath === "/auth-callback" ? "/" : currentPath;
-                return (
-                  <>
-                    <button ref={(el) => { menuItemsRef.current[0] = el; }} onClick={() => { void loginWithRedirect({ appState: { returnTo } }); setIsOpen(false); }} className="w-full px-4 py-3 flex items-center gap-3 font-semibold focus:outline-none focus:ring-2" style={{ color: colors.primary }} role="menuitem"><ArrowLeftStartOnRectangleIcon className="w-5 h-5" />Sign in</button>
-                    <button ref={(el) => { menuItemsRef.current[1] = el; }} onClick={() => { void loginWithRedirect({ authorizationParams: { screen_hint: "signup" }, appState: { returnTo } }); setIsOpen(false); }} className="w-full px-4 py-3 text-left font-semibold focus:outline-none focus:ring-2" style={{ color: colors.text }} role="menuitem">Create account</button>
-                  </>
-                );
-              })()}
-            </>
-          )}
+          }
         </div>
       )}
     </div>
@@ -170,6 +174,10 @@ const AuthDropdownClient = () => {
 };
 
 const AuthDropdown = () =>
-  typeof window === "undefined" ? <span aria-hidden="true" className="studio-account-slot" /> : <AuthDropdownClient />;
+  typeof window === "undefined" ? (
+    <span aria-hidden="true" className="studio-account-slot" />
+  ) : (
+    <AuthDropdownClient />
+  );
 
 export default AuthDropdown;

@@ -1,4 +1,4 @@
-import { useTheme } from "@/theme/ThemeContext";
+import { cv } from "@/theme/cssVars";
 import EvidenceBadge from "./EvidenceBadge";
 
 interface ExpertiseDomainProps {
@@ -7,10 +7,9 @@ interface ExpertiseDomainProps {
 }
 
 const ExpertiseDomain = ({ domain, skills }: ExpertiseDomainProps) => {
-  const { colors } = useTheme();
   return (
     <div>
-      <h3 className="text-lg font-semibold mb-4" style={{ color: colors.text }}>
+      <h3 className="text-lg font-semibold mb-4" style={{ color: cv.text }}>
         {domain}
       </h3>
       <div className="flex flex-wrap gap-3">

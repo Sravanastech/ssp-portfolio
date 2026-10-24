@@ -1,14 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
-import { useAuth0, Auth0ContextInterface } from "@auth0/auth0-react";
+import { useAuth, type AuthContextValue } from "@/auth/auth";
 import { ThemeProvider } from "@/theme/ThemeContext";
 import ProtectedRoute from "../ProtectedRoute";
-import type { User } from "@auth0/auth0-react";
 
-// Mock useAuth0
-vi.mock("@auth0/auth0-react", () => ({
-  useAuth0: vi.fn(),
+// Mock the auth facade
+vi.mock("@/auth/auth", () => ({
+  useAuth: vi.fn(),
 }));
 
 const renderWithProviders = (component: React.ReactElement) => {
@@ -24,57 +23,53 @@ describe("ProtectedRoute", () => {
     vi.clearAllMocks();
   });
 
-  it("should show ErrorPage when not authenticated", () => {
-    vi.mocked(useAuth0).mockReturnValue({
+  it("redirects signed-out visitors to Auth0 with a returnTo", () => {
+    const loginWithRedirect = vi.fn();
+    vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
       error: undefined,
-    } as Auth0ContextInterface<User>);
+      loginWithRedirect,
+    } as unknown as AuthContextValue);
+    window.history.pushState({}, "", "/account");
 
     renderWithProviders(
       <ProtectedRoute>
         <div>Protected Content</div>
       </ProtectedRoute>,
     );
-    expect(screen.getByText(/Please log in/)).toBeInTheDocument();
+    expect(loginWithRedirect).toHaveBeenCalledWith({
+      appState: { returnTo: "/account" },
+    });
+    expect(screen.getByText(/Redirecting to sign in/)).toBeInTheDocument();
+    expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
   });
 
-  it("should show 403 error code for auth failure", () => {
-    vi.mocked(useAuth0).mockReturnValue({
+  it("shows a 403 page when authentication errored, without redirect loop", () => {
+    const loginWithRedirect = vi.fn();
+    vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
-      error: undefined,
-    } as Auth0ContextInterface<User>);
+      error: new Error("boom"),
+      loginWithRedirect,
+    } as unknown as AuthContextValue);
 
     renderWithProviders(
       <ProtectedRoute>
         <div>Protected Content</div>
       </ProtectedRoute>,
     );
+    expect(loginWithRedirect).not.toHaveBeenCalled();
     expect(screen.getByText("403")).toBeInTheDocument();
-  });
-
-  it("should render Go Home button on error", () => {
-    vi.mocked(useAuth0).mockReturnValue({
-      isAuthenticated: false,
-      isLoading: false,
-      error: undefined,
-    } as Auth0ContextInterface<User>);
-
-    renderWithProviders(
-      <ProtectedRoute>
-        <div>Protected Content</div>
-      </ProtectedRoute>,
-    );
     expect(screen.getByText("Go Home")).toBeInTheDocument();
   });
 
   it("should show protected content when authenticated", () => {
-    vi.mocked(useAuth0).mockReturnValue({
+    vi.mocked(useAuth).mockReturnValue({
       isAuthenticated: true,
       isLoading: false,
       error: undefined,
-    } as Auth0ContextInterface<User>);
+    } as AuthContextValue);
 
     renderWithProviders(
       <ProtectedRoute>

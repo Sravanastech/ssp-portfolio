@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useTheme } from "@/theme/ThemeContext";
+import { cv } from "@/theme/cssVars";
 import { ChevronRight } from "lucide-react";
 
 interface BreadcrumbItem {
@@ -12,8 +12,6 @@ interface BreadcrumbsProps {
 }
 
 const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
-  const { colors } = useTheme();
-
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
       <ol className="flex items-center gap-2 text-sm flex-wrap">
@@ -22,18 +20,18 @@ const Breadcrumbs = ({ items }: BreadcrumbsProps) => {
             {item.path ? (
               <Link
                 to={item.path}
-                className="transition-colors hover:underline"
-                style={{ color: colors.primary }}
+                className="-my-3 inline-flex min-h-11 items-center transition-colors hover:underline"
+                style={{ color: cv.primary }}
               >
                 {item.label}
               </Link>
             ) : (
-              <span style={{ color: colors.text }} aria-current="page">
+              <span style={{ color: cv.text }} aria-current="page">
                 {item.label}
               </span>
             )}
             {index < items.length - 1 && (
-              <ChevronRight size={16} style={{ color: colors.textSecondary }} />
+              <ChevronRight size={16} style={{ color: cv.textSecondary }} />
             )}
           </li>
         ))}

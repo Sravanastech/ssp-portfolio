@@ -42,8 +42,8 @@ describe("HeroSection", () => {
   it("should render CTA buttons", () => {
     renderWithProviders(<HeroSection />);
 
-    const exploreButton = screen.getByRole("link", { name: /Explore Work/i });
-    const contactButton = screen.getByRole("link", { name: /Get in Touch/i });
+    const exploreButton = screen.getByRole("link", { name: /Explore work/i });
+    const contactButton = screen.getByRole("link", { name: /Get in touch/i });
 
     expect(exploreButton).toBeInTheDocument();
     expect(contactButton).toBeInTheDocument();
