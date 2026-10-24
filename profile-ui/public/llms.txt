@@ -1,0 +1,18 @@
+# Sravana S Parimi
+
+> Senior Software Engineer III at Fifth Third Bank in Cincinnati, OH. Full-stack engineer and technical lead working with React, TypeScript, Java and Spring Boot. Also known as Sravan Parimi, Sravana Parimi, Sravana Subramanyam Parimi, and DevSravana on GitHub.
+
+## About
+- [About and experience](https://sravanasparimi.com/about/): career history from January 2016 to present, including Fifth Third Bank, Kroger, FISA-OPA, ICF Next Global and Earth7 Consulting LLC.
+- [Contact](https://sravanasparimi.com/contact/): hiring and role conversations. Email contact@sravanasparimi.com.
+- [LinkedIn](https://www.linkedin.com/in/sravanap/)
+
+## Work
+- [Enterprise application modernization](https://sravanasparimi.com/work/enterprise-application-modernization/): Fifth Third Bank. Modernizing banking operations interfaces with React, TypeScript, Java and Spring Boot; shared React component library with Storybook.
+- [Produce specifications and inspections](https://sravanasparimi.com/work/produce-specifications-inspections/): Kroger. Web interfaces for produce specifications and quality inspections.
+- [Employee timekeeping and leave](https://sravanasparimi.com/work/employee-timekeeping-leave/): FISA-OPA. React redesign of timekeeping and leave interfaces.
+- [Retail eCommerce storefront](https://sravanasparimi.com/work/retail-ecommerce-storefront/): ICF Next Global. Storefront from discovery to checkout with Vue and Shopify Liquid.
+- [Business and commerce web applications](https://sravanasparimi.com/work/business-commerce-web-applications/): Earth7 Consulting LLC. Interfaces and Java API integration with automated tests.
+
+## Notes
+- The resume is available only to signed-in visitors at https://sravanasparimi.com/resume.
