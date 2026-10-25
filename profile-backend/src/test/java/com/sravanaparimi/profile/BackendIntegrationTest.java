@@ -22,7 +22,7 @@ import tools.jackson.databind.json.JsonMapper;
 class BackendIntegrationTest {
   @SuppressWarnings("resource") // stopped in @AfterAll
   static PostgreSQLContainer db =
-      new PostgreSQLContainer("postgres:17.9-alpine").withDatabaseName("test_backend");
+      new PostgreSQLContainer("postgres:17.11-alpine").withDatabaseName("test_backend");
 
   static ConfigurableApplicationContext app;
   static HttpServer jwks;

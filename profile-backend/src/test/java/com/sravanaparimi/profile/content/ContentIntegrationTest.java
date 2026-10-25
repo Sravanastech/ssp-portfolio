@@ -14,7 +14,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 class ContentIntegrationTest {
   @SuppressWarnings("resource") // stopped in @AfterAll
   static PostgreSQLContainer db =
-      new PostgreSQLContainer("postgres:17.9-alpine").withDatabaseName("test_content");
+      new PostgreSQLContainer("postgres:17.11-alpine").withDatabaseName("test_content");
 
   static ConfigurableApplicationContext app;
   static String base;

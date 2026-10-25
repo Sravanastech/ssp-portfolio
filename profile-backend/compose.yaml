@@ -1,7 +1,7 @@
 name: profile-backend-dev
 services:
   postgres:
-    image: postgres:17.9-alpine
+    image: postgres:17.11-alpine
     environment:
       POSTGRES_DB: profile_dev
       POSTGRES_USER: profile_bootstrap
@@ -19,12 +19,12 @@ services:
       retries: 15
     restart: unless-stopped
   redis:
-    image: redis:8.2.2-alpine
+    image: redis:8.10.2-alpine
     command: ["redis-server", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru", "--save", "", "--appendonly", "no"]
     ports: ["127.0.0.1:56379:6379"]
     restart: unless-stopped
   vault:
-    image: hashicorp/vault:1.17
+    image: hashicorp/vault:1.21.4
     profiles: [vault-lab]
     cap_add: [IPC_LOCK]
     environment:
