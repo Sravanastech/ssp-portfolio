@@ -167,27 +167,6 @@
   width: 86px;
   height: 86px;
 }
-:root[data-paradigm="kinetic"] .system-detail {
-  min-height: 155px;
-  background: transparent;
-  padding: 0;
-  color: var(--studio-on-blue-muted);
-}
-:root[data-paradigm="kinetic"] .system-controls,
-:root[data-paradigm="kinetic"] .system-caption {
-  background: transparent;
-  padding-inline: 0;
-}
-:root[data-paradigm="kinetic"] .system-detail p,
-:root[data-paradigm="kinetic"] .system-detail > span,
-:root[data-paradigm="kinetic"] .system-caption,
-:root[data-paradigm="kinetic"] .system-controls button {
-  color: var(--studio-on-blue-muted);
-}
-:root[data-paradigm="kinetic"] .system-controls button[aria-pressed="true"] {
-  color: var(--kinetic-lime);
-  border-color: var(--kinetic-lime);
-}
 :root[data-paradigm="kinetic"] .studio-case-body {
   grid-template-columns: repeat(3, 1fr);
 }

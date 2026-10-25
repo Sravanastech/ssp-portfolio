@@ -1,12 +1,12 @@
 # ==============================================================================
-# Monorepo Root .gitignore
+# Monorepo root .gitignore (shared rules; sub-.gitignore files add project-only rules)
 # ==============================================================================
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# IDE & Editor files
+# IDE & editor files
 .idea/
 .vscode/*
 !.vscode/extensions.json
@@ -17,7 +17,7 @@ Thumbs.db
 *.sw?
 *.iml
 
-# Environment Variables & Secrets
+# Environment variables & secrets
 .env
 .env.*
 !.env.example
@@ -34,34 +34,49 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Build Outputs & Targets
+# Build outputs & targets
 dist/
 dist-ssr/
 target/
 build/
 .local/
 
-# Test & Debug
+# Test & debug
 test-results/
 playwright-report/
 firebase-debug.log
+logs/
 *.log
 
-# Private Assets & Documents
+# Private assets, personal documents & generated reports (never track)
 private/
 **/private/
+*.pdf
+*.docx
+**/perf-report*
 
-# AI Tooling & Analyzer Caches
-.claude/settings.local.json
+# AI tooling & analyzer caches (local only)
+.claude/
+.impeccable/
 .superpowers/
 .ua/
 .understand-anything/
-docs/superpowers/
+**/docs/superpowers/
+**/AI_MEMORY.md
+profile-ui/DESIGN.md
+profile-ui/PRODUCT.md
 
+# Personal planning / learning notes (local only)
+profile-ui/docs/README.md
+profile-ui/docs/full-stack-learning-guide.*
+profile-ui/docs/portfolio-leadership-review.md
+profile-ui/docs/portfolio-v2-enhancements.md
+profile-ui/docs/solutions-architecture-plan.md
+profile-ui/docs/tools/
+profile-backend/docs/learning-path.md
 
-# Legacy repo backup and local tool artifacts
+# Legacy backup & local tool artifacts
 .git.bak/
 .firebase/
 profile-ui/artifacts/
 profile-ui/premium-audit.json
-**/.impeccable/hook.cache.json

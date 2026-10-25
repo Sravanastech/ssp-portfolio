@@ -9,12 +9,7 @@ export default function Header() {
   return (
     <header className="studio-header">
       <div className="studio-container studio-header-inner">
-        <PrefetchLink
-          to="/"
-          className="studio-brand"
-          aria-label="Sravana S Parimi - Home"
-          data-testid="logo-link"
-        >
+        <PrefetchLink to="/" className="studio-brand" data-testid="logo-link">
           <span className="studio-monogram" aria-hidden="true">
             <SiteText id="components.Header.text.1" />
             <span>

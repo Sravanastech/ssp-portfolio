@@ -44,7 +44,7 @@ export const AuthContext = createContext<AuthContextValue>({
 export const useAuth = (): AuthContextValue => useContext(AuthContext);
 
 /** Non-secret hint that a session likely exists, so the SDK can restore it. */
-export const AUTH_HINT_KEY = "auth.hint";
+const AUTH_HINT_KEY = "auth.hint";
 
 export function hasAuthHint(): boolean {
   try {

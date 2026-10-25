@@ -13,7 +13,7 @@ test.describe("Responsive portfolio header", () => {
         /Switch to (dark|light) mode/,
       );
       await expect(header.locator(".composition-switcher")).toHaveCount(0);
-      for (const value of ["ocean", "sunrise"]) {
+      for (const value of ["midnight", "sunrise"]) {
         await controls.click();
         await expect(page.locator("html")).toHaveAttribute("data-theme", value);
         await expect(brand).toBeVisible();
@@ -49,9 +49,7 @@ test.describe("Responsive portfolio header", () => {
           name: "Mobile navigation",
         });
         await expect(navigation).toBeVisible();
-        await navigation
-          .getByRole("link", { name: "Work", exact: true })
-          .click();
+        await navigation.getByRole("link", { name: /^Work\b/ }).click();
         await expect(page).toHaveURL(/\/work$/);
         await expect(navigation).not.toBeVisible();
       } else {

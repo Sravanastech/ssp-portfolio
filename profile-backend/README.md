@@ -46,7 +46,3 @@ Use synthetic test inquiries. Never place a real résumé in public assets; loca
 Activate exactly one profile: `dev`, `test`, or `prod`. Dev uses local Compose and email capture. Tests use a disposable database and fake local files. Production reads env vars or mounted secret files, requires verified database TLS and MFA, and runs Flyway with `baseline-on-migrate` at baseline version 8 (a DB bootstrapped from `scripts/supabase_init.sql` only gets V9+). Hybrid prod flags (all default off in prod): `PUBLISHING_ENABLED`, `NOTIFICATIONS_ENABLED`, `CACHE_ENABLED`, `CONTACT_ENABLED`; contact is handled by Web3Forms in the UI. Set `INQUIRY_IP_SALT` when enabling contact.
 
 `Dockerfile` is the Cloud Run image (JRE only, no renderer). See `infra/cloud-run/README.md` for deploy steps and `infra/auth0/post-login-action.js` for the MFA claim. No DNS or cloud service has been changed.
-
-## Teaching notes
-
-See `docs/learning-path.md` for stage notes and commands. The full Word workbook is `../profile-ui/docs/full-stack-learning-guide.docx`; its editable Markdown is beside it. Handoff memory is `AI_MEMORY.md`.

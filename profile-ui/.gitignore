@@ -1,43 +1,8 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# profile-ui project-specific rules.
+# Shared rules (node_modules, dist, .env*, IDE, OS, AI tooling, private/) live in the root .gitignore.
 
-node_modules
-dist
-dist-ssr
-test-results/
-playwright-report/
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Environment variables
-.env
-.env.local
-.env.*
-server/private/
-
-# Lock files - use npm instead (lock file will be generated per platform)
+# Lockfile: npm is the package manager (package-lock.json is the source of truth)
 yarn.lock
 
-# Analysis artifacts
-.ua/
-.understand-anything/
-.superpowers/
-docs/superpowers/
-
-!.env.example
+# Vite / Playwright local overrides
+*.local

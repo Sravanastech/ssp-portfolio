@@ -1,4 +1,4 @@
-export interface ProjectOutcome {
+interface ProjectOutcome {
   label: string;
 }
 

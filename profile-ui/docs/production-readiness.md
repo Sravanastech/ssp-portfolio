@@ -1,27 +1,23 @@
-# Final polish and production readiness
+# Production readiness
 
-## Changes and reasons
+## Architecture
 
-- Confirmed Kroger ends May 31, 2026 and Fifth Third starts June 1, 2026; month/year dates make the chronology accurate and easy to scan.
-- Added FISA's other payroll-related projects alongside CityTime; this captures the owner's broader scope without conflating separate applications.
-- Sharpened Fifth Third resume bullets around React interfaces, Java/Spring Boot services, Storybook libraries, and reusable starters; concrete deliverables make the role easier to assess.
-- Moved palette and composition selectors to footer Appearance settings; visitors can focus on career information first.
-- Added a header light/dark button and native browser color-scheme setting; appearance stays convenient and browser controls match the selected mode.
-- Added a finite diagram drawing/plane-reveal sequence when selecting engineering layers; motion explains the selected relationship and respects reduced motion.
-- Corrected settings-panel text contrast across palettes; expanded settings must be as readable as the main content.
+Static, prerendered React site on Firebase Hosting (project `ssp-profile`). Public content and the contact form (Web3Forms) are bundled; no API is needed to render any public page.
 
-## Motion research
+Firebase rewrites `/api/**` to the Cloud Run service `profile-backend` (`us-central1`), which serves only the gated `/api/resume`, `/api/me`, admin endpoints and `/api/health`. Only client-rendered routes (`/resume`, `/account`, `/admin/**`, `/auth-callback`) fall back to `index.html`; unknown paths return the prerendered `404.html`.
 
-Reviewed the public content of [Bruno Simon's interactive portfolio](https://bruno-simon.com/) and [Linear's product site](https://linear.app/), plus [Motion's reduced-motion guidance](https://motion.dev/docs/react-use-reduced-motion). Their relevant lessons here are an interaction tied to the subject and clear responses to visitor input. The implemented interpretation is a bounded engineering-diagram sequence, using existing CSS and no new animation dependency. Text-only research does not establish a frame-by-frame comparison or a “best website” ranking; some award and portfolio pages were inaccessible.
+The resume PDF is never part of the static build. It lives in a private GCS bucket mounted read-only into Cloud Run (see `docs/secure-resume.md` and `profile-backend/infra/cloud-run/README.md`).
 
-## Release assessment
+## Release gates
 
-The UI and resume changes have passed a production build, 156 unit tests, and visual inspection of desktop/mobile screenshots and all three PDF pages. Lint has no errors and four existing Fast Refresh warnings. The initial 19-test browser run passed 18 and identified a settings contrast failure, which was corrected. The contrast test subsequently passed across all palettes/compositions, and an additional reduced-motion test passed. All 20 browser cases have now passed across the full run and targeted confirmations. The 10 resume authentication tests also passed under Vitest.
+- `npm run verify`: Prettier, ESLint, Vitest, production build with prerender.
+- `npx playwright test`: browser end-to-end suite.
+- `npm run build:release`: refuses to build when the Auth0 callback points at localhost.
+- CI: `.github/workflows/profile-ui.yml` (verify, audit, e2e), `quality.yml` (Lighthouse budgets on PRs), `site-health.yml` (weekly live checks), `deploy.yml` (manual hosting deploy).
 
-**Not fully production-ready under the current deployment configuration.**
+## Before go-live
 
-1. `firebase.json` rewrites all unmatched requests to `/index.html`. The deployment workflow deploys hosting only. `/api/resume` requires `server/index.mjs`, and `/api/events` uses the same service. Deploy that service with `AUTH0_DOMAIN`, `AUTH0_AUDIENCE`, and access to the private PDF; configure specific API rewrites before the SPA fallback. No backend service identifier is supplied in this repository, so a real destination cannot be safely invented.
-2. The workflow supplies `VITE_API_URL`, while `src/api/UserApi.tsx` reads `VITE_API_BASE_URL`. The optional account callback also depends on a separate `/api/user` service not implemented by this Node server. Its deployed base URL and service availability need confirmation.
-3. Production Auth0 callback/origin settings, authenticated PDF retrieval, and real Web3Forms delivery remain unverified. No deployment or real message submission was performed.
-
-The PDF remains outside `dist`; it must never be copied into Firebase's public assets to work around the API deployment gap.
+1. GitHub secrets: `FIREBASE_SERVICE_ACCOUNT`, `VITE_AUTH0_DOMAIN`, `VITE_AUTH0_CLIENT_ID`, `VITE_AUTH0_CALLBACK_URL`, `VITE_AUTH0_AUDIENCE`, `VITE_WEB3FORMS_ACCESS_KEY`, `VITE_GA_MEASUREMENT_ID`; optional `VITE_GOOGLE_SITE_VERIFICATION`, `VITE_BING_SITE_VERIFICATION`, `INDEXNOW_KEY`.
+2. Auth0: refresh token rotation on; production callback, logout and web-origin URLs for `https://sravanasparimi.com`.
+3. Backend deployed per `profile-backend/infra/cloud-run/README.md`.
+4. After deploy: `/nope` returns 404, `/llms.txt` returns text, the CSP header is present, and signing in on `/resume` loads the PDF.
