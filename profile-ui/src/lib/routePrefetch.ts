@@ -1,4 +1,6 @@
 /** Route chunk prefetching. Loaders share specifiers with AppRoutes' React.lazy imports, so Vite reuses the same chunks. */
+import type { ComponentType } from "react";
+
 type Loader = () => Promise<unknown>;
 
 export const routeLoaders = {
@@ -17,6 +19,14 @@ export type RouteKey = keyof typeof routeLoaders;
 const LIKELY_NEXT: RouteKey[] = ["/work", "/about", "/contact"];
 
 const cache = new Map<RouteKey, Promise<void>>();
+const resolved = new Map<RouteKey, ComponentType<object>>();
+
+/** Component of a route chunk that already finished loading, if any. */
+export function getResolvedRoute(
+  key: RouteKey,
+): ComponentType<object> | undefined {
+  return resolved.get(key);
+}
 
 export function resolveRouteKey(path: string): RouteKey | null {
   if (!path.startsWith("/") || path.startsWith("//")) return null;
@@ -34,7 +44,12 @@ export function prefetchRoute(path: string): Promise<void> {
   const pending = Promise.resolve()
     .then(() => routeLoaders[key]())
     .then(
-      () => undefined,
+      (module) => {
+        resolved.set(
+          key,
+          (module as { default: ComponentType<object> }).default,
+        );
+      },
       () => {
         cache.delete(key); // allow retry on the next intent signal
       },
@@ -71,4 +86,5 @@ export function scheduleIdlePrefetch(
 
 export function __resetPrefetchForTests() {
   cache.clear();
+  resolved.clear();
 }

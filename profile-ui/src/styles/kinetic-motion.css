@@ -421,3 +421,43 @@
     }
   }
 }
+
+/* ===== perf lite tier (html[data-perf="lite"], set by src/lib/perfTier.ts) =====
+ * Low-end CPU/GPU, low RAM or constrained network: drop fixed full-viewport layers and
+ * scroll-driven animation. Keeps palette, typography, borders, bare arrows and the ticker.
+ * Extra [data-paradigm] attr outranks the earlier rules whatever the import order. */
+:root[data-perf="lite"][data-paradigm="kinetic"]::before,
+:root[data-perf="lite"][data-paradigm="kinetic"]::after,
+:root[data-perf="lite"][data-paradigm="kinetic"] body::before,
+:root[data-perf="lite"][data-paradigm="kinetic"] body::after,
+:root[data-perf="lite"][data-paradigm="kinetic"] .kinetic-reticle,
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-hero h1::after,
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-project-image::after,
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-project::before,
+:root[data-perf="lite"][data-paradigm="kinetic"] .project-related a::before {
+  display: none;
+}
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-project,
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-case,
+:root[data-perf="lite"][data-paradigm="kinetic"] .project-related a,
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-hero h1,
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-section-heading::before,
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-hero .studio-button-light,
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-hero .studio-button-light:hover,
+:root[data-perf="lite"][data-paradigm="kinetic"] .studio-hero .studio-button-light:focus-visible {
+  animation: none;
+}
+/* Route wipe becomes a plain fade. */
+@keyframes kinetic-lite-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-perf="lite"][data-paradigm="kinetic"]::view-transition-new(page) {
+    animation: kinetic-lite-fade 160ms ease-out both;
+  }
+}

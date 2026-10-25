@@ -174,6 +174,13 @@ test.describe("paradigm toggle (desktop)", () => {
         "data-paradigm",
         paradigm,
       );
+      // The static boot loader can set data-paradigm before React replaces the
+      // prerendered DOM; tag the header only once the app has mounted.
+      await page.waitForFunction(() =>
+        Object.keys(document.getElementById("root")!).some((k) =>
+          k.startsWith("__reactContainer"),
+        ),
+      );
       await page.evaluate(() => {
         (
           document.querySelector("header.studio-header") as HTMLElement

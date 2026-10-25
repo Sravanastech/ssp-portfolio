@@ -3,20 +3,23 @@ import { lazy, Suspense } from "react";
 import LayoutRoute, { PageSkeleton } from "./layouts/LayoutRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
+import { routeComponent } from "./lib/routeComponent";
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
-const AboutPage = lazy(() => import("./pages/AboutPage"));
-const WorkPage = lazy(() => import("./pages/WorkPage"));
-const ProjectPage = lazy(() => import("./pages/ProjectPage"));
-const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
-const TermsAndConditionsPage = lazy(() => import("./pages/TermsAndConditions"));
-const ContactPage = lazy(() => import("./pages/ContactPage"));
-const ResumePage = lazy(() => import("./pages/ResumePage"));
+const AboutPage = routeComponent("/about");
+const WorkPage = routeComponent("/work");
+const ProjectPage = routeComponent("/work/:slug");
+const PrivacyPage = routeComponent("/privacy");
+const TermsAndConditionsPage = routeComponent("/termsconditions");
+const ContactPage = routeComponent("/contact");
+const ResumePage = routeComponent("/resume");
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const InquiriesPage = lazy(() => import("./pages/InquiriesPage"));
 import ErrorPage from "./pages/ErrorPage";
 import { DEFINED_ROUTES } from "./routes";
 import "./styles/pages.css";
+// Shared by the prerendered /work pages: eager so they are styled before hydration.
+import "./styles/project-page.css";
 
 const AppRoutes = () => {
   return (
