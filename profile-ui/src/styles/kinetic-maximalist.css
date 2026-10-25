@@ -501,12 +501,6 @@
   overflow: hidden;
   display: flex;
   align-items: center;
-  mask-image: linear-gradient(
-    90deg,
-    #000 calc(100% - 120px),
-    transparent calc(100% - 56px),
-    #000 calc(100% - 56px)
-  );
 }
 :root[data-paradigm="kinetic"] .mode-strip-lead > .kinetic-stage {
   flex: 1 1 auto;
@@ -581,37 +575,66 @@
 }
 
 /* ------------------------------------------------------------- ticker */
+/* Pause is a normal flex sibling of the viewport (never overlaps text, no mask
+   hole). Fixed width, so Pause<->Play never shifts it. */
 :root[data-paradigm="kinetic"] .kinetic-ticker {
   position: relative;
   height: 100%;
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: stretch;
   min-width: 0;
   width: 100%;
-  overflow: hidden;
   color: var(--kinetic-lime);
   font-weight: 600;
+}
+:root[data-paradigm="kinetic"] .kinetic-ticker-viewport {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  contain: paint;
+  container-type: inline-size;
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 16px,
+    #000 calc(100% - 24px),
+    transparent
+  );
 }
 :root[data-paradigm="kinetic"] .kinetic-ticker-track {
   display: flex;
   flex: none;
-  gap: 48px;
   width: max-content;
   white-space: nowrap;
 }
+/* Gap sits inside each copy (gap + trailing padding), so -50% == one copy. */
+:root[data-paradigm="kinetic"] .kinetic-ticker-copy {
+  display: flex;
+  flex: none;
+  box-sizing: border-box;
+  min-inline-size: 100cqw;
+  justify-content: space-around;
+  gap: 48px;
+  margin: 0;
+  padding: 0 48px 0 0;
+  list-style: none;
+}
 :root[data-paradigm="kinetic"] .kinetic-pause {
-  position: absolute;
-  inset: 0 0 0 auto;
-  display: inline-grid;
-  place-items: center;
-  min-width: 32px;
-  min-height: 32px;
-  padding: 0 8px;
+  flex: none;
+  box-sizing: border-box;
+  inline-size: 56px;
+  min-block-size: 32px;
+  padding: 0;
   border: 0;
+  border-inline-start: 1px solid var(--color-borderLight);
   background: var(--kinetic-void);
   color: var(--kinetic-lime);
   font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  text-align: center;
   cursor: pointer;
   touch-action: manipulation;
 }
@@ -624,8 +647,23 @@
 }
 @media (pointer: coarse) {
   :root[data-paradigm="kinetic"] .kinetic-pause {
-    min-width: 44px;
-    min-height: 44px;
+    inline-size: 56px;
+    min-block-size: 44px;
+  }
+}
+/* >1920 the strip font scales with the root clamp: keep Pause/Play text inside. */
+@media (min-width: 1921px) {
+  :root[data-paradigm="kinetic"] .kinetic-pause {
+    inline-size: 5.1em;
+  }
+}
+/* Too narrow for a useful ticker: keep the strip + mode switch only. */
+@media (max-width: 479px) {
+  :root[data-paradigm="kinetic"] .mode-strip {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  :root[data-paradigm="kinetic"] .mode-strip-lead > .kinetic-stage {
+    display: none;
   }
 }
 
@@ -692,12 +730,17 @@
     translate: none;
     scale: none;
   }
-  :root[data-paradigm="kinetic"] .kinetic-ticker-track {
-    flex: 1 1 auto;
-    min-width: 0;
-    width: auto;
+  /* No scroll animation: static copy, swipe/scroll to read, clone hidden. */
+  :root[data-paradigm="kinetic"] .kinetic-ticker-viewport {
     overflow-x: auto;
-    padding-inline-end: 64px;
+    scrollbar-width: none;
+  }
+  :root[data-paradigm="kinetic"] .kinetic-ticker-copy[data-copy="clone"] {
+    display: none;
+  }
+  /* Nothing animates here, so a Play/Pause toggle would be a dead control. */
+  :root[data-paradigm="kinetic"] .kinetic-pause {
+    display: none;
   }
 }
 

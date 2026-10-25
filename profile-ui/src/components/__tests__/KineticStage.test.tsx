@@ -66,6 +66,23 @@ describe("KineticStage", () => {
     expect(ticker).toHaveAttribute("data-paused", "true");
   });
 
+  it("keeps ticker copies gap-free and pause button content-only", () => {
+    const { container } = renderKinetic();
+    const track = container.querySelector(".kinetic-ticker-track")!;
+    expect(track.getAttribute("style")).toBeNull();
+    container
+      .querySelectorAll(".kinetic-ticker-copy")
+      .forEach((c) => expect(c.getAttribute("style")).toBeNull());
+    expect(
+      container.querySelector(".kinetic-ticker-viewport"),
+    ).toContainElement(track as HTMLElement);
+    // Pause lives outside the clipped viewport so it can never overlap text.
+    const btn = screen.getByRole("button", { name: /pause kinetic ticker/i });
+    expect(
+      container.querySelector(".kinetic-ticker-viewport"),
+    ).not.toContainElement(btn);
+  });
+
   it("defaults to paused under prefers-reduced-motion", () => {
     mockMedia(["(prefers-reduced-motion: reduce)"]);
     renderKinetic();

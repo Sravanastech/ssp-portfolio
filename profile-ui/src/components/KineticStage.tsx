@@ -38,18 +38,13 @@ export function KineticTicker() {
 
   if (!isKinetic) return null;
 
+  // Gap lives inside each copy (gap + trailing padding in CSS), so -50% of the
+  // track is exactly one copy and the loop has no seam.
   const track = (hidden: boolean) => (
     <ul
       className="kinetic-ticker-copy"
       data-copy={hidden ? "clone" : "primary"}
       aria-hidden={hidden ? true : undefined}
-      style={{
-        display: "flex",
-        gap: 48,
-        margin: 0,
-        padding: 0,
-        listStyle: "none",
-      }}
     >
       {items.map((item) => (
         <li key={item}>{item}</li>
@@ -64,9 +59,11 @@ export function KineticTicker() {
       aria-label="Kinetic telemetry ticker"
     >
       <div className="kinetic-ticker" data-paused={paused ? "true" : "false"}>
-        <div className="kinetic-ticker-track">
-          {track(false)}
-          {track(true)}
+        <div className="kinetic-ticker-viewport">
+          <div className="kinetic-ticker-track">
+            {track(false)}
+            {track(true)}
+          </div>
         </div>
         <button
           type="button"
@@ -93,7 +90,10 @@ export default function KineticStage() {
       setFinePointer(false);
       return;
     }
-    setFinePointer(matches(FINE_POINTER));
+    // Lite tier (src/lib/perfTier.ts): no reticle on low-end machines.
+    setFinePointer(
+      matches(FINE_POINTER) && document.documentElement.dataset.perf !== "lite",
+    );
   }, [isKinetic]);
 
   useEffect(() => {

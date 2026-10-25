@@ -160,4 +160,34 @@ describe("kinetic motion hygiene", () => {
     expect(all).not.toContain(".paradigm-toggle");
     expect(all).not.toContain(".kinetic-hud");
   });
+
+  it("ticker strip: seamless loop, fixed pause, no will-change leak", () => {
+    const strip = (name: string) =>
+      readFileSync(resolve(cssPath, "..", name), "utf8").replace(
+        /\/\*[\s\S]*?\*\//g,
+        "",
+      );
+    const max = strip("kinetic-maximalist.css");
+    const motion = strip("kinetic-motion.css");
+    // gap lives inside each copy, not between copies
+    expect(max).toMatch(/\.kinetic-ticker-copy \{[^}]*padding: 0 48px 0 0/);
+    expect(max).not.toMatch(/\.kinetic-ticker-track \{[^}]*gap:/);
+    expect(max).toMatch(/\.kinetic-ticker-viewport \{[^}]*contain: paint/);
+    // pause: fixed width, flow sibling (not absolutely positioned)
+    const pause = max.match(/\.kinetic-pause \{[^}]*\}/)![0];
+    expect(pause).toContain("inline-size: 56px");
+    expect(pause).not.toContain("position: absolute");
+    // pause via play-state only; hover pause fine-pointer only; focus never pauses
+    expect(motion).toContain("animation-play-state: paused");
+    expect(motion).toMatch(
+      /@media \(hover: hover\) and \(pointer: fine\) \{[^@]*kinetic-ticker-viewport:hover/,
+    );
+    expect(motion).not.toMatch(/kinetic-ticker[^{,]*:focus-within/);
+    const tickerRule = motion.match(/\.kinetic-ticker-track \{[^}]*\}/)![0];
+    expect(tickerRule).not.toContain("will-change");
+    // narrow screens hide the ticker, keep the strip
+    expect(max).toMatch(
+      /@media \(max-width: 479px\) \{[^@]*\.kinetic-stage \{\s*display: none/,
+    );
+  });
 });

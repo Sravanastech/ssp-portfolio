@@ -283,6 +283,131 @@ test.describe("mobile 390x844", () => {
   });
 });
 
+/* ------------------------------------------------------------ ticker strip */
+
+for (const width of [1440, 1920, 3440]) {
+  test.describe(`ticker strip ${width}`, () => {
+    test.use({ viewport: { width, height: 800 } });
+
+    test("pause fixed, seamless loop, inside viewport", async ({ page }) => {
+      const errors = trackConsole(page);
+      await page.addInitScript(() =>
+        localStorage.setItem("portfolio-paradigm", "kinetic"),
+      );
+      await page.goto("/");
+      const pause = page.locator(".kinetic-pause");
+      await expect(pause).toBeVisible();
+      const box = async () => (await pause.boundingBox())!;
+      const before = await box();
+      expect(before.x).toBeGreaterThanOrEqual(0);
+      expect(before.x + before.width).toBeLessThanOrEqual(width);
+      await pause.click();
+      await page.mouse.move(5, 400);
+      await expect(pause).toHaveText("Play");
+      const paused = await box();
+      expect(paused.x).toBe(before.x);
+      expect(paused.width).toBe(before.width);
+      // frozen while paused
+      const t1 = await page.evaluate(
+        () =>
+          getComputedStyle(document.querySelector(".kinetic-ticker-track")!)
+            .translate,
+      );
+      await page.waitForTimeout(300);
+      const t2 = await page.evaluate(
+        () =>
+          getComputedStyle(document.querySelector(".kinetic-ticker-track")!)
+            .translate,
+      );
+      expect(t2).toBe(t1);
+      await pause.click();
+      await page.mouse.move(5, 400);
+      await expect(pause).toHaveText("Pause");
+      const resumed = await box();
+      expect(resumed.x).toBe(before.x);
+      expect(resumed.width).toBe(before.width);
+
+      // never overlaps the ticker viewport or the mode switch
+      const rects = await page.evaluate(() => {
+        const r = (s: string) =>
+          document.querySelector(s)!.getBoundingClientRect();
+        const v = r(".kinetic-ticker-viewport");
+        const p = r(".kinetic-pause");
+        const sw = r(".mode-switch");
+        return {
+          vRight: v.right,
+          pLeft: p.left,
+          pRight: p.right,
+          swLeft: sw.left,
+        };
+      });
+      expect(rects.vRight).toBeLessThanOrEqual(rects.pLeft + 0.5);
+      expect(rects.pRight).toBeLessThanOrEqual(rects.swLeft + 0.5);
+
+      // seam: copy width == half the track and translate never exceeds it
+      const seam = await page.evaluate(
+        () =>
+          new Promise<{ copy: number; track: number; max: number; vw: number }>(
+            (resolve) => {
+              const t = document.querySelector(
+                ".kinetic-ticker-track",
+              ) as HTMLElement;
+              const c = document.querySelector("[data-copy=primary]")!;
+              const vw = document
+                .querySelector(".kinetic-ticker-viewport")!
+                .getBoundingClientRect().width;
+              let max = 0;
+              const start = performance.now();
+              const tick = () => {
+                const tr = new DOMMatrix(getComputedStyle(t).transform);
+                max = Math.max(max, Math.abs(tr.m41));
+                if (performance.now() - start < 1500)
+                  requestAnimationFrame(tick);
+                else
+                  resolve({
+                    copy: c.getBoundingClientRect().width,
+                    track: t.getBoundingClientRect().width,
+                    max,
+                    vw,
+                  });
+              };
+              tick();
+            },
+          ),
+      );
+      expect(seam.copy * 2).toBeCloseTo(seam.track, 0); // -50% is one whole copy incl. gap
+      expect(seam.copy).toBeGreaterThanOrEqual(seam.vw); // never blank at the right edge
+      expect(seam.max).toBeLessThanOrEqual(seam.copy);
+      expect(errors).toEqual([]);
+    });
+  });
+}
+
+test.describe("ticker strip 390", () => {
+  test.use({
+    viewport: { width: 390, height: 844 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  test("ticker hidden, strip + switch intact, no overflow", async ({
+    page,
+  }) => {
+    await page.addInitScript(() =>
+      localStorage.setItem("portfolio-paradigm", "kinetic"),
+    );
+    await page.goto("/");
+    await expect(seg(page, "kinetic")).toBeVisible();
+    await expect(page.locator(".kinetic-pause")).toBeHidden();
+    const sw = (await page.locator(".mode-switch").boundingBox())!;
+    expect(sw.x + sw.width).toBeLessThanOrEqual(390);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  });
+});
+
 /* ------------------------------------------------------------------ perf */
 
 async function installObservers(page: Page) {
