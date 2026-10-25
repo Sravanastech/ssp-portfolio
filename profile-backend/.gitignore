@@ -1,6 +1,2 @@
-target/
-.env
-.env.*
-!.env.example
-.local/
-*.log
+# profile-backend project-specific rules.
+# Shared rules (target/, .env*, .local/, *.log, .idea/, build/) live in the root .gitignore.
