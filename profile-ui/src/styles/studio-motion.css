@@ -1,0 +1,99 @@
+/* Studio motion: restrained, compositor-only (opacity/translate/scale). */
+:root:not([data-paradigm="kinetic"]) {
+  --sm-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Route enter/exit (main carries view-transition-name: page). */
+  :root:not([data-paradigm="kinetic"])::view-transition-old(page) {
+    animation: sm-page-out 160ms ease-in both;
+  }
+  :root:not([data-paradigm="kinetic"])::view-transition-new(page) {
+    animation: sm-page-in 220ms var(--sm-ease) both;
+  }
+
+  /* Hero text stagger; --i set here since markup has no index. */
+  :root:not([data-paradigm="kinetic"]) .studio-hero-name {
+    --i: 1;
+  }
+  :root:not([data-paradigm="kinetic"]) .studio-hero-description {
+    --i: 2;
+  }
+  :root:not([data-paradigm="kinetic"]) .studio-hero .studio-actions {
+    --i: 3;
+  }
+  :root:not([data-paradigm="kinetic"])
+    :is(
+      .studio-hero-name,
+      .studio-hero-description,
+      .studio-hero .studio-actions
+    ) {
+    animation: sm-rise 240ms var(--sm-ease) calc(var(--i, 0) * 60ms) backwards;
+  }
+
+  /* Hover/press: translate/scale only. */
+  :root:not([data-paradigm="kinetic"])
+    :is(.studio-button, .studio-button-secondary, .studio-hero-link) {
+    transition:
+      transform 160ms var(--sm-ease),
+      translate 160ms var(--sm-ease),
+      scale 160ms var(--sm-ease);
+  }
+  :root:not([data-paradigm="kinetic"])
+    :is(.studio-button, .studio-button-secondary):active {
+    scale: 0.98;
+  }
+  :root:not([data-paradigm="kinetic"]) .studio-navigation a {
+    transition: translate 160ms var(--sm-ease);
+  }
+  :root:not([data-paradigm="kinetic"]) .studio-navigation a:hover {
+    translate: 0 -1px;
+  }
+  :root:not([data-paradigm="kinetic"]) .studio-project {
+    transition:
+      translate 240ms var(--sm-ease),
+      scale 240ms var(--sm-ease);
+  }
+  :root:not([data-paradigm="kinetic"]) .studio-project:hover {
+    translate: 0 -4px;
+  }
+  :root:not([data-paradigm="kinetic"]) .studio-project:active {
+    scale: 0.99;
+  }
+}
+
+/* Scroll reveal: only where supported; otherwise content is simply visible. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root:not([data-paradigm="kinetic"]) :is(.studio-section-heading, .studio-project) {
+      animation: sm-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+@keyframes sm-page-out {
+  to {
+    opacity: 0;
+    translate: 0 -12px;
+  }
+}
+@keyframes sm-page-in {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+@keyframes sm-rise {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+@keyframes sm-reveal {
+  from {
+    opacity: 0;
+    translate: 0 16px;
+  }
+}

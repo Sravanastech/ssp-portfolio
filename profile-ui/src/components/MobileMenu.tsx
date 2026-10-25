@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { PrefetchNavLink as NavLink } from "./PrefetchLink";
 import { useAuth } from "@/auth/auth";
 import { SiteText } from "@/content/SiteContent";
 import { useSiteContent } from "@/content/siteContentContext";

@@ -888,3 +888,16 @@ html:has(.studio-case-nav) {
     display: none;
   }
 }
+
+/* Route transitions: only the page content gets a named transition group, so the
+   header/footer stay put. Scoped to route changes (flag set by lib/viewTransition)
+   so paradigm/composition root transitions are unaffected. Keyframes live elsewhere. */
+:root[data-route-transition] #main-content {
+  view-transition-name: page;
+}
+#main-content:focus {
+  outline: none;
+}
+::view-transition-group(page) {
+  animation-duration: 220ms;
+}

@@ -1,6 +1,6 @@
 import { SiteText } from "@/content/SiteContent";
 import { useSiteContent } from "@/content/siteContentContext";
-import { Link } from "react-router-dom";
+import PrefetchLink from "@/components/PrefetchLink";
 import { ArrowDown, ArrowUpRight } from "lucide-react";
 import SystemStudio from "./SystemStudio";
 
@@ -22,15 +22,15 @@ export default function HeroSection({
         <div className="studio-hero-grid">
           <div className="studio-hero-copy">
             <div className="studio-rail-nav">
-              <Link to="/work">
+              <PrefetchLink to="/work">
                 <SiteText id="components.HeroSection.text.1" />
-              </Link>
-              <Link to="/about">
+              </PrefetchLink>
+              <PrefetchLink to="/about">
                 <SiteText id="components.HeroSection.text.2" />
-              </Link>
-              <Link to="/contact">
+              </PrefetchLink>
+              <PrefetchLink to="/contact">
                 <SiteText id="components.HeroSection.text.3" />
-              </Link>
+              </PrefetchLink>
             </div>
             <h1>{title ?? profile.headline}</h1>
             <p className="studio-hero-name">
@@ -44,18 +44,21 @@ export default function HeroSection({
               {description ?? profile.description}
             </p>
             <div className="studio-actions">
-              <Link to="/work" className="studio-button studio-button-light">
+              <PrefetchLink
+                to="/work"
+                className="studio-button studio-button-light"
+              >
                 <SiteText id="components.HeroSection.text.5" />
                 <ArrowUpRight size={20} aria-hidden="true" />
-              </Link>
-              <Link to="/resume" className="studio-hero-link">
+              </PrefetchLink>
+              <PrefetchLink to="/resume" className="studio-hero-link">
                 <SiteText id="components.HeroSection.text.9" />
                 <ArrowUpRight size={18} aria-hidden="true" />
-              </Link>
-              <Link to="/contact" className="studio-hero-link">
+              </PrefetchLink>
+              <PrefetchLink to="/contact" className="studio-hero-link">
                 <SiteText id="components.HeroSection.text.6" />
                 <ArrowUpRight size={18} aria-hidden="true" />
-              </Link>
+              </PrefetchLink>
             </div>
           </div>
           <SystemStudio />

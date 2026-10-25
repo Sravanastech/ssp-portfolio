@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import ModeStrip from "@/components/ModeStrip";
 import PageMetadata from "@/components/PageMetadata";
 import OfflineBanner from "@/components/OfflineBanner";
 import ConsentBanner from "@/components/ConsentBanner";
@@ -10,6 +11,21 @@ import {
   CompositionContext,
   type Composition,
 } from "@/theme/CompositionContext";
+
+import { ParadigmProvider, useParadigm } from "@/theme/ParadigmContext";
+
+// Kinetic-only code: Studio visitors never download this chunk.
+const LazyKineticStage = lazy(() => import("@/components/KineticStage"));
+
+function KineticStageSlot() {
+  const { isKinetic } = useParadigm();
+  if (!isKinetic) return null;
+  return (
+    <Suspense fallback={null}>
+      <LazyKineticStage />
+    </Suspense>
+  );
+}
 
 type Props = { children: React.ReactNode; showHero?: boolean };
 export default function Layout({ children }: Props) {
@@ -45,23 +61,27 @@ export default function Layout({ children }: Props) {
     }
   };
   return (
-    <CompositionContext.Provider value={{ composition, select }}>
-      <div
-        className="studio-shell flex flex-col min-h-screen"
-        data-composition={composition}
-      >
-        <a className="skip-link" href="#main-content">
-          Skip to content
-        </a>
-        <Header />
-        <PageMetadata />
-        <main id="main-content" tabIndex={-1} className="flex-1 w-full">
-          {children}
-        </main>
-        <Footer />
-        <OfflineBanner />
-        <ConsentBanner />
-      </div>
-    </CompositionContext.Provider>
+    <ParadigmProvider>
+      <CompositionContext.Provider value={{ composition, select }}>
+        <div
+          className="studio-shell flex flex-col min-h-screen"
+          data-composition={composition}
+        >
+          <a className="skip-link" href="#main-content">
+            Skip to content
+          </a>
+          <ModeStrip />
+          <KineticStageSlot />
+          <Header />
+          <PageMetadata />
+          <main id="main-content" tabIndex={-1} className="flex-1 w-full">
+            {children}
+          </main>
+          <Footer />
+          <OfflineBanner />
+          <ConsentBanner />
+        </div>
+      </CompositionContext.Provider>
+    </ParadigmProvider>
   );
 }

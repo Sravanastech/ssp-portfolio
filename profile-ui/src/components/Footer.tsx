@@ -1,6 +1,6 @@
 import { SiteText } from "@/content/SiteContent";
 import { useSiteContent } from "@/content/siteContentContext";
-import { Link } from "react-router-dom";
+import PrefetchLink from "@/components/PrefetchLink";
 import { ArrowUpRight } from "lucide-react";
 import { isAnalyticsEnabled, openConsent } from "@/lib/analytics";
 import "@/styles/consent.css";
@@ -11,14 +11,14 @@ export default function Footer() {
     <footer className="studio-footer">
       <div className="studio-container">
         <div className="studio-footer-main">
-          <Link to="/" className="studio-footer-name">
+          <PrefetchLink to="/" className="studio-footer-name">
             <SiteText id="components.Footer.text.1" />
             <br />
             <SiteText id="components.Footer.text.2" />
             <span>
               <SiteText id="components.Footer.text.3" />
             </span>
-          </Link>
+          </PrefetchLink>
           <div>
             <p>
               <SiteText id="components.Footer.text.4" />
@@ -46,12 +46,12 @@ export default function Footer() {
           </span>
           <span>{profile.location}</span>
           <nav aria-label="Legal">
-            <Link to="/privacy">
+            <PrefetchLink to="/privacy">
               <SiteText id="components.Footer.text.14" />
-            </Link>
-            <Link to="/termsconditions">
+            </PrefetchLink>
+            <PrefetchLink to="/termsconditions">
               <SiteText id="components.Footer.text.15" />
-            </Link>
+            </PrefetchLink>
             {isAnalyticsEnabled() && (
               <button
                 type="button"

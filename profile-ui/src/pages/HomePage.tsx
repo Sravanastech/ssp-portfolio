@@ -1,13 +1,20 @@
 import { SiteText } from "@/content/SiteContent";
 import { useSiteContent } from "@/content/siteContentContext";
-import { Link } from "react-router-dom";
+import PrefetchLink from "@/components/PrefetchLink";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import HeroSection from "@/components/HeroSection";
 import ProjectArtwork from "@/components/ProjectArtwork";
 import EmployerTimeline from "@/components/EmployerTimeline";
 
 export default function HomePage() {
-  const { caseStudies, experiences } = useSiteContent();
+  const { caseStudies, experiences, copy } = useSiteContent();
+  const copyMap = copy as Record<string, string>;
+  const workHeadingGhost = [
+    copyMap["pages.HomePage.text.1"],
+    copyMap["pages.HomePage.text.2"],
+  ]
+    .filter(Boolean)
+    .join(" ");
   // Tools derived from the stacks already listed on the case studies, most-used first.
   const tallies = new Map<string, number>();
   caseStudies.forEach((study) =>
@@ -27,7 +34,7 @@ export default function HomePage() {
         className="studio-container studio-section"
         aria-labelledby="selected-work-title"
       >
-        <div className="studio-section-heading">
+        <div className="studio-section-heading" data-ghost={workHeadingGhost}>
           <h2 id="selected-work-title">
             <SiteText id="pages.HomePage.text.1" />
             <br />
@@ -40,7 +47,7 @@ export default function HomePage() {
         <div className="studio-project-grid">
           {caseStudies.map((study) => (
             <article className="studio-project" key={study.id}>
-              <Link
+              <PrefetchLink
                 className="studio-project-image"
                 to={`/work/${study.slug}`}
                 aria-label={`Read the ${study.name} case study`}
@@ -49,17 +56,17 @@ export default function HomePage() {
                 <span className="studio-project-open">
                   <ArrowUpRight aria-hidden="true" />
                 </span>
-              </Link>
+              </PrefetchLink>
               <div className="studio-project-copy">
                 <p className="studio-project-meta">
                   {study.organization}
                   <span>{study.role}</span>
                 </p>
                 <h3>
-                  <Link to={`/work/${study.slug}`}>
+                  <PrefetchLink to={`/work/${study.slug}`}>
                     {study.name}
                     <ArrowUpRight size={22} aria-hidden="true" />
-                  </Link>
+                  </PrefetchLink>
                 </h3>
                 <p className="studio-project-summary">{study.summary}</p>
                 <p className="studio-project-contribution">{study.preview}</p>
@@ -71,18 +78,21 @@ export default function HomePage() {
                     <li key={technology}>{technology}</li>
                   ))}
                 </ul>
-                <Link className="studio-link" to={`/work/${study.slug}`}>
+                <PrefetchLink
+                  className="studio-link"
+                  to={`/work/${study.slug}`}
+                >
                   <SiteText id="pages.HomePage.text.4" />
                   <ArrowRight size={16} aria-hidden="true" />
-                </Link>
+                </PrefetchLink>
               </div>
             </article>
           ))}
         </div>
-        <Link className="studio-link" to="/work">
+        <PrefetchLink className="studio-link" to="/work">
           <SiteText id="pages.HomePage.text.5" />
           <ArrowRight size={18} aria-hidden="true" />
-        </Link>
+        </PrefetchLink>
       </section>
       <section
         className="studio-container studio-proof"
@@ -93,10 +103,10 @@ export default function HomePage() {
             <h2 id="employers-title">
               <SiteText id="pages.HomePage.text.25" />
             </h2>
-            <Link className="studio-link" to="/about#experience">
+            <PrefetchLink className="studio-link" to="/about#experience">
               <SiteText id="pages.HomePage.text.26" />
               <ArrowRight size={16} aria-hidden="true" />
-            </Link>
+            </PrefetchLink>
           </div>
           <EmployerTimeline items={experiences} />
         </div>
@@ -125,10 +135,10 @@ export default function HomePage() {
             <p className="studio-lede">
               <SiteText id="pages.HomePage.text.8" />
             </p>
-            <Link className="studio-link" to="/about">
+            <PrefetchLink className="studio-link" to="/about">
               <SiteText id="pages.HomePage.text.9" />{" "}
               <ArrowUpRight size={18} aria-hidden="true" />
-            </Link>
+            </PrefetchLink>
           </div>
           <div className="studio-principles">
             <section>
@@ -187,10 +197,10 @@ export default function HomePage() {
             <SiteText id="pages.HomePage.text.21" />
           </p>
         </div>
-        <Link className="studio-button" to="/contact">
+        <PrefetchLink className="studio-button" to="/contact">
           <SiteText id="pages.HomePage.text.22" />
           <ArrowUpRight size={20} aria-hidden="true" />
-        </Link>
+        </PrefetchLink>
       </section>
     </>
   );
