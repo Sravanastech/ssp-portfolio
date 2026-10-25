@@ -22,16 +22,16 @@ export function PageSkeleton() {
 /** Layout route: one persistent shell; only the Outlet suspends. */
 export default function LayoutRoute() {
   const { pathname, hash } = useLocation();
-  const first = useRef(true);
+  const lastPath = useRef(pathname);
   useEffect(() => scheduleIdlePrefetch(), []);
   useLayoutEffect(() => {
     notifyRouteCommitted();
   }, [pathname]);
   useEffect(() => {
-    if (first.current) {
-      first.current = false;
-      return;
-    }
+    // Compare paths (not a one-shot flag) so StrictMode's effect replay in dev
+    // does not steal focus from the skip link on first load.
+    if (lastPath.current === pathname) return;
+    lastPath.current = pathname;
     // Hash navigation keeps its anchor behavior; otherwise move focus without scrolling.
     if (hash) return;
     document.getElementById("main-content")?.focus({ preventScroll: true });

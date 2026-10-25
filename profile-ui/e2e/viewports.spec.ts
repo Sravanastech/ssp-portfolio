@@ -77,6 +77,23 @@ for (const paradigm of ["studio", "kinetic"] as const) {
       for (const route of ROUTES) {
         await page.goto(route);
         await expect(page.locator("main")).toBeVisible();
+        // Measure only once the app is hydrated in the requested paradigm, the
+        // lazy Kinetic chunk (ticker) has mounted and fonts/layout have settled;
+        // measuring mid-hydration on wide viewports was the source of flakes.
+        await expect(page.locator("html")).toHaveAttribute(
+          "data-paradigm",
+          paradigm,
+        );
+        if (paradigm === "kinetic") {
+          await expect(page.locator(".kinetic-ticker").first()).toBeAttached();
+        }
+        await page.waitForLoadState("networkidle");
+        await page.evaluate(async () => {
+          await document.fonts.ready;
+          await new Promise<void>((done) =>
+            requestAnimationFrame(() => requestAnimationFrame(() => done())),
+          );
+        });
         await expect(page.locator("header").first()).toBeVisible();
         await expect(page.locator("footer").first()).toBeAttached();
         const m = await measure(page);

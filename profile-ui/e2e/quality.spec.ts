@@ -1,5 +1,7 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { existsSync, readdirSync } from "node:fs";
+import { join, resolve } from "node:path";
 
 const publicRoutes = [
   "/",
@@ -24,14 +26,60 @@ for (const route of publicRoutes) {
   });
 }
 
-test("private resume is never served as a public static PDF", async ({ request }) => {
-  const response = await request.get(
-    "http://127.0.0.1:5173/private/Sravana_Parimi.pdf",
-  );
-  // A static host may return the SPA fallback instead of a 404; neither may
-  // expose PDF bytes. Authenticated delivery is tested against the API handler.
-  expect(response.headers()["content-type"]).not.toContain("application/pdf");
-  expect((await response.body()).subarray(0, 5).toString()).not.toBe("%PDF-");
+test.describe("private resume is never public", () => {
+  test("static build output contains no PDF files", async () => {
+    const dist = resolve("dist");
+    test.skip(!existsSync(dist), "dist/ not built");
+    const pdfs: string[] = [];
+    const walk = (dir: string) => {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        const full = join(dir, entry.name);
+        if (entry.isDirectory()) walk(full);
+        else if (/\.pdf$/i.test(entry.name)) pdfs.push(full);
+      }
+    };
+    walk(dist);
+    expect(pdfs).toEqual([]);
+  });
+
+  test("anonymous /resume is sent to Auth0 login, not a PDF", async ({
+    page,
+  }) => {
+    const pdfRequests: string[] = [];
+    page.on("request", (req) => {
+      if (/\.pdf(\?|$)/i.test(req.url()) || req.url().includes("/api/resume"))
+        pdfRequests.push(req.url());
+    });
+    // Never reach the real tenant; the redirect itself is the assertion.
+    await page.route(/auth0\.com/, (route) =>
+      route.fulfill({ status: 200, contentType: "text/html", body: "login" }),
+    );
+    await page.goto("/resume");
+    await page.waitForURL(/auth0\.com\/authorize/);
+    expect(pdfRequests).toEqual([]);
+  });
+
+  test("public pages never request a PDF", async ({ page }) => {
+    const pdfs: string[] = [];
+    page.on("response", (res) => {
+      const type = res.headers()["content-type"] ?? "";
+      if (type.includes("application/pdf") || /\.pdf(\?|$)/i.test(res.url()))
+        pdfs.push(res.url());
+    });
+    for (const route of publicRoutes) {
+      await page.goto(route);
+      await page.waitForLoadState("networkidle");
+    }
+    expect(pdfs).toEqual([]);
+  });
+
+  test("legacy static PDF path serves no PDF bytes", async ({ request }) => {
+    const response = await request.get("/private/Sravana_Parimi.pdf");
+    expect(response.headers()["content-type"] ?? "").not.toContain(
+      "application/pdf",
+    );
+    expect((await response.body()).subarray(0, 5).toString()).not.toBe("%PDF-");
+  });
 });
 
 test("engineering motion is finite and respects reduced motion", async ({

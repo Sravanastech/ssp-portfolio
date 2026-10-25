@@ -5,7 +5,9 @@ test.describe("Portfolio brand and navigation", () => {
     await page.goto("/work");
     const brand = page.getByTestId("logo-link");
     await expect(brand).toBeVisible();
-    await expect(brand).toHaveAccessibleName("Sravana S Parimi - Home");
+    await expect(brand).toHaveAccessibleName(
+      /^Sravana S Parimi\s*Full-stack engineering$/,
+    );
     await expect(brand).toHaveAttribute("href", "/");
     await expect(brand).toContainText("Sravana S Parimi");
     await expect(brand.locator(".studio-monogram")).toHaveText("sp.");
@@ -23,6 +25,11 @@ test.describe("Portfolio brand and navigation", () => {
     await expect(
       page.getByRole("link", { name: "Skip to content" }),
     ).toBeFocused();
+    // Next stops are the Studio/Kinetic mode strip, then the brand.
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("button", { name: "Studio" })).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("button", { name: "Kinetic" })).toBeFocused();
     await page.keyboard.press("Tab");
     const brand = page.getByTestId("logo-link");
     await expect(brand).toBeFocused();

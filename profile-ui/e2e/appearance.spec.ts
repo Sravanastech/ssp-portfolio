@@ -1,51 +1,41 @@
 import { test, expect } from "@playwright/test";
 
 for (const width of [1440, 390]) {
-  test(`appearance choices are visible, compact and persistent at ${width}px`, async ({
+  test(`light/dark appearance is switchable, compact and persistent at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    await page.getByText("Appearance settings", { exact: true }).click();
-    await expect(page.locator(".composition-switcher")).toContainText("Bold");
-    await expect(page.locator(".composition-switcher")).toContainText(
-      "Spatial",
-    );
-    for (const name of ["Woodland", "Sunrise", "Ocean"]) {
-      const button = page.getByRole("button", {
-        name: `${name} theme`,
-        exact: true,
-      });
-      await button.click();
-      await expect(button).toHaveAttribute("aria-pressed", "true");
-      await expect(button).toContainText(name);
-      for (const composition of ["Bold", "Bright", "Spatial"]) {
-        const radio = page.getByRole("radio", {
-          name: new RegExp(composition),
-        });
-        await radio.check();
-        await expect(radio).toBeChecked();
-        const label = radio.locator("..");
-        await expect
-          .poll(() =>
-            label.evaluate((el) => getComputedStyle(el).backgroundColor),
-          )
-          .toBe("rgb(220, 233, 155)");
-      }
+    const html = page.locator("html");
+    await expect(html).toHaveAttribute("data-theme", "sunrise");
+    // Removed controls must stay gone.
+    await expect(page.getByText("Appearance settings")).toHaveCount(0);
+    await expect(page.locator(".composition-switcher")).toHaveCount(0);
+
+    if (width >= 950) {
+      const toggle = page.locator(".mode-toggle:visible");
+      await toggle.click();
+      await expect(html).toHaveAttribute("data-theme", "midnight");
+      await expect(toggle).toHaveAccessibleName("Switch to light mode");
+    } else {
+      await page.getByRole("button", { name: "Open navigation menu" }).click();
+      const dialog = page.getByRole("dialog");
+      const group = dialog.getByRole("group", { name: "Appearance" });
+      const light = group.getByRole("button", { name: "Light" });
+      const dark = group.getByRole("button", { name: "Dark" });
+      await expect(light).toHaveAttribute("aria-pressed", "true");
+      await dark.click();
+      await expect(dark).toHaveAttribute("aria-pressed", "true");
+      await expect(light).toHaveAttribute("aria-pressed", "false");
+      await expect(html).toHaveAttribute("data-theme", "midnight");
+      await page.keyboard.press("Escape");
     }
-    const palette = await page.locator(".theme-switcher").boundingBox();
-    expect(palette?.width).toBeLessThanOrEqual(440);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    await page.screenshot({ path: `artifacts/studio/appearance-${width}.png` });
     await page.reload();
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "ocean");
-    await expect(page.locator(".studio-shell")).toHaveAttribute(
-      "data-composition",
-      "c",
-    );
+    await expect(html).toHaveAttribute("data-theme", "midnight");
   });
 }
