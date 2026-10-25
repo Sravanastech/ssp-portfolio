@@ -748,3 +748,25 @@
 :root[data-paradigm="kinetic"] #main-content {
   overflow-x: clip;
 }
+
+/* Huge viewports (>= ~7M px): full-viewport fixed layers and scroll-driven effects cost more
+   than they add; keep static, opaque equivalents so scroll stays smooth on 32:9 / 5K+ panels. */
+@media (min-width: 3440px) {
+  :root[data-paradigm="kinetic"]::after {
+    display: none;
+  }
+  :root[data-paradigm="kinetic"] body::before,
+  :root[data-paradigm="kinetic"] body::after {
+    inset: 0;
+    will-change: auto;
+  }
+  :root[data-paradigm="kinetic"] .studio-header {
+    backdrop-filter: none;
+  }
+  :root[data-paradigm="kinetic"] .studio-project,
+  :root[data-paradigm="kinetic"] .studio-case,
+  :root[data-paradigm="kinetic"] .project-related a,
+  :root[data-paradigm="kinetic"] .studio-section-heading::before {
+    animation: none;
+  }
+}

@@ -128,7 +128,7 @@ button:disabled {
   scroll-margin-top: 100px;
 }
 .studio-container {
-  width: min(100% - 96px, 1280px);
+  width: min(100% - 96px, var(--studio-container-max, 1280px));
   margin-inline: auto;
 }
 .studio-section {
@@ -342,7 +342,7 @@ button:disabled {
   font-size: clamp(3rem, 1rem + 4.5vw, 5.125rem);
   font-weight: 700;
   line-height: 1.02;
-  max-width: 700px;
+  max-width: 43.75rem;
   margin: 0;
   transition: font-size 0.6s var(--studio-ease);
   animation: hero-arrive 0.8s var(--studio-ease);
@@ -2095,4 +2095,54 @@ a:hover .project-art-sheet {
   .workflow-system-node {
     font-size: 0.75rem;
   }
+}
+
+/* Large / ultra-wide + short-height scaling (token driven; <=1920 unchanged). */
+:root {
+  --studio-container-max: 1280px;
+}
+@media (min-width: 1921px) {
+  :root {
+    --studio-container-max: 84rem;
+    /* 16px at 1920 -> ~28px at 7680 (capped). rem = user's default size, so a
+       larger browser font setting is respected instead of reset to 16px. */
+    font-size: clamp(1rem, calc(1rem + (100vw - 1920px) * 0.0021), 1.875rem);
+  }
+  [data-composition="a"] .studio-hero::before {
+    clip-path: polygon(
+      calc(50% + 0.36 * min(100% - 96px, var(--studio-container-max))) 0,
+      100% 0,
+      100% 100%,
+      calc(50% - 0.03 * min(100% - 96px, var(--studio-container-max))) 100%
+    );
+  }
+}
+@media (min-width: 2560px) {
+  :root {
+    --studio-container-max: 90rem;
+  }
+}
+@media (min-width: 3440px) {
+  :root {
+    --studio-container-max: 100rem;
+  }
+}
+@media (min-width: 5120px) {
+  :root {
+    --studio-container-max: 110rem;
+  }
+}
+@media (max-height: 760px) and (min-width: 720px) {
+  .studio-header-inner {
+    min-height: 72px;
+  }
+  .studio-hero {
+    padding-top: 40px;
+  }
+  .studio-hero h1 {
+    font-size: clamp(2.75rem, 1rem + 3.6vw, 4rem);
+  }
+}
+.studio-project-contribution {
+  max-width: 75ch;
 }

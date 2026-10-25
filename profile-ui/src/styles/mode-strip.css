@@ -67,3 +67,13 @@
   outline: 2px solid var(--color-focus-ring);
   outline-offset: -2px;
 }
+/* Large displays: grow with the >1920 root font clamp (src/index.css) so the strip
+   stays legible on 4K+/ultrawide panels; same height in both designs (no shift). */
+@media (min-width: 1921px) and (pointer: fine) {
+  .mode-strip {
+    block-size: 2rem;
+  }
+  :root:not([data-paradigm="kinetic"]) .mode-strip {
+    font-size: 0.6875rem;
+  }
+}
