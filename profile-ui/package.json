@@ -20,7 +20,8 @@
     "fix": "npm run format && npm run lint:fix",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
-    "fix:prettier": "prettier --write ."
+    "fix:prettier": "prettier --write .",
+    "resume:pdf": "node scripts/build-resume.mjs"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.28.2",
