@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("Responsive portfolio header", () => {
   for (const width of [375, 768, 1440]) {

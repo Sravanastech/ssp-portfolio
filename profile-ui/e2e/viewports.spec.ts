@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "./fixtures";
 
 /** Responsive gate: both paradigms across 720p..7680x2160 + small-screen regressions. */
 const SIZES: Array<[number, number]> = [

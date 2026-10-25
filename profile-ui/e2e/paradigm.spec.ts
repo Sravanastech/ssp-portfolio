@@ -1,4 +1,4 @@
-import { test, expect, type Page, type ConsoleMessage } from "@playwright/test";
+import { test, expect, type Page, type ConsoleMessage } from "./fixtures";
 import { mkdir, writeFile } from "node:fs/promises";
 
 /**

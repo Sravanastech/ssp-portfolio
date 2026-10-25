@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter as Router } from "react-router-dom";
 import AppRoutes from "./AppRoutes";
+import AppReady from "./components/AppReady";
 import AuthProvider from "./auth/AuthProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
@@ -62,6 +63,7 @@ const mountApp = () =>
                     <ErrorBoundary>
                       <SiteContentProvider>
                         <AppRoutes />
+                        <AppReady />
                       </SiteContentProvider>
                     </ErrorBoundary>
                   </AuthProvider>
