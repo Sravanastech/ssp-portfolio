@@ -13,7 +13,6 @@ export interface QueuedContactDraft {
 const DB_NAME = "ssp_portfolio_offline";
 const DB_VERSION = 1;
 const STORE_NAME = "queued_inquiries";
-export const MAX_RETRIES = 3;
 
 function openDB(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -82,30 +81,6 @@ export async function getPendingDrafts(): Promise<QueuedContactDraft[]> {
   } catch {
     return [];
   }
-}
-
-export async function updateDraftStatus(
-  id: string,
-  status: QueuedContactDraft["status"],
-  lastError?: string,
-): Promise<void> {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORE_NAME, "readwrite");
-    const store = tx.objectStore(STORE_NAME);
-    const getReq = store.get(id);
-    getReq.onsuccess = () => {
-      const draft = getReq.result as QueuedContactDraft | undefined;
-      if (!draft) return resolve();
-      draft.status = status;
-      if (status === "failed") draft.retryCount += 1;
-      if (lastError) draft.lastError = lastError;
-      const putReq = store.put(draft);
-      putReq.onsuccess = () => resolve();
-      putReq.onerror = () => reject(putReq.error);
-    };
-    getReq.onerror = () => reject(getReq.error);
-  });
 }
 
 export async function deleteOfflineDraft(id: string): Promise<void> {

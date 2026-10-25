@@ -12,10 +12,10 @@ declare global {
 }
 
 export type ConsentChoice = "granted" | "denied";
-export const CONSENT_KEY = "consent.analytics";
+const CONSENT_KEY = "consent.analytics";
 
 // EEA member states + Iceland, Liechtenstein, Norway, UK, Switzerland.
-export const CONSENT_REGIONS = [
+const CONSENT_REGIONS = [
   "AT",
   "BE",
   "BG",
@@ -52,7 +52,7 @@ export const CONSENT_REGIONS = [
 
 const SKIPPED_PATHS = new Set(["/auth-callback"]);
 
-export function getMeasurementId(): string | undefined {
+function getMeasurementId(): string | undefined {
   const id = (
     import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined
   )?.trim();
@@ -66,7 +66,7 @@ let reopened = false;
 const listeners = new Set<() => void>();
 const notify = () => listeners.forEach((l) => l());
 
-export function readStoredConsent(): ConsentChoice | null {
+function readStoredConsent(): ConsentChoice | null {
   try {
     const v = localStorage.getItem(CONSENT_KEY);
     return v === "granted" || v === "denied" ? v : null;

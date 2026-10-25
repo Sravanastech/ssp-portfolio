@@ -13,7 +13,7 @@ export type Account = {
   country: string | null;
 };
 
-export class AccountApiError extends Error {
+class AccountApiError extends Error {
   status: number;
   constructor(message: string, status: number) {
     super(message);
