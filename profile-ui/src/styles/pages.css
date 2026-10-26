@@ -41,20 +41,28 @@
 .resume-actions .studio-button-secondary {
   gap: 12px;
 }
-.resume-frame {
+.resume-preview {
+  margin: 0;
+  width: 100%;
+  max-width: 880px;
+}
+.resume-preview[data-ready="false"] {
+  height: 0;
+  overflow: hidden;
+}
+.resume-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.resume-canvas {
   display: block;
   width: 100%;
-  height: 78dvh;
-  min-height: 520px;
+  height: auto;
   border: 1px solid var(--color-border);
   border-radius: 6px;
-  background: var(--color-surface);
-}
-.resume-note {
-  display: none;
-  margin: 0;
-  max-width: 52ch;
-  color: var(--color-textSecondary);
+  /* A PDF page is paper: keep it white in dark mode too. */
+  background: #fff;
 }
 .resume-panel {
   display: flex;
@@ -89,18 +97,23 @@
   margin: 0 0 20px;
   color: var(--color-textSecondary);
 }
+.resume-loading .resume-status--slow {
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
 .resume-loading .skeleton-bar--frame {
   width: 100%;
+  max-width: 880px;
   height: 78dvh;
   min-height: 520px;
 }
 @media (max-width: 719px) {
-  .resume-frame,
   .resume-loading .skeleton-bar--frame {
-    display: none;
-  }
-  .resume-note {
-    display: block;
+    min-height: 360px;
+    height: 60dvh;
   }
   .resume-actions .studio-button,
   .resume-actions .studio-button-secondary {

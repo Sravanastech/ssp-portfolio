@@ -1,13 +1,34 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import ResumePage from "../ResumePage";
+import { __resetWarmupForTests } from "@/lib/backendWarmup";
+
+const renderer = vi.hoisted(() => ({
+  renderPdf: vi.fn((opts: { host: HTMLElement; onFirstPage: () => void }) => {
+    const canvas = document.createElement("canvas");
+    canvas.setAttribute("role", "img");
+    opts.host.append(canvas);
+    opts.onFirstPage();
+    return { destroy: vi.fn() };
+  }),
+}));
+vi.mock("@/lib/pdfRender", () => renderer);
 
 const auth = vi.hoisted(() => ({
   getAccessTokenSilently: vi.fn(),
   isAuthenticated: true,
 }));
 vi.mock("@/auth/auth", () => ({ useAuth: () => auth }));
+
+const resumeCalls = () =>
+  vi.mocked(fetch).mock.calls.filter(([url]) => url === "/api/resume");
 
 function preview() {
   return render(
@@ -21,6 +42,8 @@ describe("secure resume preview", () => {
   beforeEach(() => {
     auth.isAuthenticated = true;
     auth.getAccessTokenSilently.mockResolvedValue("verified-access-token");
+    __resetWarmupForTests();
+    renderer.renderPdf.mockClear();
     vi.stubGlobal("fetch", vi.fn());
     URL.createObjectURL = vi.fn(() => "blob:private-resume");
     URL.revokeObjectURL = vi.fn();
@@ -28,16 +51,19 @@ describe("secure resume preview", () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it("fetches with authorization and revokes its local preview on unmount", async () => {
-    vi.mocked(fetch).mockResolvedValue(
-      new Response(new Blob(["%PDF-content"]), {
-        headers: { "Content-Type": "application/pdf" },
-      }),
+    vi.mocked(fetch).mockImplementation(async (url) =>
+      url === "/api/health"
+        ? new Response("{}")
+        : new Response(new Blob(["%PDF-content"]), {
+            headers: { "Content-Type": "application/pdf" },
+          }),
     );
     const page = preview();
-    expect(await screen.findByTitle("Resume PDF")).toHaveAttribute(
-      "src",
-      "blob:private-resume",
-    );
+    expect(
+      await screen.findByRole("figure", { name: /Resume preview/ }),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(renderer.renderPdf).toHaveBeenCalledTimes(1));
+    expect(screen.queryByTitle("Resume PDF")).not.toBeInTheDocument();
     expect(fetch).toHaveBeenCalledWith(
       "/api/resume",
       expect.objectContaining({
@@ -52,6 +78,41 @@ describe("secure resume preview", () => {
     expect(URL.revokeObjectURL).toHaveBeenCalledWith("blob:private-resume");
   });
 
+  it("warms the backend once on mount, without credentials", async () => {
+    vi.mocked(fetch).mockResolvedValue(new Response("{}", { status: 401 }));
+    preview();
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/health",
+      expect.objectContaining({ credentials: "omit" }),
+    );
+    await screen.findByRole("alert");
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    await waitFor(() => expect(resumeCalls()).toHaveLength(2));
+    const health = vi
+      .mocked(fetch)
+      .mock.calls.filter(([url]) => url === "/api/health");
+    expect(health).toHaveLength(1);
+  });
+
+  it("explains a cold start when the request is slow", async () => {
+    vi.useFakeTimers();
+    try {
+      vi.mocked(fetch).mockImplementation(() => new Promise(() => undefined));
+      preview();
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "Loading your secure resume preview",
+      );
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2600);
+      });
+      expect(screen.getByRole("status")).toHaveTextContent(
+        "Waking up the server",
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("offers retry after a rejected session without creating a preview", async () => {
     vi.mocked(fetch).mockResolvedValue(new Response("{}", { status: 401 }));
     preview();
@@ -61,7 +122,7 @@ describe("secure resume preview", () => {
     expect(screen.queryByTitle("Resume PDF")).not.toBeInTheDocument();
     expect(URL.createObjectURL).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole("button", { name: "Try again" }));
-    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(resumeCalls()).toHaveLength(2));
   });
 
   it("rejects an HTML static fallback instead of treating it as a PDF", async () => {
@@ -80,6 +141,6 @@ describe("secure resume preview", () => {
   it("does not fetch before authentication", () => {
     auth.isAuthenticated = false;
     preview();
-    expect(fetch).not.toHaveBeenCalled();
+    expect(resumeCalls()).toHaveLength(0);
   });
 });

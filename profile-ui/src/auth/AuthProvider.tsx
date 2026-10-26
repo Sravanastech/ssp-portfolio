@@ -17,6 +17,8 @@ import {
   type AuthMethods,
   type AuthSnapshot,
 } from "./auth";
+import { warmBackend } from "@/lib/backendWarmup";
+import { loadPdfRenderer } from "@/lib/pdfLoader";
 
 const LazyAuth0Bridge = lazy(() => import("./Auth0Bridge"));
 
@@ -41,6 +43,15 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (needsAuthRoute) setActive(true);
   }, [needsAuthRoute]);
+
+  // /resume sits behind the auth gate, so ResumePage mounts only after sign-in state
+  // resolves. Warm the API and (for a likely signed-in visitor) pdf.js right away.
+  const onResume = /^\/resume(\/|$)/.test(pathname);
+  useEffect(() => {
+    if (!onResume) return;
+    warmBackend();
+    if (hasAuthHint()) void loadPdfRenderer().catch(() => undefined);
+  }, [onResume]);
 
   const handleChange = useCallback(
     (next: AuthSnapshot, methods: AuthMethods) => {
