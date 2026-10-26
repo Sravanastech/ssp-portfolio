@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write # keyless Google auth (Workload Identity Federation)
 
 jobs:
   deploy:
@@ -32,13 +33,12 @@ jobs:
           VITE_GOOGLE_SITE_VERIFICATION: ${{ secrets.VITE_GOOGLE_SITE_VERIFICATION }}
           VITE_BING_SITE_VERIFICATION: ${{ secrets.VITE_BING_SITE_VERIFICATION }}
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+      - uses: google-github-actions/auth@v3
         with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: ssp-profile
-          channelId: live
-          entryPoint: profile-ui
+          workload_identity_provider: projects/132779291429/locations/global/workloadIdentityPools/github/providers/github-repo
+          service_account: github-hosting@ssp-profile.iam.gserviceaccount.com
+      - run: npx --yes firebase-tools@15.34.1 deploy --only hosting --project ssp-profile --non-interactive
+        working-directory: profile-ui
       # Notify Bing/Yandex of the sitemap URLs; the script is a no-op when the secret is absent.
       - run: node scripts/indexnow.mjs --submit
         working-directory: profile-ui
