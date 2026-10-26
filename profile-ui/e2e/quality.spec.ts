@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import AxeBuilder from "@axe-core/playwright";
 import { existsSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -54,7 +54,7 @@ test.describe("private resume is never public", () => {
     await page.route(/auth0\.com/, (route) =>
       route.fulfill({ status: 200, contentType: "text/html", body: "login" }),
     );
-    await page.goto("/resume");
+    await page.goto("/resume", { waitUntil: "commit" });
     await page.waitForURL(/auth0\.com\/authorize/);
     expect(pdfRequests).toEqual([]);
   });
