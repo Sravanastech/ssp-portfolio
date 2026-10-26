@@ -103,7 +103,7 @@ function MobileMenuClient() {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="studio-mobile-sheet flex flex-col justify-between h-[calc(100dvh-4.5rem)] w-[88vw] sm:w-[400px] max-w-md p-5 sm:p-6 overflow-hidden border-l"
+        className="studio-mobile-sheet flex flex-col justify-between h-[calc(100dvh-4.5rem)] w-[92vw] sm:w-[400px] max-w-md gap-2 p-3 sm:p-5 overflow-hidden border-l"
         style={{
           backgroundColor: cv.surface,
           borderColor: cv.border,
@@ -113,11 +113,11 @@ function MobileMenuClient() {
         <div className="flex flex-col flex-1 min-h-0">
           {/* Header & Accessibility Meta */}
           <div
-            className="pb-3 border-b pr-8"
+            className="pb-2 border-b pr-8"
             style={{ borderBottomColor: cv.border }}
           >
             <SheetTitle
-              className="text-xl font-bold tracking-tight"
+              className="text-lg font-bold tracking-tight leading-tight"
               style={{ color: cv.primary }}
             >
               <SiteText id="components.MobileMenu.text.1" />
@@ -131,12 +131,12 @@ function MobileMenuClient() {
           </div>
 
           {/* User Banner / Prompt */}
-          <div className="pt-4 pb-2">
+          <div className="pt-2 pb-1 empty:hidden">
             {isAuthenticated ? (
               <NavLink
                 to="/account"
                 onClick={() => setOpen(false)}
-                className="group flex items-center justify-between p-3.5 rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99] shadow-xs"
+                className="group flex items-center justify-between p-2.5 rounded-xl border transition-all hover:scale-[1.01] active:scale-[0.99] shadow-xs"
                 style={{
                   backgroundColor: cv.background,
                   borderColor: cv.border,
@@ -182,7 +182,7 @@ function MobileMenuClient() {
           {/* Navigation Links Scrollable Area */}
           <nav
             aria-label="Mobile navigation"
-            className="flex-1 overflow-y-auto space-y-2 py-2 pr-1"
+            className="flex-1 overflow-y-auto overscroll-contain space-y-1.5 py-1.5"
           >
             {navigation.map(({ href: path, label }) => {
               const Icon = getNavIcon(path);
@@ -196,7 +196,7 @@ function MobileMenuClient() {
                   key={path}
                   to={path}
                   onClick={() => setOpen(false)}
-                  className="group flex items-center justify-between p-3 rounded-xl border transition-all active:scale-[0.98]"
+                  className="group flex items-center justify-between px-2.5 py-2 rounded-xl border transition-all active:scale-[0.98]"
                   style={{
                     backgroundColor: isActive
                       ? tint("primary", 8)
@@ -242,7 +242,7 @@ function MobileMenuClient() {
             <NavLink
               to="/resume"
               onClick={() => setOpen(false)}
-              className="group flex items-center justify-between p-3 rounded-xl border transition-all active:scale-[0.98]"
+              className="group flex items-center justify-between px-2.5 py-2 rounded-xl border transition-all active:scale-[0.98]"
               style={{
                 backgroundColor: isResumeActive
                   ? tint("primary", 8)
@@ -324,7 +324,7 @@ function MobileMenuClient() {
               <NavLink
                 to="/account"
                 onClick={() => setOpen(false)}
-                className="group flex items-center justify-between p-3 rounded-xl border transition-all active:scale-[0.98]"
+                className="group flex items-center justify-between px-2.5 py-2 rounded-xl border transition-all active:scale-[0.98]"
                 style={{
                   backgroundColor: isAccountActive
                     ? tint("primary", 8)
@@ -365,12 +365,12 @@ function MobileMenuClient() {
 
         {/* Footer & Action Center */}
         <div
-          className="pt-4 border-t mt-3 space-y-3 shrink-0"
+          className="pt-2.5 border-t mt-2 space-y-2 shrink-0 pb-[env(safe-area-inset-bottom)]"
           style={{ borderTopColor: cv.border }}
         >
           {/* Appearance */}
           <div
-            className="flex items-center justify-between gap-3 p-2.5 rounded-xl border"
+            className="flex items-center justify-between gap-3 py-1.5 pl-3 pr-1.5 rounded-xl border"
             style={{
               backgroundColor: cv.background,
               borderColor: cv.border,
@@ -412,7 +412,7 @@ function MobileMenuClient() {
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border text-sm font-medium transition-all hover:bg-red-500/10 active:scale-98"
+              className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl border text-sm font-medium transition-all hover:bg-red-500/10 active:scale-98"
               style={{
                 borderColor: tint("error", 31),
                 color: cv.error,
@@ -425,7 +425,7 @@ function MobileMenuClient() {
             <button
               type="button"
               onClick={handleSignIn}
-              className="studio-button w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm shadow-xs transition-all active:scale-98"
+              className="studio-button w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-bold text-sm shadow-xs transition-all active:scale-98"
               style={{
                 backgroundColor: cv.primary,
                 color: cv.accent,
@@ -437,7 +437,7 @@ function MobileMenuClient() {
           )}
 
           <p
-            className="text-[11px] text-center opacity-60"
+            className="menu-fineprint text-[11px] text-center opacity-60"
             style={{ color: cv.textSecondary }}
           >
             © 2026 Sravana S Parimi · Engineering Portfolio

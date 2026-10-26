@@ -41,11 +41,11 @@ for (const width of [1440, 390]) {
       await expect(
         page.locator('.workflow-stage[aria-pressed="true"]'),
       ).toHaveCount(1);
-      expect(
-        await explanation.evaluate(
-          (el) => el.getBoundingClientRect().top + window.scrollY,
-        ),
-      ).toBe(initialTop);
+      // Sub-pixel layout rounding varies by platform; a visible shift is >= 1px.
+      const top = await explanation.evaluate(
+        (el) => el.getBoundingClientRect().top + window.scrollY,
+      );
+      expect(Math.abs(top - initialTop)).toBeLessThan(1);
     }
     const result = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])

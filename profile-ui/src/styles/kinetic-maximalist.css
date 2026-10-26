@@ -160,8 +160,12 @@
   border-radius: 0;
   display: block;
 }
-:root[data-paradigm="kinetic"] .system-model {
+:root[data-paradigm="kinetic"] .system-model:not(.workflow-model) {
   height: 265px;
+}
+/* Workflow stages stack on phones and grow past any fixed height; never pin it. */
+:root[data-paradigm="kinetic"] .workflow-model {
+  height: auto;
 }
 :root[data-paradigm="kinetic"] .system-node {
   width: 86px;
