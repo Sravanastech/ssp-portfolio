@@ -6,3 +6,6 @@ yarn.lock
 
 # Vite / Playwright local overrides
 *.local
+
+# The only PDF allowed in git: a synthetic one-page e2e fixture (never the real resume)
+!e2e/fixtures/sample-resume.pdf
