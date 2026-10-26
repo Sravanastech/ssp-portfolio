@@ -60,3 +60,10 @@
   background: var(--color-primary);
   color: var(--color-accent);
 }
+
+/* Short phones: reclaim the sheet's vertical space for navigation. */
+@media (max-height: 760px) {
+  .menu-fineprint {
+    display: none;
+  }
+}
