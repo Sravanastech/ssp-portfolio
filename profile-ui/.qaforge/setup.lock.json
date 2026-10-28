@@ -41,8 +41,14 @@
     },
     {
       "id": "scripts",
-      "commit": "",
+      "commit": "a427c9a362bc23c072b34d94ef9b02d18e4f3851",
       "appliedAt": "2026-10-28T03:54:30.936Z",
+      "installs": []
+    },
+    {
+      "id": "starter-tests",
+      "commit": "",
+      "appliedAt": "2026-10-28T03:54:31.014Z",
       "installs": []
     }
   ]
