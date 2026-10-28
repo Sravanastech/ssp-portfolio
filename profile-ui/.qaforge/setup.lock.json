@@ -4,9 +4,34 @@
   "steps": [
     {
       "id": "branch",
-      "commit": "",
+      "commit": "06fdf5f671e9d33213481075b236a3a1ecfae41f",
       "appliedAt": "2026-10-28T03:54:20.890Z",
       "installs": []
+    },
+    {
+      "id": "install",
+      "commit": "",
+      "appliedAt": "2026-10-28T03:54:30.768Z",
+      "installs": [
+        {
+          "name": "@vitest/coverage-v8",
+          "version": "5.0.5",
+          "ecosystem": "npm",
+          "dev": true
+        },
+        {
+          "name": "@stryker-mutator/core",
+          "version": "10.1.1",
+          "ecosystem": "npm",
+          "dev": true
+        },
+        {
+          "name": "@stryker-mutator/vitest-runner",
+          "version": "10.1.1",
+          "ecosystem": "npm",
+          "dev": true
+        }
+      ]
     }
   ]
 }
