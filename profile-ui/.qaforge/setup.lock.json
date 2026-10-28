@@ -35,8 +35,14 @@
     },
     {
       "id": "config",
-      "commit": "",
+      "commit": "c2750faee8f80f48460d999b0e19c5629604f6e0",
       "appliedAt": "2026-10-28T03:54:30.856Z",
+      "installs": []
+    },
+    {
+      "id": "scripts",
+      "commit": "",
+      "appliedAt": "2026-10-28T03:54:30.936Z",
       "installs": []
     }
   ]

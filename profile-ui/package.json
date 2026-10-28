@@ -21,7 +21,11 @@
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
     "fix:prettier": "prettier --write .",
-    "resume:pdf": "node scripts/build-resume.mjs"
+    "resume:pdf": "node scripts/build-resume.mjs",
+    "test:coverage": "vitest run --coverage",
+    "test:api": "playwright test --grep @api",
+    "test:add-first-tests": "vitest run",
+    "test:mutation": "stryker run"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.28.2",
