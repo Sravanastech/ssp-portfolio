@@ -59,7 +59,7 @@
     },
     {
       "id": "verify",
-      "commit": "",
+      "commit": "b32290d2a41fa6f515d119837d5ca004270036c5",
       "appliedAt": "2026-10-28T03:54:39.514Z",
       "installs": []
     }
