@@ -47,8 +47,14 @@
     },
     {
       "id": "starter-tests",
-      "commit": "",
+      "commit": "ddd93ce27bf86688fc3e4130e66bd3acabd42404",
       "appliedAt": "2026-10-28T03:54:31.014Z",
+      "installs": []
+    },
+    {
+      "id": "gitignore",
+      "commit": "",
+      "appliedAt": "2026-10-28T03:54:31.097Z",
       "installs": []
     }
   ]

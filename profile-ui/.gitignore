@@ -9,3 +9,12 @@ yarn.lock
 
 # The only PDF allowed in git: a synthetic one-page e2e fixture (never the real resume)
 !e2e/fixtures/sample-resume.pdf
+
+# Added by QAForge setup
+.qaforge/*
+!.qaforge/setup.lock.json
+coverage/
+test-results/
+playwright-report/
+reports/mutation/
+.stryker-tmp/
