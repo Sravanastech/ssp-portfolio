@@ -344,6 +344,21 @@ class OtpServiceTest {
   }
 
   @Test
+  void perIpBucketStopsJunkTokensBeforeTheCaptchaNetworkCall() throws Exception {
+    captchaOk.set(false);
+    int limited = 0;
+    for (int i = 0; i < 15; i++) {
+      var ex = failure(() -> svc.request("a@x.com", "junk", IP));
+      if (ex.code().equals("rate_limited")) limited++;
+      else assertEquals("captcha_failed", ex.code());
+    }
+    assertEquals(10, captchaCalls.get());
+    assertEquals(5, limited);
+    // Another client is unaffected.
+    assertEquals("captcha_failed", failure(() -> svc.request("a@x.com", "junk", "198.51.100.9")).code());
+  }
+
+  @Test
   void disabledFeatureReportsUnavailable() throws Exception {
     env.setProperty("profile.resume-otp.enabled", "false");
     var off = service(env);

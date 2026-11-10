@@ -37,6 +37,7 @@ public class OtpService {
   private final ResumeTokenService tokens;
   private final boolean enabled;
   private final byte[] ipSalt;
+  private final RequestThrottle throttle;
 
   public OtpService(
       OtpRepository otp,
@@ -54,12 +55,20 @@ public class OtpService {
     this.tokens = tokens;
     this.enabled = env.getProperty("profile.resume-otp.enabled", Boolean.class, false);
     this.ipSalt = env.getProperty("profile.inquiries.ip-salt", "").getBytes(StandardCharsets.UTF_8);
+    this.throttle =
+        new RequestThrottle(
+            env.getProperty("profile.resume-otp.ip-requests-per-minute", Integer.class, 10),
+            10_000,
+            System::nanoTime);
   }
 
   public Requested request(String rawEmail, String turnstileToken, String clientIp) {
     if (!enabled) throw OtpException.unavailable();
     String email = normalize(rawEmail);
-    // CAPTCHA first: nothing below may write to the database or send mail without it.
+    // Cheap in-memory bucket first so junk tokens cannot tie up threads on the Turnstile call.
+    long wait = throttle.tryAcquire(ClientIp.bucketKey(clientIp));
+    if (wait > 0) throw OtpException.rateLimited(wait);
+    // CAPTCHA next: nothing below may write to the database or send mail without it.
     if (!turnstile.verify(turnstileToken, clientIp)) throw OtpException.captchaFailed();
     Instant now = Instant.now();
     otp.purgeOlderThan(now.minus(RETENTION), PURGE_BATCH);
