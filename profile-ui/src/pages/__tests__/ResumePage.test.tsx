@@ -9,6 +9,7 @@ import {
 import { HelmetProvider } from "react-helmet-async";
 import ResumePage from "../ResumePage";
 import { __resetWarmupForTests } from "@/lib/backendWarmup";
+import { clear, getToken, setToken } from "@/lib/otpSession";
 
 const renderer = vi.hoisted(() => ({
   renderPdf: vi.fn((opts: { host: HTMLElement; onFirstPage: () => void }) => {
@@ -23,8 +24,11 @@ vi.mock("@/lib/pdfRender", () => renderer);
 
 const auth = vi.hoisted(() => ({
   getAccessTokenSilently: vi.fn(),
+  loginWithRedirect: vi.fn(),
   isAuthenticated: true,
+  isLoading: false,
 }));
+vi.mock("@/components/TurnstileWidget", () => ({ default: () => null }));
 vi.mock("@/auth/auth", () => ({ useAuth: () => auth }));
 
 const resumeCalls = () =>
@@ -40,6 +44,9 @@ function preview() {
 
 describe("secure resume preview", () => {
   beforeEach(() => {
+    clear();
+    sessionStorage.clear();
+    auth.isLoading = false;
     auth.isAuthenticated = true;
     auth.getAccessTokenSilently.mockResolvedValue("verified-access-token");
     __resetWarmupForTests();
@@ -138,9 +145,76 @@ describe("secure resume preview", () => {
     expect(URL.createObjectURL).not.toHaveBeenCalled();
   });
 
-  it("does not fetch before authentication", () => {
+  it("shows the email gate and does not fetch without credentials", () => {
     auth.isAuthenticated = false;
     preview();
     expect(resumeCalls()).toHaveLength(0);
+    expect(
+      screen.getByRole("button", { name: "Verify with email" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Sign in with Auth0" }),
+    ).toBeInTheDocument();
+  });
+
+  it("waits for the Auth0 session check instead of flashing the gate", () => {
+    auth.isAuthenticated = false;
+    auth.isLoading = true;
+    preview();
+    expect(
+      screen.queryByRole("button", { name: "Verify with email" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Loading your secure resume preview",
+    );
+  });
+
+  it("skips the gate and uses a valid stored email-code token", async () => {
+    auth.isAuthenticated = false;
+    setToken("otp-access-token", 1800);
+    vi.mocked(fetch).mockImplementation(async (url) =>
+      url === "/api/health"
+        ? new Response("{}")
+        : new Response(new Blob(["%PDF-content"]), {
+            headers: { "Content-Type": "application/pdf" },
+          }),
+    );
+    preview();
+    expect(
+      await screen.findByRole("figure", { name: /Resume preview/ }),
+    ).toBeInTheDocument();
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/resume",
+      expect.objectContaining({
+        headers: { Authorization: "Bearer otp-access-token" },
+      }),
+    );
+    expect(auth.getAccessTokenSilently).not.toHaveBeenCalled();
+  });
+
+  it("prefers the Auth0 token over a stored email-code token", async () => {
+    setToken("otp-access-token", 1800);
+    vi.mocked(fetch).mockResolvedValue(new Response("{}", { status: 401 }));
+    preview();
+    await screen.findByRole("alert");
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/resume",
+      expect.objectContaining({
+        headers: { Authorization: "Bearer verified-access-token" },
+      }),
+    );
+  });
+
+  it("clears a rejected email-code token and returns to the gate with a notice", async () => {
+    auth.isAuthenticated = false;
+    setToken("stale-token", 1800);
+    vi.mocked(fetch).mockResolvedValue(new Response("{}", { status: 401 }));
+    preview();
+    expect(
+      await screen.findByRole("button", { name: "Verify with email" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/session expired/i)).toBeInTheDocument();
+    expect(getToken()).toBeNull();
+    expect(URL.createObjectURL).not.toHaveBeenCalled();
   });
 });

@@ -914,3 +914,203 @@ html:has(.studio-case-nav) {
 ::view-transition-group(page) {
   animation-duration: 220ms;
 }
+
+/* ---------- Resume email-code gate ---------- */
+.otp-group {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.otp-legend {
+  padding: 0;
+  margin-bottom: 2px;
+}
+.otp-boxes {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  max-width: 360px;
+}
+.otp-box {
+  flex: 1 1 0;
+  width: 0;
+  min-width: 44px;
+  max-width: 56px;
+  min-height: 52px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: center;
+  caret-color: var(--color-primary);
+}
+.otp-box:hover:not(:disabled) {
+  border-color: var(--color-textSecondary);
+}
+.otp-box:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  border-color: var(--color-primary);
+}
+.otp-box[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+.otp-box:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .otp-box {
+    transition: border-color 0.15s ease;
+  }
+}
+@media (max-width: 400px) {
+  .otp-boxes {
+    gap: 6px;
+  }
+}
+.turnstile-host {
+  min-height: 0;
+}
+.otp-gate {
+  display: grid;
+  gap: 16px;
+  max-width: 560px;
+}
+.otp-gate form,
+.otp-gate > div:not(.otp-summary) {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.otp-gate .panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+.otp-gate .page-copy {
+  font-size: 1rem;
+}
+.otp-actions {
+  align-items: stretch;
+}
+.otp-actions .studio-button,
+.otp-actions .studio-button-secondary,
+.otp-actions .link-button {
+  min-height: 44px;
+}
+.otp-actions .link-button {
+  display: inline-flex;
+  align-items: center;
+}
+.otp-count {
+  font-variant-numeric: tabular-nums;
+}
+.otp-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  color: var(--color-textSecondary);
+  font-size: 0.9375rem;
+}
+.otp-live:empty {
+  display: none;
+}
+@media (max-width: 719px) {
+  .otp-actions .studio-button,
+  .otp-actions .studio-button-secondary {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------- Admin visitors panel ---------- */
+.visitors-panel {
+  display: grid;
+  gap: 16px;
+}
+.visitors-panel .panel-title {
+  margin: 0;
+}
+.visitors-panel .page-notice {
+  margin: 0;
+}
+.ops-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+.ops-table-wrap:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+.ops-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.ops-table th,
+.ops-table td {
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--color-border);
+}
+.ops-table thead th {
+  color: var(--color-textSecondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.ops-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.ops-table-email {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.ops-num {
+  font-variant-numeric: tabular-nums;
+}
+.ops-pager {
+  align-items: center;
+  margin-top: 0;
+}
+.ops-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: color-mix(in srgb, var(--color-background) 30%, black 70%);
+}
+.ops-dialog {
+  position: fixed;
+  z-index: 81;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  gap: 16px;
+  width: min(480px, calc(100vw - 32px));
+  padding: 24px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.ops-dialog .panel-title {
+  margin: 0;
+}
+.ops-dialog .page-copy {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}

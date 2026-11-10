@@ -42,7 +42,7 @@ test.describe("private resume is never public", () => {
     expect(pdfs).toEqual([]);
   });
 
-  test("anonymous /resume is sent to Auth0 login, not a PDF", async ({
+  test("anonymous /resume shows the verification gate, never a PDF; Auth0 sign-in still redirects", async ({
     page,
   }) => {
     const pdfRequests: string[] = [];
@@ -54,7 +54,12 @@ test.describe("private resume is never public", () => {
     await page.route(/auth0\.com/, (route) =>
       route.fulfill({ status: 200, contentType: "text/html", body: "login" }),
     );
-    await page.goto("/resume", { waitUntil: "commit" });
+    await page.goto("/resume");
+    await expect(
+      page.getByRole("button", { name: "Verify with email" }),
+    ).toBeVisible();
+    expect(pdfRequests).toEqual([]);
+    await page.getByRole("button", { name: "Sign in with Auth0" }).click();
     await page.waitForURL(/auth0\.com\/authorize/);
     expect(pdfRequests).toEqual([]);
   });

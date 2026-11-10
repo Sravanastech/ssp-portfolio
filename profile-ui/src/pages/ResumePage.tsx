@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { warmBackend } from "@/lib/backendWarmup";
 import { loadPdfRenderer } from "@/lib/pdfLoader";
+import { clear as clearOtp, getToken as getOtpToken } from "@/lib/otpSession";
+import ResumeGate from "@/components/ResumeGate";
 
 const SLOW_AFTER_MS = 2500;
 const RENDER_ERROR =
@@ -62,18 +64,21 @@ const ResumePage = () => {
   const [slow, setSlow] = useState(false);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
+  const [otpToken, setOtpToken] = useState<string | null>(() => getOtpToken());
+  const [expired, setExpired] = useState(false);
+  const hasCredential = isAuthenticated || otpToken !== null;
 
   // Resume intent is certain here: warm the API and pdf.js before the token resolves.
   useEffect(() => {
     warmBackend();
   }, []);
-  const authPending = isLoading || isAuthenticated;
+  const authPending = isLoading || hasCredential;
   useEffect(() => {
     if (authPending) void loadPdfRenderer().catch(() => undefined);
   }, [authPending]);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!hasCredential) return;
     const controller = new AbortController();
     let objectUrl: string | undefined;
     setLoaded(null);
@@ -81,13 +86,22 @@ const ResumePage = () => {
     setError("");
     async function loadResume() {
       try {
-        const token = await getAccessTokenSilently();
+        // Auth0 wins when present; otherwise use the email-code token.
+        const token = isAuthenticated
+          ? await getAccessTokenSilently()
+          : (otpToken ?? "");
         if (controller.signal.aborted) return;
         const response = await fetch("/api/resume", {
           headers: { Authorization: `Bearer ${token}` },
           cache: "no-store",
           signal: controller.signal,
         });
+        if (response.status === 401 && !isAuthenticated) {
+          clearOtp();
+          setOtpToken(null);
+          setExpired(true);
+          return;
+        }
         if (!response.ok)
           throw new Error(
             response.status === 401
@@ -130,7 +144,13 @@ const ResumePage = () => {
       controller.abort();
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [getAccessTokenSilently, isAuthenticated, attempt]);
+  }, [
+    getAccessTokenSilently,
+    isAuthenticated,
+    hasCredential,
+    otpToken,
+    attempt,
+  ]);
 
   const waiting = !error && !drawn;
   useEffect(() => {
@@ -158,7 +178,19 @@ const ResumePage = () => {
               Experience, technical skills, and professional background.
             </p>
           </header>
-          {error ? (
+          {!hasCredential && !isLoading ? (
+            <ResumeGate
+              notice={
+                expired
+                  ? "Your session expired. Verify your email again to keep viewing the resume."
+                  : undefined
+              }
+              onVerified={() => {
+                setExpired(false);
+                setOtpToken(getOtpToken());
+              }}
+            />
+          ) : error ? (
             <div role="alert" className="resume-panel resume-panel--error">
               <AlertCircle size={22} aria-hidden="true" />
               <div>

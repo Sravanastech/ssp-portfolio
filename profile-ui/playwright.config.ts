@@ -18,6 +18,8 @@ export default defineConfig({
       : "npm run dev -- --host 127.0.0.1 --strictPort",
     url: "http://127.0.0.1:5173",
     reuseExistingServer: !process.env.CI,
+    // Cloudflare's always-pass dummy site key, so the resume gate can render a widget.
+    env: { VITE_TURNSTILE_SITE_KEY: "1x00000000000000000000AA" },
     timeout: 120_000,
   },
 });
