@@ -72,6 +72,9 @@ public final class EnvironmentPolicy {
       throw new IllegalStateException("Resume OTP requires profile.email.mode=provider");
     if (env.getProperty("profile.email.from", "").contains("resend.dev"))
       throw new IllegalStateException("Resume OTP requires a verified sender, not resend.dev");
+    String emailKey = env.getProperty("profile.email.key", "").trim();
+    if (emailKey.isEmpty() || emailKey.equalsIgnoreCase("none"))
+      throw new IllegalStateException("Resume OTP requires a real profile.email.key");
     String secret = env.getProperty(prefix + "secret", "");
     if (secret.getBytes(StandardCharsets.UTF_8).length < 32
         || secret.contains("dev-only")

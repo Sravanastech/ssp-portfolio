@@ -51,7 +51,7 @@ Set these environment variables or mounted secrets. "Required" means startup fai
 |---|---|---|
 | `RESUME_OTP_ENABLED` | env | `true` to enable; default `false` |
 | `EMAIL_MODE` | env | must be `provider` |
-| `EMAIL_KEY` | secret | Resend restricted key, not blank, not `none` |
+| `EMAIL_KEY` | secret | Resend restricted key; startup fails if blank or equal to `none` (case-insensitive) |
 | `EMAIL_FROM` | env | verified sender, must not contain `resend.dev` |
 | `EMAIL_RECIPIENT` | env | not blank (contact notifications); default `admin@sravanasparimi.com` |
 | `OTP_SECRET` | secret | at least 32 bytes, not a `dev-only` value; HKDF derives the code and token keys from it |
@@ -158,6 +158,9 @@ Known limits of the design. They are accepted for a free-tier, single-owner site
    that only Firebase Hosting (via the load balancer or internal ingress settings) can reach the service, otherwise an
    attacker can append their own entries and the chosen entry is attacker-controlled. The hop count must be confirmed in
    staging (section 5) before enabling the feature.
-8. **Limit state is partly in memory.** The per-IP request throttle (default 10 requests/minute/IP, config
-   `profile.resume-otp.ip-requests-per-minute`) lives in each instance's memory and resets on restart or scale-out.
+8. **Limit state is partly in memory.** The per-IP request throttle (default 10 request calls and 30 verify calls per minute per IP, config
+   `profile.resume-otp.ip-requests-per-minute` and `profile.resume-otp.ip-verifies-per-minute`) lives in each instance's memory and resets on restart or scale-out.
    The database limits (per email, per IP, global) are the durable ones.
+9. **Failed sends still use IP and global quota.** When the provider rejects a send, the row is kept (migration V11,
+   `send_failed`) so it counts toward the per-IP and global caps, but not toward the per-email cap or the 45 second
+   cooldown, so a visitor can retry at once. OTP request bodies are capped at 4096 bytes.

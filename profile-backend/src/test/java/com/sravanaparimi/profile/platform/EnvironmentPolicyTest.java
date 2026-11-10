@@ -132,6 +132,9 @@ class EnvironmentPolicyTest {
   void productionOtpRejectsUnsafeSettings() {
     assertOtpRejected("profile.email.mode", "capture");
     assertOtpRejected("profile.email.from", "onboarding@resend.dev");
+    assertOtpRejected("profile.email.key", "none");
+    assertOtpRejected("profile.email.key", "NoNe");
+    assertOtpRejected("profile.email.key", " ");
     assertOtpRejected("profile.resume-otp.secret", "");
     assertOtpRejected("profile.resume-otp.secret", "too-short");
     assertOtpRejected("profile.resume-otp.secret", "dev-only-otp-secret-change-me-0123456789");
