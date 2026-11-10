@@ -261,4 +261,15 @@ class OtpRepositoryTest {
     var latest = otp.latestSendByEmail("a@x.com").orElseThrow();
     assertTrue(latest.isAfter(Instant.now().minusSeconds(60)));
   }
+
+  @Test
+  void discardRemovesOnlyThatChallenge() {
+    var a = open("a@x.com");
+    var b = open("a@x.com");
+    otp.insert(a);
+    otp.insert(b);
+    assertTrue(otp.discard(a.id()));
+    assertFalse(otp.discard(a.id()));
+    assertEquals(1, otp.countSendsByEmail("a@x.com", Instant.now().minusSeconds(60)));
+  }
 }

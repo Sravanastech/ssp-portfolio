@@ -54,6 +54,11 @@ public class OtpRepository {
         .findFirst();
   }
 
+  /** Removes a challenge whose email was never delivered so it counts toward no limit. */
+  public boolean discard(UUID id) {
+    return db.update("DELETE FROM resume_otp_challenge WHERE id=?", id) == 1;
+  }
+
   public Optional<Info> find(UUID id) {
     return db
         .query(

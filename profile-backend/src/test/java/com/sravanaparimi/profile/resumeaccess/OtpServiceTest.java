@@ -301,8 +301,16 @@ class OtpServiceTest {
     var ex = failure(() -> service(broken).request("a@x.com", "tok", IP));
     assertEquals(503, ex.status());
     assertEquals("send_failed", ex.code());
-    var id = sql.queryForObject("SELECT id FROM resume_otp_challenge", UUID.class);
-    assertTrue(otp.spendAttempt(id).isEmpty());
+    // A failed send never reached the visitor, so it must not count toward any send limit.
+    var day = Instant.now().minus(1, ChronoUnit.DAYS);
+    assertEquals(0, otp.countSendsByEmail("a@x.com", day));
+    assertEquals(0, otp.countSendsByIp(svc.ipHash(IP), day));
+    assertEquals(0, otp.countSendsGlobal(day));
+    assertTrue(otp.latestSendByEmail("a@x.com").isEmpty());
+    assertEquals(
+        0, sql.queryForObject("SELECT count(*) FROM resume_otp_challenge", Integer.class));
+    // An immediate retry is not blocked by the resend cooldown.
+    assertDoesNotThrow(() -> svc.request("a@x.com", "tok", IP));
   }
 
   @Test

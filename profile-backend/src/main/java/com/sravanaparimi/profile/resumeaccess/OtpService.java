@@ -92,7 +92,8 @@ public class OtpService {
       mail.sendOtp(id, email, code);
     } catch (Exception ex) {
       if (ex instanceof InterruptedException) Thread.currentThread().interrupt();
-      otp.invalidateOpenFor(email);
+      // Never delivered: delete (not just invalidate) so it counts toward no send limit.
+      otp.discard(id);
       throw OtpException.sendFailed();
     }
     return new Requested(id);
