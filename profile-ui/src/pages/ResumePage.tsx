@@ -2,20 +2,82 @@ import { Helmet } from "react-helmet-async";
 import { useAuth } from "@/auth/auth";
 import { AlertCircle, Download, ExternalLink, Loader2 } from "lucide-react";
 import "@/styles/pages.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
+import { warmBackend } from "@/lib/backendWarmup";
+import { loadPdfRenderer } from "@/lib/pdfLoader";
+
+const SLOW_AFTER_MS = 2500;
+const RENDER_ERROR =
+  "The resume preview could not be drawn. Download the file or try again.";
+
+type Loaded = { url: string; data: Uint8Array };
+
+function PdfPreview({
+  data,
+  onReady,
+  onError,
+}: {
+  data: Uint8Array;
+  onReady: () => void;
+  onError: (message: string) => void;
+}) {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const callbacks = useRef({ onReady, onError });
+  useEffect(() => {
+    callbacks.current = { onReady, onError };
+  });
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    let cancelled = false;
+    let handle: { destroy: () => void } | undefined;
+    loadPdfRenderer()
+      .then(({ renderPdf }) => {
+        if (cancelled) return;
+        handle = renderPdf({
+          host,
+          data,
+          onFirstPage: () => callbacks.current.onReady(),
+          onError: () => callbacks.current.onError(RENDER_ERROR),
+        });
+      })
+      .catch(() => {
+        if (!cancelled) callbacks.current.onError(RENDER_ERROR);
+      });
+    return () => {
+      cancelled = true;
+      handle?.destroy();
+    };
+  }, [data]);
+
+  return <div ref={hostRef} className="resume-pages" />;
+}
 
 const ResumePage = () => {
-  const { getAccessTokenSilently, isAuthenticated } = useAuth();
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const { getAccessTokenSilently, isAuthenticated, isLoading } = useAuth();
+  const [loaded, setLoaded] = useState<Loaded | null>(null);
+  const [drawn, setDrawn] = useState(false);
+  const [slow, setSlow] = useState(false);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
+
+  // Resume intent is certain here: warm the API and pdf.js before the token resolves.
+  useEffect(() => {
+    warmBackend();
+  }, []);
+  const authPending = isLoading || isAuthenticated;
+  useEffect(() => {
+    if (authPending) void loadPdfRenderer().catch(() => undefined);
+  }, [authPending]);
 
   useEffect(() => {
     if (!isAuthenticated) return;
     const controller = new AbortController();
     let objectUrl: string | undefined;
-    setPdfUrl(null);
+    setLoaded(null);
+    setDrawn(false);
     setError("");
     async function loadResume() {
       try {
@@ -46,8 +108,10 @@ const ResumePage = () => {
         if (pdf.size === 0) {
           throw new Error("The resume file came back empty. Please try again.");
         }
+        const data = new Uint8Array(await pdf.arrayBuffer());
+        if (controller.signal.aborted) return;
         objectUrl = URL.createObjectURL(pdf);
-        setPdfUrl(objectUrl);
+        setLoaded({ url: objectUrl, data });
         trackEvent("resume_view");
       } catch (cause) {
         if (!controller.signal.aborted) {
@@ -67,6 +131,14 @@ const ResumePage = () => {
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [getAccessTokenSilently, isAuthenticated, attempt]);
+
+  const waiting = !error && !drawn;
+  useEffect(() => {
+    setSlow(false);
+    if (!waiting) return;
+    const timer = window.setTimeout(() => setSlow(true), SLOW_AFTER_MS);
+    return () => window.clearTimeout(timer);
+  }, [waiting, attempt]);
 
   return (
     <>
@@ -100,51 +172,63 @@ const ResumePage = () => {
                 </button>
               </div>
             </div>
-          ) : !pdfUrl ? (
-            <div className="resume-loading" aria-busy="true">
-              <p role="status" className="resume-status">
-                <Loader2
-                  className="resume-spinner"
-                  size={18}
-                  aria-hidden="true"
-                />
-                Loading your secure resume preview…
-              </p>
-              <span
-                className="skeleton-bar skeleton-bar--frame"
-                aria-hidden="true"
-              />
-            </div>
           ) : (
             <>
-              <div className="resume-actions">
-                <a
-                  href={pdfUrl}
-                  download="Sravana_Parimi_Resume.pdf"
-                  className="studio-button"
+              {loaded && (
+                <div className="resume-actions">
+                  <a
+                    href={loaded.url}
+                    download="Sravana_Parimi_Resume.pdf"
+                    className="studio-button"
+                  >
+                    <Download size={18} aria-hidden="true" />
+                    Download resume
+                  </a>
+                  <a
+                    href={loaded.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="studio-button-secondary"
+                  >
+                    <ExternalLink size={18} aria-hidden="true" />
+                    Open in new tab
+                  </a>
+                </div>
+              )}
+              {!drawn && (
+                <div className="resume-loading" aria-busy="true">
+                  <p
+                    role="status"
+                    className={`resume-status${slow ? " resume-status--slow" : ""}`}
+                  >
+                    <Loader2
+                      className="resume-spinner"
+                      size={18}
+                      aria-hidden="true"
+                    />
+                    {slow
+                      ? "Waking up the server… first view can take a few seconds"
+                      : "Loading your secure resume preview…"}
+                  </p>
+                  <span
+                    className="skeleton-bar skeleton-bar--frame"
+                    aria-hidden="true"
+                  />
+                </div>
+              )}
+              {loaded && (
+                <figure
+                  className="resume-preview"
+                  aria-label="Resume preview. The Download resume link is the accessible alternative."
+                  data-ready={drawn}
                 >
-                  <Download size={18} aria-hidden="true" />
-                  Download resume
-                </a>
-                <a
-                  href={pdfUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="studio-button-secondary"
-                >
-                  <ExternalLink size={18} aria-hidden="true" />
-                  Open in new tab
-                </a>
-              </div>
-              <p className="resume-note">
-                Phone browsers rarely display PDFs inline. Open the resume in a
-                new tab or download it to read it.
-              </p>
-              <iframe
-                src={pdfUrl}
-                title="Resume PDF"
-                className="resume-frame"
-              />
+                  <PdfPreview
+                    data={loaded.data}
+                    onReady={() => setDrawn(true)}
+                    onError={setError}
+                  />
+                </figure>
+              )}
             </>
           )}
         </div>

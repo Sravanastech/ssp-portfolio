@@ -61,6 +61,8 @@ export default defineConfig(({ mode }) => {
         manifest: false, // Using manual manifest.webmanifest
         workbox: {
           globPatterns: ["**/*.{js,css,html,woff2,svg}"],
+          // The resume needs a signed-in network fetch anyway; do not precache pdf.js.
+          globIgnores: ["**/vendor-pdfjs-*.js"],
           runtimeCaching: [
             {
               urlPattern: ({ url }: { url: URL }) =>
@@ -115,6 +117,8 @@ export default defineConfig(({ mode }) => {
               id.includes("/node_modules/react-router-dom/")
             )
               return "vendor-react";
+            // pdf.js is only reachable from the lazy resume route.
+            if (id.includes("/node_modules/pdfjs-dist/")) return "vendor-pdfjs";
             // Auth0 and form libraries stay in their lazy route chunks so the home page never preloads them.
             if (id.includes("/node_modules/@tanstack/react-query/"))
               return "vendor-query";

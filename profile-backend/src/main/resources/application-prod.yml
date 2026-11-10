@@ -37,5 +37,16 @@ profile:
     mode: ${EMAIL_MODE:provider}
     endpoint: ${EMAIL_ENDPOINT:https://api.resend.com/emails}
     key: ${EMAIL_KEY:none}
-    recipient: ${EMAIL_RECIPIENT:admin@sravanaparimi.com}
+    recipient: ${EMAIL_RECIPIENT:admin@sravanasparimi.com}
     from: ${EMAIL_FROM:onboarding@resend.dev}
+  admin:
+    owner-sub: ${ADMIN_OWNER_SUB:}
+  resume-otp:
+    enabled: ${RESUME_OTP_ENABLED:false}
+    trusted-proxy-hops: ${OTP_TRUSTED_PROXY_HOPS:1}
+    secret: ${OTP_SECRET:}
+    turnstile:
+      enabled: ${TURNSTILE_ENABLED:true}
+      secret: ${TURNSTILE_SECRET:}
+      allowed-hostnames: ${TURNSTILE_ALLOWED_HOSTNAMES:sravanasparimi.com,www.sravanasparimi.com}
+      require-action: true

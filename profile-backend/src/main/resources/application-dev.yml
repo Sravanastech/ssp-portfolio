@@ -13,3 +13,12 @@ profile:
     template: ${PROFILE_STATIC_INDEX:../profile-ui/dist/index.html}
   email:
     mode: capture
+  resume-otp:
+    enabled: true
+    trusted-proxy-hops: 1
+    secret: ${OTP_SECRET:dev-only-otp-secret-change-me-0123456789}
+    turnstile:
+      enabled: true
+      secret: ${TURNSTILE_SECRET:1x0000000000000000000000000000000AA}
+      allowed-hostnames: example.com,localhost
+      require-action: false

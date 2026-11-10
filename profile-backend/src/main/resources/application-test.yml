@@ -3,6 +3,15 @@ profile:
     mode: capture
   jobs:
     enabled: false
+  resume-otp:
+    enabled: true
+    trusted-proxy-hops: 1
+    secret: dev-only-otp-secret-change-me-0123456789
+    turnstile:
+      enabled: true
+      secret: 1x0000000000000000000000000000000AA
+      allowed-hostnames: example.com,localhost
+      require-action: false
 spring:
   datasource:
     hikari:

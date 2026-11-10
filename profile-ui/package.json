@@ -21,7 +21,11 @@
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx}'",
     "fix:prettier": "prettier --write .",
-    "resume:pdf": "node scripts/build-resume.mjs"
+    "resume:pdf": "node scripts/build-resume.mjs",
+    "test:coverage": "vitest run --coverage",
+    "test:api": "playwright test --grep @api",
+    "test:add-first-tests": "vitest run",
+    "test:mutation": "stryker run"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.28.2",
@@ -34,6 +38,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^14.6.0",
     "lucide-react": "^1.61.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-helmet-async": "^3.0.0",
@@ -54,6 +59,8 @@
     "@eslint/js": "^10.0.1",
     "@fontsource/space-grotesk": "^5.3.0",
     "@playwright/test": "^1.64.1",
+    "@stryker-mutator/core": "10.1.1",
+    "@stryker-mutator/vitest-runner": "10.1.1",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",
@@ -61,6 +68,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "@vitest/coverage-v8": "5.0.5",
     "eslint": "^10.13.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",

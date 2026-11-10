@@ -1,6 +1,9 @@
 package com.sravanaparimi.profile.accounts;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.UUID;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -10,9 +13,23 @@ import org.springframework.web.server.ResponseStatusException;
 public class AdminAuthorization {
   public static final String AMR_CLAIM = "https://sravanasparimi.com/amr";
   private final AccountService accounts;
+  private final String ownerSub;
 
-  public AdminAuthorization(AccountService accounts) {
+  public AdminAuthorization(AccountService accounts, Environment env) {
     this.accounts = accounts;
+    this.ownerSub = env.getProperty("profile.admin.owner-sub", "");
+  }
+
+  /** Admin + MFA, and additionally the token subject must be the configured owner. */
+  public UUID requireOwner(Jwt jwt) {
+    String sub = jwt.getSubject();
+    boolean owner =
+        !ownerSub.isBlank()
+            && sub != null
+            && MessageDigest.isEqual(
+                ownerSub.getBytes(StandardCharsets.UTF_8), sub.getBytes(StandardCharsets.UTF_8));
+    if (!owner) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Owner access required");
+    return require(jwt);
   }
 
   public UUID require(Jwt jwt) {

@@ -1,5 +1,6 @@
 /** Route chunk prefetching. Loaders share specifiers with AppRoutes' React.lazy imports, so Vite reuses the same chunks. */
 import type { ComponentType } from "react";
+import { warmBackend } from "@/lib/backendWarmup";
 
 type Loader = () => Promise<unknown>;
 
@@ -39,6 +40,8 @@ export function resolveRouteKey(path: string): RouteKey | null {
 export function prefetchRoute(path: string): Promise<void> {
   const key = resolveRouteKey(path);
   if (!key) return Promise.resolve();
+  // Resume intent (hover, focus, touch, click) also warms the scale-to-zero API.
+  if (key === "/resume") warmBackend();
   const hit = cache.get(key);
   if (hit) return hit;
   const pending = Promise.resolve()

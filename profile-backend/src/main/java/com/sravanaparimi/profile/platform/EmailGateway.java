@@ -72,4 +72,63 @@ public class EmailGateway {
     if (response.statusCode() < 200 || response.statusCode() > 299)
       throw new IllegalStateException("Provider rejected notification");
   }
+
+  /**
+   * Sends a one-time code. Capture mode writes {challengeId,to,code} for dev/test; provider mode
+   * posts a plain-text and minimal-HTML message with no links. Never logs the code or recipient.
+   */
+  public void sendOtp(UUID challengeId, String to, String code) throws Exception {
+    if (to == null || !to.matches("[^\\s<>\"',;]{1,254}"))
+      throw new IllegalArgumentException("Invalid recipient");
+    if (code == null || !code.matches("[0-9]{6}"))
+      throw new IllegalArgumentException("Invalid code");
+    if (env.getRequiredProperty("profile.email.mode").equals("capture")) {
+      Path dir =
+          Path.of(env.getRequiredProperty("profile.media.root"))
+              .toAbsolutePath()
+              .resolve("capture");
+      Files.createDirectories(dir);
+      Files.writeString(
+          dir.resolve("otp-" + challengeId + ".json"),
+          json.writeValueAsString(
+              Map.of("challengeId", challengeId.toString(), "to", to, "code", code)));
+      return;
+    }
+    String endpoint = env.getRequiredProperty("profile.email.endpoint");
+    if (!endpoint.equals("https://api.resend.com/emails"))
+      throw new IllegalStateException("Unverified provider");
+    var req =
+        HttpRequest.newBuilder(URI.create(endpoint))
+            .timeout(Duration.ofSeconds(10))
+            .header("Authorization", "Bearer " + env.getRequiredProperty("profile.email.key"))
+            .header("Idempotency-Key", "otp-" + challengeId)
+            .header("Content-Type", "application/json")
+            .POST(
+                HttpRequest.BodyPublishers.ofString(
+                    json.writeValueAsString(
+                        otpPayload(env.getRequiredProperty("profile.email.from"), to, code))))
+            .build();
+    var response = client.send(req, HttpResponse.BodyHandlers.discarding());
+    if (response.statusCode() < 200 || response.statusCode() > 299)
+      throw new IllegalStateException("Provider rejected verification email");
+  }
+
+  static Map<String, Object> otpPayload(String from, String to, String code) {
+    String text =
+        "Your verification code is "
+            + code
+            + ".\n\nIt is valid for 10 minutes and can be used once.\n\nIf you did not request"
+            + " this, you can ignore this email.";
+    String html =
+        "<p>Your verification code is <strong style=\"font-size:1.25em;letter-spacing:.15em\">"
+            + code
+            + "</strong>.</p><p>It is valid for 10 minutes and can be used once.</p><p>If you did"
+            + " not request this, you can ignore this email.</p>";
+    return Map.of(
+        "from", from,
+        "to", List.of(to),
+        "subject", "Your verification code: " + code,
+        "text", text,
+        "html", html);
+  }
 }
