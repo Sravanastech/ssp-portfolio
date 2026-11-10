@@ -20,19 +20,26 @@ vi.mock("@/auth/auth", () => ({ useAuth: () => auth }));
 vi.mock("../TurnstileWidget", () => ({
   default: ({
     onToken,
+    onExpire,
     resetKey,
   }: {
     onToken: (t: string) => void;
+    onExpire: () => void;
     resetKey?: number;
   }) => (
-    <button
-      type="button"
-      data-testid="turnstile"
-      data-reset={resetKey ?? 0}
-      onClick={() => onToken("ts-token")}
-    >
-      solve
-    </button>
+    <>
+      <button
+        type="button"
+        data-testid="turnstile"
+        data-reset={resetKey ?? 0}
+        onClick={() => onToken("ts-token")}
+      >
+        solve
+      </button>
+      <button type="button" data-testid="expire" onClick={onExpire}>
+        expire
+      </button>
+    </>
   ),
 }));
 
@@ -113,17 +120,60 @@ describe("ResumeGate", () => {
     expect(api.requestOtp).not.toHaveBeenCalled();
   });
 
-  it("requires the verification check before sending", async () => {
+  it("keeps Send code aria-disabled with status text until a token arrives", () => {
     render(<ResumeGate onVerified={vi.fn()} />);
     fireEvent.click(screen.getByRole("button", { name: "Verify with email" }));
     fireEvent.change(screen.getByLabelText("Email address"), {
       target: { value: "me@example.com" },
     });
-    fireEvent.click(screen.getByRole("button", { name: "Send code" }));
+    const send = screen.getByRole("button", { name: "Send code" });
+    expect(send).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByText(/Checking that you.re human/)).toBeInTheDocument();
+    fireEvent.click(send);
+    expect(api.requestOtp).not.toHaveBeenCalled();
+    expect(screen.queryByTestId("error-summary")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId("turnstile"));
+    expect(send).not.toHaveAttribute("aria-disabled", "true");
+    expect(
+      screen.queryByText(/Checking that you.re human/),
+    ).not.toBeInTheDocument();
+  });
+
+  it("announces the check status politely", () => {
+    render(<ResumeGate onVerified={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Verify with email" }));
+    const status = screen.getByText(/Checking that you.re human/);
+    expect(status.closest("[aria-live]")).toHaveAttribute(
+      "aria-live",
+      "polite",
+    );
+  });
+
+  it("re-disables after a send until a fresh token arrives", async () => {
+    await toCodeStep();
+    expect(screen.getByRole("button", { name: /Resend code/ })).toBeDisabled();
+    expect(screen.getByText(/Checking that you.re human/)).toBeInTheDocument();
+  });
+
+  it("on token expiry disables sending, explains, and offers a retry", async () => {
+    render(<ResumeGate onVerified={vi.fn()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Verify with email" }));
+    fireEvent.change(screen.getByLabelText("Email address"), {
+      target: { value: "me@example.com" },
+    });
+    fireEvent.click(screen.getByTestId("turnstile"));
+    fireEvent.click(screen.getByTestId("expire"));
+    const send = screen.getByRole("button", { name: "Send code" });
+    expect(send).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByText(/expired or failed/i)).toBeInTheDocument();
+    fireEvent.click(send);
     expect(await screen.findByTestId("error-summary")).toHaveTextContent(
       "verification check",
     );
     expect(api.requestOtp).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "Retry check" }));
+    expect(screen.getByTestId("turnstile")).toHaveAttribute("data-reset", "1");
+    expect(screen.getByText(/Checking that you.re human/)).toBeInTheDocument();
   });
 
   it("sends the code with the Turnstile token and moves to the code step", async () => {
