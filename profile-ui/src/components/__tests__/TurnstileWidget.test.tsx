@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, render, screen } from "@testing-library/react";
-import TurnstileWidget, { __resetTurnstileForTests } from "../TurnstileWidget";
+import TurnstileWidget from "../TurnstileWidget";
+import { __resetTurnstileForTests } from "@/lib/turnstileLoader";
 
 type Opts = {
   sitekey: string;
