@@ -239,4 +239,26 @@ class OtpRepositoryTest {
     assertFalse(visitors.delete(id));
     assertEquals(0, visitors.count());
   }
+
+  @Test
+  void findReturnsEmailIpAndAttempts() {
+    var c = open("a@x.com");
+    otp.insert(c);
+    otp.spendAttempt(c.id());
+    var info = otp.find(c.id()).orElseThrow();
+    assertEquals("a@x.com", info.email());
+    assertArrayEquals(IP, info.ipHash());
+    assertEquals(1, info.attempts());
+    assertTrue(otp.find(UUID.randomUUID()).isEmpty());
+  }
+
+  @Test
+  void latestSendByEmailReturnsNewestCreation() {
+    assertTrue(otp.latestSendByEmail("a@x.com").isEmpty());
+    otp.insert(open("a@x.com"));
+    sql.update("UPDATE resume_otp_challenge SET created_at = now() - interval '1 hour'");
+    otp.insert(open("a@x.com"));
+    var latest = otp.latestSendByEmail("a@x.com").orElseThrow();
+    assertTrue(latest.isAfter(Instant.now().minusSeconds(60)));
+  }
 }

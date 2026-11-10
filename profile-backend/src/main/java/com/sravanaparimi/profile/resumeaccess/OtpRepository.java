@@ -14,6 +14,8 @@ public class OtpRepository {
   public record Challenge(
       UUID id, String email, byte[] codeHmac, byte[] ipHash, Instant expiresAt) {}
 
+  public record Info(String email, byte[] ipHash, int attempts) {}
+
   private final JdbcTemplate db;
 
   public OtpRepository(JdbcTemplate db) {
@@ -50,6 +52,25 @@ public class OtpRepository {
             MAX_ATTEMPTS)
         .stream()
         .findFirst();
+  }
+
+  public Optional<Info> find(UUID id) {
+    return db
+        .query(
+            "SELECT email,ip_hash,attempts FROM resume_otp_challenge WHERE id=?",
+            (rs, n) -> new Info(rs.getString(1), rs.getBytes(2), rs.getInt(3)),
+            id)
+        .stream()
+        .findFirst();
+  }
+
+  public Optional<Instant> latestSendByEmail(String email) {
+    Timestamp ts =
+        db.queryForObject(
+            "SELECT max(created_at) FROM resume_otp_challenge WHERE email=?",
+            Timestamp.class,
+            email);
+    return Optional.ofNullable(ts).map(Timestamp::toInstant);
   }
 
   public boolean consume(UUID id) {
