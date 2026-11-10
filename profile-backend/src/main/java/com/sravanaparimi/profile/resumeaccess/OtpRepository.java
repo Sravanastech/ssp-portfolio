@@ -33,6 +33,11 @@ public class OtpRepository {
         Timestamp.from(c.expiresAt()));
   }
 
+  /** Transaction-scoped lock serialising limit checks and inserts for one email address. */
+  public void lockEmail(String email) {
+    db.query("SELECT pg_advisory_xact_lock(hashtext(?))", rs -> {}, email);
+  }
+
   /** Invalidates open challenges of this email created from the same (hashed) client IP only. */
   public void invalidateOpenFor(String email, byte[] ipHash) {
     db.update(

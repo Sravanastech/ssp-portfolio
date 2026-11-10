@@ -78,7 +78,15 @@ class OtpServiceTest {
           captchaIp.set(ip);
           return captchaOk.get();
         };
-    return new OtpService(otp, visitors, new EmailGateway(e, JSON), fake, crypto, tokens, e);
+    return new OtpService(
+        otp,
+        visitors,
+        new EmailGateway(e, JSON),
+        fake,
+        crypto,
+        tokens,
+        e,
+        new org.springframework.jdbc.datasource.DataSourceTransactionManager(sql.getDataSource()));
   }
 
   String codeFor(UUID id) throws Exception {
@@ -356,6 +364,38 @@ class OtpServiceTest {
     assertEquals(5, limited);
     // Another client is unaffected.
     assertEquals("captcha_failed", failure(() -> svc.request("a@x.com", "junk", "198.51.100.9")).code());
+  }
+
+  @Test
+  void parallelRequestsForOneEmailRespectTheLimitsAtomically() throws Exception {
+    // Pre-existing rows leave room for exactly one more send inside the 15 minute window.
+    for (int i = 0; i < 2; i++) seed("a@x.com", "123456", "198.51.100." + i);
+    age("true", "2 minutes");
+    var ok = new AtomicInteger();
+    var limited = new AtomicInteger();
+    try (var pool = Executors.newFixedThreadPool(8)) {
+      var start = new CountDownLatch(1);
+      var futures = new ArrayList<Future<?>>();
+      for (int i = 0; i < 8; i++)
+        futures.add(
+            pool.submit(
+                () -> {
+                  start.await();
+                  try {
+                    svc.request("a@x.com", "tok", IP);
+                    ok.incrementAndGet();
+                  } catch (OtpException ex) {
+                    if (ex.code().equals("rate_limited")) limited.incrementAndGet();
+                  }
+                  return null;
+                }));
+      start.countDown();
+      for (var f : futures) f.get(30, TimeUnit.SECONDS);
+    }
+    assertEquals(1, ok.get());
+    assertEquals(7, limited.get());
+    assertEquals(
+        3, otp.countSendsByEmail("a@x.com", Instant.now().minus(15, ChronoUnit.MINUTES)));
   }
 
   @Test

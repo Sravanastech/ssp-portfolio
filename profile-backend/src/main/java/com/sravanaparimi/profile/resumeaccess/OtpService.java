@@ -11,6 +11,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /** OTP rules: spec sections 5 and 13. Never logs or returns email, code or token details. */
 @Service
@@ -38,6 +40,7 @@ public class OtpService {
   private final boolean enabled;
   private final byte[] ipSalt;
   private final RequestThrottle throttle;
+  private final TransactionTemplate tx;
 
   public OtpService(
       OtpRepository otp,
@@ -46,7 +49,9 @@ public class OtpService {
       TurnstileVerifier turnstile,
       OtpCrypto crypto,
       ResumeTokenService tokens,
-      Environment env) {
+      Environment env,
+      PlatformTransactionManager transactions) {
+    this.tx = new TransactionTemplate(transactions);
     this.otp = otp;
     this.visitors = visitors;
     this.mail = mail;
@@ -70,9 +75,30 @@ public class OtpService {
     if (wait > 0) throw OtpException.rateLimited(wait);
     // CAPTCHA next: nothing below may write to the database or send mail without it.
     if (!turnstile.verify(turnstileToken, clientIp)) throw OtpException.captchaFailed();
-    Instant now = Instant.now();
-    otp.purgeOlderThan(now.minus(RETENTION), PURGE_BATCH);
+    Instant purgeNow = Instant.now();
+    otp.purgeOlderThan(purgeNow.minus(RETENTION), PURGE_BATCH);
     byte[] ipHash = ipHash(clientIp);
+    // Limit checks, invalidation and insert are atomic per email (advisory lock held until
+    // commit); the email is sent only after the commit.
+    var pending = tx.execute(status -> reserve(email, ipHash));
+    UUID id = pending.id();
+    String code = pending.code();
+    try {
+      mail.sendOtp(id, email, code);
+    } catch (Exception ex) {
+      if (ex instanceof InterruptedException) Thread.currentThread().interrupt();
+      // Never delivered: delete (not just invalidate) so it counts toward no send limit.
+      otp.discard(id);
+      throw OtpException.sendFailed();
+    }
+    return new Requested(id);
+  }
+
+  private record Pending(UUID id, String code) {}
+
+  private Pending reserve(String email, byte[] ipHash) {
+    otp.lockEmail(email);
+    Instant now = Instant.now();
     if (otp.countSendsGlobal(now.minus(Duration.ofDays(1))) >= GLOBAL_PER_DAY)
       throw OtpException.unavailable();
     if (otp.countSendsByIp(ipHash, now.minus(Duration.ofHours(1))) >= IP_SENDS_PER_HOUR)
@@ -89,22 +115,13 @@ public class OtpService {
       throw OtpException.rateLimited(900);
     if (otp.countSendsByEmail(email, now.minus(Duration.ofDays(1))) >= EMAIL_PER_DAY)
       throw OtpException.rateLimited(3600);
-
     otp.invalidateOpenFor(email, ipHash);
     UUID id = UUID.randomUUID();
     String code = crypto.generateCode();
     otp.insert(
         new OtpRepository.Challenge(
             id, email, crypto.hmac(code, id), ipHash, now.plusSeconds(EXPIRES_IN_SECONDS)));
-    try {
-      mail.sendOtp(id, email, code);
-    } catch (Exception ex) {
-      if (ex instanceof InterruptedException) Thread.currentThread().interrupt();
-      // Never delivered: delete (not just invalidate) so it counts toward no send limit.
-      otp.discard(id);
-      throw OtpException.sendFailed();
-    }
-    return new Requested(id);
+    return new Pending(id, code);
   }
 
   /** Returns a fresh access token or throws {@link OtpException}. */
