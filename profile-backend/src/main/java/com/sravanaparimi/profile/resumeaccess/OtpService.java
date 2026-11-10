@@ -87,8 +87,12 @@ public class OtpService {
       mail.sendOtp(id, email, code);
     } catch (Exception ex) {
       if (ex instanceof InterruptedException) Thread.currentThread().interrupt();
-      // Never delivered: delete (not just invalidate) so it counts toward no send limit.
-      otp.discard(id);
+      // Never delivered: keep the row for the IP and global caps, but out of the email limits.
+      try {
+        otp.markSendFailed(id);
+      } catch (RuntimeException ignored) {
+        // Cleanup trouble must not turn a 503 send_failed into a 500.
+      }
       throw OtpException.sendFailed();
     }
     return new Requested(id);

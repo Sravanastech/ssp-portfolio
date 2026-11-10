@@ -61,9 +61,15 @@ public class OtpRepository {
         .findFirst();
   }
 
-  /** Removes a challenge whose email was never delivered so it counts toward no limit. */
-  public boolean discard(UUID id) {
-    return db.update("DELETE FROM resume_otp_challenge WHERE id=?", id) == 1;
+  /**
+   * Marks a challenge whose email was never delivered: it is dead, still counts toward the per-IP
+   * and global send caps, but not toward the per-email cap or the resend cooldown.
+   */
+  public boolean markSendFailed(UUID id) {
+    return db.update(
+            "UPDATE resume_otp_challenge SET invalidated_at=now(), send_failed=true WHERE id=?",
+            id)
+        == 1;
   }
 
   public Optional<Info> find(UUID id) {
@@ -79,7 +85,7 @@ public class OtpRepository {
   public Optional<Instant> latestSendByEmail(String email) {
     Timestamp ts =
         db.queryForObject(
-            "SELECT max(created_at) FROM resume_otp_challenge WHERE email=?",
+            "SELECT max(created_at) FROM resume_otp_challenge WHERE email=? AND NOT send_failed",
             Timestamp.class,
             email);
     return Optional.ofNullable(ts).map(Timestamp::toInstant);
@@ -94,7 +100,7 @@ public class OtpRepository {
   }
 
   public int countSendsByEmail(String email, Instant since) {
-    return count("email=?", email, since);
+    return count("email=? AND NOT send_failed", email, since);
   }
 
   public int countSendsByIp(byte[] ipHash, Instant since) {

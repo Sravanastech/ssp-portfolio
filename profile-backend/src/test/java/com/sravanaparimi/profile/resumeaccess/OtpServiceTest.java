@@ -329,16 +329,62 @@ class OtpServiceTest {
     var ex = failure(() -> service(broken).request("a@x.com", "tok", IP));
     assertEquals(503, ex.status());
     assertEquals("send_failed", ex.code());
-    // A failed send never reached the visitor, so it must not count toward any send limit.
+    // Not delivered: out of the email cap and the cooldown, but still inside IP and global caps.
     var day = Instant.now().minus(1, ChronoUnit.DAYS);
     assertEquals(0, otp.countSendsByEmail("a@x.com", day));
-    assertEquals(0, otp.countSendsByIp(svc.ipHash(IP), day));
-    assertEquals(0, otp.countSendsGlobal(day));
     assertTrue(otp.latestSendByEmail("a@x.com").isEmpty());
-    assertEquals(
-        0, sql.queryForObject("SELECT count(*) FROM resume_otp_challenge", Integer.class));
+    assertEquals(1, otp.countSendsByIp(svc.ipHash(IP), day));
+    assertEquals(1, otp.countSendsGlobal(day));
+    var id = sql.queryForObject("SELECT id FROM resume_otp_challenge", UUID.class);
+    assertTrue(otp.spendAttempt(id).isEmpty());
+    assertTrue(sql.queryForObject("SELECT send_failed FROM resume_otp_challenge", Boolean.class));
     // An immediate retry is not blocked by the resend cooldown.
     assertDoesNotThrow(() -> svc.request("a@x.com", "tok", IP));
+  }
+
+  @Test
+  void failedSendsStillConsumeThePerIpAndGlobalCaps() throws Exception {
+    Path blocker = Files.createFile(media.resolve("not-a-dir"));
+    var broken = new MockEnvironment()
+        .withProperty("profile.email.mode", "capture")
+        .withProperty("profile.media.root", blocker.toString())
+        .withProperty("profile.inquiries.ip-salt", "0123456789abcdef-salt")
+        .withProperty("profile.resume-otp.enabled", "true");
+    var failing = service(broken);
+    for (int i = 0; i < 10; i++) {
+      int n = i;
+      assertEquals("send_failed", failure(() -> failing.request("f" + n + "@x.com", "tok", IP)).code());
+    }
+    // The IP has now used its 10 sends/hour on failed attempts.
+    assertEquals("rate_limited", failure(() -> svc.request("ok@x.com", "tok", IP)).code());
+  }
+
+  @Test
+  void cleanupFailureStillReportsSendFailed() throws Exception {
+    Path blocker = Files.createFile(media.resolve("not-a-dir"));
+    var broken = new MockEnvironment()
+        .withProperty("profile.email.mode", "capture")
+        .withProperty("profile.media.root", blocker.toString())
+        .withProperty("profile.inquiries.ip-salt", "0123456789abcdef-salt")
+        .withProperty("profile.resume-otp.enabled", "true");
+    var flaky =
+        new OtpRepository(sql) {
+          @Override
+          public boolean markSendFailed(UUID id) {
+            throw new IllegalStateException("db down");
+          }
+        };
+    var service =
+        new OtpService(
+            flaky,
+            visitors,
+            new EmailGateway(broken, JSON),
+            (t, i) -> true,
+            crypto,
+            tokens,
+            broken,
+            new org.springframework.jdbc.datasource.DataSourceTransactionManager(sql.getDataSource()));
+    assertEquals("send_failed", failure(() -> service.request("a@x.com", "tok", IP)).code());
   }
 
   @Test

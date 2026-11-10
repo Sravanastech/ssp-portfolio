@@ -265,13 +265,20 @@ class OtpRepositoryTest {
   }
 
   @Test
-  void discardRemovesOnlyThatChallenge() {
-    var a = open("a@x.com");
-    var b = open("a@x.com");
-    otp.insert(a);
-    otp.insert(b);
-    assertTrue(otp.discard(a.id()));
-    assertFalse(otp.discard(a.id()));
-    assertEquals(1, otp.countSendsByEmail("a@x.com", Instant.now().minusSeconds(60)));
+  void sendFailedRowsCountForIpAndGlobalButNotEmailOrCooldown() {
+    var since = Instant.now().minusSeconds(3600);
+    var failed = open("a@x.com");
+    var fine = open("a@x.com");
+    otp.insert(failed);
+    otp.insert(fine);
+    assertTrue(otp.markSendFailed(failed.id()));
+    assertTrue(otp.spendAttempt(failed.id()).isEmpty());
+    assertFalse(otp.markSendFailed(UUID.randomUUID()));
+    assertEquals(1, otp.countSendsByEmail("a@x.com", since));
+    assertEquals(2, otp.countSendsByIp(IP, since));
+    assertEquals(2, otp.countSendsGlobal(since));
+    sql.update("UPDATE resume_otp_challenge SET created_at = now() - interval '5 minutes' WHERE id=?", fine.id());
+    var latest = otp.latestSendByEmail("a@x.com").orElseThrow();
+    assertTrue(latest.isBefore(Instant.now().minusSeconds(240)), "failed row must not set the cooldown");
   }
 }
