@@ -977,3 +977,55 @@ html:has(.studio-case-nav) {
 .turnstile-host {
   min-height: 0;
 }
+.otp-gate {
+  display: grid;
+  gap: 16px;
+  max-width: 560px;
+}
+.otp-gate form,
+.otp-gate > div:not(.otp-summary) {
+  display: grid;
+  gap: 16px;
+}
+.otp-gate .panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+.otp-gate .page-copy {
+  font-size: 1rem;
+}
+.otp-actions {
+  align-items: stretch;
+}
+.otp-actions .studio-button,
+.otp-actions .studio-button-secondary,
+.otp-actions .link-button {
+  min-height: 44px;
+}
+.otp-actions .link-button {
+  display: inline-flex;
+  align-items: center;
+}
+.otp-count {
+  font-variant-numeric: tabular-nums;
+}
+.otp-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 0;
+  margin: 0;
+  color: var(--color-textSecondary);
+  font-size: 0.9375rem;
+}
+.otp-live:empty {
+  display: none;
+}
+@media (max-width: 719px) {
+  .otp-actions .studio-button,
+  .otp-actions .studio-button-secondary {
+    flex: 1 1 100%;
+  }
+}

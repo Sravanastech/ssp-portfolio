@@ -12,6 +12,8 @@ type Props = {
   /** Change to clear the boxes and refocus the first one. */
   resetKey?: number;
   autoFocus?: boolean;
+  /** Refocus the first box after a reset (default). Turn off to leave focus on an error summary. */
+  focusOnReset?: boolean;
 };
 
 export default function OtpInput({
@@ -22,6 +24,7 @@ export default function OtpInput({
   describedBy,
   resetKey = 0,
   autoFocus = false,
+  focusOnReset = true,
 }: Props) {
   const [digits, setDigits] = useState<string[]>(EMPTY);
   const state = useRef<string[]>(EMPTY);
@@ -63,8 +66,9 @@ export default function OtpInput({
     }
     state.current = EMPTY;
     setDigits(EMPTY);
-    focusAt(0);
-  }, [resetKey, autoFocus]);
+    if (focusOnReset) focusAt(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetKey]);
 
   const onChange = (i: number, raw: string) => {
     const clean = raw.replace(/\D/g, "");
@@ -125,6 +129,7 @@ export default function OtpInput({
               refs.current[i] = el;
             }}
             type="text"
+            name={i === 0 ? "code" : undefined}
             inputMode="numeric"
             pattern="[0-9]*"
             maxLength={i === 0 ? LENGTH : 1}
