@@ -41,15 +41,10 @@ const AppRoutes = () => {
             element={<TermsAndConditionsPage />}
           />
 
+          {/* Resume: gated in-page (email code or Auth0), not by ProtectedRoute */}
+          <Route path={DEFINED_ROUTES.RESUME} element={<ResumePage />} />
+
           {/* Protected Routes */}
-          <Route
-            path={DEFINED_ROUTES.RESUME}
-            element={
-              <ProtectedRoute>
-                <ResumePage />
-              </ProtectedRoute>
-            }
-          />
           <Route
             path={DEFINED_ROUTES.ACCOUNT}
             element={

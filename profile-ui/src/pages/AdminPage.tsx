@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/auth/auth";
 import { AlertCircle, Info, Loader2 } from "lucide-react";
 import { ensureAccount, adminRequest } from "@/api/accountApi";
+import VisitorsPanel from "@/components/admin/VisitorsPanel";
 import "@/styles/pages.css";
 
 type Draft = { id: number; version: number; content: Record<string, unknown> };
@@ -171,6 +172,7 @@ export default function AdminPage() {
                 </button>
               </div>
             </div>
+            <VisitorsPanel />
           </div>
         )}
         {allowed === undefined && busy && (
