@@ -29,4 +29,14 @@ describe("firebase.json CSP supports the pdf.js resume preview", () => {
       expect(values).not.toContain("'unsafe-inline'");
     }
   });
+  it("allows Cloudflare Turnstile for script, frame and connect only", () => {
+    const origin = "https://challenges.cloudflare.com";
+    for (const directive of ["script-src", "frame-src", "connect-src"]) {
+      expect(csp.get(directive)).toContain(origin);
+    }
+    for (const directive of ["default-src", "style-src", "img-src"]) {
+      expect(csp.get(directive) ?? []).not.toContain(origin);
+    }
+    expect(csp.get("script-src")).not.toContain("*");
+  });
 });
