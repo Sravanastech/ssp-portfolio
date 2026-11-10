@@ -164,7 +164,9 @@ describe("secure resume preview", () => {
     expect(
       screen.queryByRole("button", { name: "Verify with email" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByRole("status")).toHaveTextContent("Checking");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Loading your secure resume preview",
+    );
   });
 
   it("skips the gate and uses a valid stored email-code token", async () => {

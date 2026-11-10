@@ -178,29 +178,18 @@ const ResumePage = () => {
               Experience, technical skills, and professional background.
             </p>
           </header>
-          {!hasCredential ? (
-            isLoading ? (
-              <p role="status" className="resume-status">
-                <Loader2
-                  className="resume-spinner"
-                  size={18}
-                  aria-hidden="true"
-                />
-                Checking your session…
-              </p>
-            ) : (
-              <ResumeGate
-                notice={
-                  expired
-                    ? "Your session expired. Verify your email again to keep viewing the resume."
-                    : undefined
-                }
-                onVerified={() => {
-                  setExpired(false);
-                  setOtpToken(getOtpToken());
-                }}
-              />
-            )
+          {!hasCredential && !isLoading ? (
+            <ResumeGate
+              notice={
+                expired
+                  ? "Your session expired. Verify your email again to keep viewing the resume."
+                  : undefined
+              }
+              onVerified={() => {
+                setExpired(false);
+                setOtpToken(getOtpToken());
+              }}
+            />
           ) : error ? (
             <div role="alert" className="resume-panel resume-panel--error">
               <AlertCircle size={22} aria-hidden="true" />

@@ -931,10 +931,12 @@ html:has(.studio-case-nav) {
 .otp-boxes {
   display: flex;
   gap: 8px;
+  min-width: 0;
   max-width: 360px;
 }
 .otp-box {
   flex: 1 1 0;
+  width: 0;
   min-width: 44px;
   max-width: 56px;
   min-height: 52px;
@@ -986,6 +988,7 @@ html:has(.studio-case-nav) {
 .otp-gate > div:not(.otp-summary) {
   display: grid;
   gap: 16px;
+  min-width: 0;
 }
 .otp-gate .panel-title {
   display: flex;
