@@ -61,6 +61,7 @@ class OtpControllerIntegrationTest {
             "--server.port=0",
             "--server.forward-headers-strategy=framework",
             "--profile.resume-otp.ip-requests-per-minute=1000",
+            "--profile.resume-otp.ip-verifies-per-minute=1000",
             "--profile.media.root=" + media,
             "--profile.auth.issuer=http://127.0.0.1:1/",
             "--profile.auth.jwks=http://127.0.0.1:1/jwks",

@@ -40,6 +40,7 @@ public class OtpService {
   private final boolean enabled;
   private final byte[] ipSalt;
   private final RequestThrottle throttle;
+  private final RequestThrottle verifyThrottle;
   private final TransactionTemplate tx;
 
   public OtpService(
@@ -63,6 +64,11 @@ public class OtpService {
     this.throttle =
         new RequestThrottle(
             env.getProperty("profile.resume-otp.ip-requests-per-minute", Integer.class, 10),
+            10_000,
+            System::nanoTime);
+    this.verifyThrottle =
+        new RequestThrottle(
+            env.getProperty("profile.resume-otp.ip-verifies-per-minute", Integer.class, 30),
             10_000,
             System::nanoTime);
   }
@@ -131,6 +137,8 @@ public class OtpService {
   /** Returns a fresh access token or throws {@link OtpException}. */
   public String verify(UUID challengeId, String code, String clientIp) {
     if (!enabled) throw OtpException.unavailable();
+    long wait = verifyThrottle.tryAcquire(ClientIp.bucketKey(clientIp));
+    if (wait > 0) throw OtpException.rateLimited(wait);
     var info = otp.find(challengeId).orElseThrow(() -> OtpException.invalidCode(0));
     byte[] ipHash = ipHash(clientIp);
     Instant hourAgo = Instant.now().minus(Duration.ofHours(1));

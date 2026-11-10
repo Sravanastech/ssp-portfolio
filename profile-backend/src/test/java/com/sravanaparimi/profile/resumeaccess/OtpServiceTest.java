@@ -445,6 +445,40 @@ class OtpServiceTest {
   }
 
   @Test
+  void perIpVerifyThrottleStopsBeforeAnyDatabaseQuery() throws Exception {
+    var finds = new AtomicInteger();
+    var counting =
+        new OtpRepository(sql) {
+          @Override
+          public Optional<Info> find(UUID id) {
+            finds.incrementAndGet();
+            return super.find(id);
+          }
+        };
+    var service =
+        new OtpService(
+            counting,
+            visitors,
+            new EmailGateway(env, JSON),
+            (t, i) -> true,
+            crypto,
+            tokens,
+            env,
+            new org.springframework.jdbc.datasource.DataSourceTransactionManager(sql.getDataSource()));
+    for (int i = 0; i < 30; i++)
+      assertEquals("invalid_code", failure(() -> service.verify(UUID.randomUUID(), "123456", IP)).code());
+    assertEquals(30, finds.get());
+    var ex = failure(() -> service.verify(UUID.randomUUID(), "123456", IP));
+    assertEquals(429, ex.status());
+    assertEquals("rate_limited", ex.code());
+    assertTrue(ex.retryAfterSeconds() >= 1);
+    assertEquals(30, finds.get());
+    assertEquals(
+        "invalid_code",
+        failure(() -> service.verify(UUID.randomUUID(), "123456", "198.51.100.9")).code());
+  }
+
+  @Test
   void disabledFeatureReportsUnavailable() throws Exception {
     env.setProperty("profile.resume-otp.enabled", "false");
     var off = service(env);
