@@ -231,8 +231,9 @@ test.describe("resume email code gate (real backend)", () => {
     await page.getByRole("button", { name: "Verify with email" }).click();
     await page.getByLabel("Email address").fill(email);
     // Managed Turnstile (dummy key) fills the token asynchronously.
-    await expect(page.getByRole("button", { name: "Send code" })).toBeEnabled();
-    await page.waitForTimeout(1500);
+    await expect(page.getByRole("button", { name: "Send code" })).toBeEnabled({
+      timeout: 15_000,
+    });
     await page.getByRole("button", { name: "Send code" }).click();
     await expect(
       page.getByRole("group", { name: "Verification code" }),

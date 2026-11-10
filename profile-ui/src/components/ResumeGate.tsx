@@ -120,6 +120,7 @@ export default function ResumeGate({ onVerified, notice }: Props) {
   const [challenge, setChallenge] = useState<OtpChallenge | null>(null);
   const [turnstile, setTurnstile] = useState<string | null>(null);
   const [captchaKey, setCaptchaKey] = useState(0);
+  const [captchaLost, setCaptchaLost] = useState(false);
   const [codeKey, setCodeKey] = useState(0);
   const [problems, setProblems] = useState<Problem[]>([]);
   const [busy, setBusy] = useState(false);
@@ -137,17 +138,7 @@ export default function ResumeGate({ onVerified, notice }: Props) {
 
   const send = async (address: string) => {
     if (inFlight.current) return;
-    if (!turnstile) {
-      setProblems([
-        {
-          field: "turnstile",
-          label: "Verification check",
-          message:
-            "Please wait for the verification check to finish, then try again.",
-        },
-      ]);
-      return;
-    }
+    if (!turnstile) return;
     inFlight.current = true;
     setBusy(true);
     setProblems([]);
@@ -162,14 +153,36 @@ export default function ResumeGate({ onVerified, notice }: Props) {
     } finally {
       // Turnstile tokens are single use: always ask for a new one.
       setTurnstile(null);
+      setCaptchaLost(false);
       setCaptchaKey((k) => k + 1);
       inFlight.current = false;
       setBusy(false);
     }
   };
 
+  const retryCaptcha = () => {
+    setCaptchaLost(false);
+    setTurnstile(null);
+    setProblems([]);
+    setCaptchaKey((k) => k + 1);
+  };
+
   const onEmailSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+    if (busy) return;
+    if (!turnstile) {
+      // Pending checks are explained by the status text; only a lost one is an error.
+      if (captchaLost)
+        setProblems([
+          {
+            field: "turnstile",
+            label: "Verification check",
+            message:
+              "The verification check expired or failed. Retry the check, then send the code.",
+          },
+        ]);
+      return;
+    }
     const parsed = emailSchema.safeParse(email);
     if (!parsed.success) {
       setProblems([
@@ -214,11 +227,43 @@ export default function ResumeGate({ onVerified, notice }: Props) {
   const emailProblem = problems.find((p) => p.field === "email");
   const codeProblem = problems.find((p) => p.field === "code");
   const captcha = (
-    <TurnstileWidget
-      resetKey={captchaKey}
-      onToken={setTurnstile}
-      onExpire={() => setTurnstile(null)}
-    />
+    <>
+      <TurnstileWidget
+        resetKey={captchaKey}
+        onToken={(token) => {
+          setCaptchaLost(false);
+          setTurnstile(token);
+        }}
+        onExpire={() => {
+          setTurnstile(null);
+          setCaptchaLost(true);
+        }}
+      />
+      <div aria-live="polite" className="otp-live otp-live--visible">
+        {!turnstile &&
+          (captchaLost ? (
+            <>
+              <span>The verification check expired or failed.</span>
+              <button
+                type="button"
+                className="link-button"
+                onClick={retryCaptcha}
+              >
+                Retry check
+              </button>
+            </>
+          ) : (
+            <>
+              <Loader2
+                className="resume-spinner"
+                size={16}
+                aria-hidden="true"
+              />
+              <span>Checking that you&apos;re human…</span>
+            </>
+          ))}
+      </div>
+    </>
   );
   const authButton = (
     <button type="button" className="link-button" onClick={signIn}>
@@ -310,7 +355,11 @@ export default function ResumeGate({ onVerified, notice }: Props) {
           </div>
           {captcha}
           <div className="page-actions otp-actions">
-            <button type="submit" className="studio-button" disabled={busy}>
+            <button
+              type="submit"
+              className="studio-button"
+              aria-disabled={busy || !turnstile}
+            >
               {busy ? (
                 <Loader2
                   className="resume-spinner"
