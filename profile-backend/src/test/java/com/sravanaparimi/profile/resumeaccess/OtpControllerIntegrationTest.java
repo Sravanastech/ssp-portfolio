@@ -339,4 +339,40 @@ class OtpControllerIntegrationTest {
     assertTrue(sawForwarded, "framework strategy must register ForwardedHeaderFilter");
     assertTrue(capture < forwarded, capture + " must be strictly before " + forwarded);
   }
+
+  static final String VALID = "{\"email\":\"pad@x.com\",\"turnstileToken\":\"ok\"}";
+
+  @Test
+  void oversizedContentLengthIsRejectedBeforeAnyWork() throws Exception {
+    // Valid JSON padded with whitespace, so only a size cap can reject it.
+    var r = post("/api/resume/otp/request", "application/json", VALID + " ".repeat(3000));
+    assertEquals(400, r.statusCode());
+    assertEquals("invalid_request", body(r).get("code").asString());
+    assertEquals("no-store", r.headers().firstValue("Cache-Control").orElse(""));
+    assertEquals(0, captchaCalls.get());
+    assertEquals(0, challenges());
+    var v = post("/api/resume/otp/verify", "application/json", "{}" + " ".repeat(3000));
+    assertEquals(400, v.statusCode());
+    assertEquals("invalid_request", body(v).get("code").asString());
+  }
+
+  @Test
+  void oversizedChunkedBodyWithoutContentLengthIsRejected() throws Exception {
+    byte[] payload = (VALID + " ".repeat(3000)).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    var req =
+        HttpRequest.newBuilder(URI.create(base + "/api/resume/otp/request"))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofInputStream(() -> new java.io.ByteArrayInputStream(payload)))
+            .build();
+    var r = HttpClient.newHttpClient().send(req, HttpResponse.BodyHandlers.ofString());
+    assertEquals(400, r.statusCode());
+    assertEquals("invalid_request", body(r).get("code").asString());
+    assertEquals(0, challenges());
+  }
+
+  @Test
+  void bodiesAtTheLimitStillWork() throws Exception {
+    var r = post("/api/resume/otp/request", "application/json", VALID + " ".repeat(2048 - VALID.length()));
+    assertEquals(202, r.statusCode());
+  }
 }
