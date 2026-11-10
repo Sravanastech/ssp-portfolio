@@ -164,3 +164,46 @@ Known limits of the design. They are accepted for a free-tier, single-owner site
 9. **Failed sends still use IP and global quota.** When the provider rejects a send, the row is kept (migration V11,
    `send_failed`) so it counts toward the per-IP and global caps, but not toward the per-email cap or the 45 second
    cooldown, so a visitor can retry at once. OTP request bodies are capped at 4096 bytes.
+
+## 9. Supabase Data API exposure check
+
+If the production database is Supabase, its Data API (PostgREST) can serve tables in the `public` schema to the
+`anon` and `authenticated` roles, which would expose visitor emails. Migration `V12__resume_otp_lockdown.sql` protects
+the two new tables: it enables row level security with a policy that never matches `anon` or `authenticated`, and
+revokes all privileges on them from `PUBLIC`, `anon` and `authenticated` (only for roles that exist, so plain Postgres
+migrates cleanly). `FORCE ROW LEVEL SECURITY` is not used, so the table owner keeps access. A separate runtime role
+(for example `profile_runtime` in the dev compose) is also fine, because the policy only excludes the Data API roles.
+
+Check in the Supabase dashboard:
+
+1. Project Settings, Data API (or API): confirm the Data API is disabled, or that `public` is not an exposed schema.
+   Disabling it is the strongest protection if the app only talks to Postgres directly (it does).
+2. Database, Tables: open `resume_visitor` and `resume_otp_challenge` and confirm "RLS enabled".
+3. Database, Roles: note which role the backend connects as (`DB_USERNAME`). It must be the table owner or a role you
+   granted access to explicitly; it must not be `anon` or `authenticated`.
+
+Verify with SQL (SQL editor or `psql`, read-only):
+
+```sql
+-- RLS on for both tables (relrowsecurity must be true, relforcerowsecurity false)
+select relname, relrowsecurity, relforcerowsecurity
+from pg_class
+where relname in ('resume_visitor', 'resume_otp_challenge');
+
+-- Data API roles hold no privileges (every column below must be false)
+select t.tbl,
+       has_table_privilege('anon', t.tbl, 'SELECT')          as anon_select,
+       has_table_privilege('anon', t.tbl, 'INSERT,UPDATE,DELETE') as anon_write,
+       has_table_privilege('authenticated', t.tbl, 'SELECT') as auth_select,
+       has_table_privilege('authenticated', t.tbl, 'INSERT,UPDATE,DELETE') as auth_write
+from (values ('resume_visitor'), ('resume_otp_challenge')) as t(tbl);
+
+-- Policies present
+select tablename, policyname from pg_policies
+where tablename in ('resume_visitor', 'resume_otp_challenge');
+```
+
+Other existing tables (`accounts`, `inquiries`, `outbox`, `audit_events`, content, media and publication tables, and
+anything created by `scripts/supabase_init.sql`) were NOT changed by this work. They may hold personal data too. Run
+the same two checks against each of them, and enable RLS or revoke `anon`/`authenticated` privileges where needed in
+a separate, reviewed change. Disabling the Data API removes the exposure for all tables at once.
