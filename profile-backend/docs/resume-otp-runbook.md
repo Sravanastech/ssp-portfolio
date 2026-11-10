@@ -131,3 +131,33 @@ DELETE FROM resume_otp_challenge WHERE email = lower('<visitor email>');
 
 Already-issued access tokens are stateless and expire within 30 minutes; to revoke all of them at
 once, rotate `OTP_SECRET`.
+
+## 8. Accepted risks
+
+Known limits of the design. They are accepted for a free-tier, single-owner site; revisit if traffic or threat level changes.
+
+1. **The global 80/day send cap is a kill switch.** Anyone able to solve CAPTCHAs in bulk can use up the cap, after which
+   the email path answers `503 otp_unavailable` for everyone until the window rolls. Auth0 sign-in keeps working.
+   Monitor the Resend dashboard and alert on `otp_unavailable` responses (log-based alert on that error code, which
+   carries no personal data).
+2. **A victim's daily send quota can be exhausted.** A determined attacker with a CAPTCHA solver can request six codes for
+   a victim's address within a day (limit 6/day/email), so the victim cannot request a seventh until the window rolls.
+   This is also a nuisance mail path to the victim (at most 6 emails/day, no links).
+3. **Email aliases bypass per-email caps.** Gmail-style `+tag` and dotted variants are different addresses to the
+   service. The per-IP (10/hour) and global (80/day) caps and Turnstile still apply. Aliases are not collapsed.
+4. **The per-IP verify limit keys on the requester's IP.** The verify call is limited by the IP that originally requested
+   the challenge (the only IP stored), not necessarily the IP calling verify. Each challenge still has its own five attempts,
+   and sends per email are capped, so the guess budget per address is at most 5 x 6 = 30 per day. There is no per-email
+   lock on purpose: a third party must not be able to lock a visitor out.
+5. **Deleting a visitor does not revoke an issued token.** Access tokens are stateless; a token issued before the
+   deletion keeps working until it expires (at most 30 minutes). Rotating `OTP_SECRET` revokes all tokens at once.
+6. **429 reveals recent activity for an email.** A `rate_limited` answer for an address shows that a code was recently
+   requested for it. The 202 response itself is identical for any valid address.
+7. **Client IP depends on the network layout.** Rate limits trust the Nth-from-right `X-Forwarded-For` entry
+   (`OTP_TRUSTED_PROXY_HOPS`). This is only safe if clients cannot reach Cloud Run directly: restrict Cloud Run ingress so
+   that only Firebase Hosting (via the load balancer or internal ingress settings) can reach the service, otherwise an
+   attacker can append their own entries and the chosen entry is attacker-controlled. The hop count must be confirmed in
+   staging (section 5) before enabling the feature.
+8. **Limit state is partly in memory.** The per-IP request throttle (default 10 requests/minute/IP, config
+   `profile.resume-otp.ip-requests-per-minute`) lives in each instance's memory and resets on restart or scale-out.
+   The database limits (per email, per IP, global) are the durable ones.
