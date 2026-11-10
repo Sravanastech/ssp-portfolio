@@ -14,7 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 /** Caps OTP request bodies: declared length is rejected up front, streamed bytes are bounded. */
 @Configuration
 class OtpBodyLimitFilter {
-  static final int MAX_BODY_BYTES = 2048;
+  static final int MAX_BODY_BYTES = 4096;
   private static final String PROBLEM =
       "{\"type\":\"about:blank\",\"title\":\"Bad Request\",\"status\":400,"
           + "\"detail\":\"Check the submitted fields\",\"code\":\"invalid_request\"}";

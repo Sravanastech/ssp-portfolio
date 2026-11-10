@@ -345,20 +345,20 @@ class OtpControllerIntegrationTest {
   @Test
   void oversizedContentLengthIsRejectedBeforeAnyWork() throws Exception {
     // Valid JSON padded with whitespace, so only a size cap can reject it.
-    var r = post("/api/resume/otp/request", "application/json", VALID + " ".repeat(3000));
+    var r = post("/api/resume/otp/request", "application/json", VALID + " ".repeat(5000));
     assertEquals(400, r.statusCode());
     assertEquals("invalid_request", body(r).get("code").asString());
     assertEquals("no-store", r.headers().firstValue("Cache-Control").orElse(""));
     assertEquals(0, captchaCalls.get());
     assertEquals(0, challenges());
-    var v = post("/api/resume/otp/verify", "application/json", "{}" + " ".repeat(3000));
+    var v = post("/api/resume/otp/verify", "application/json", "{}" + " ".repeat(5000));
     assertEquals(400, v.statusCode());
     assertEquals("invalid_request", body(v).get("code").asString());
   }
 
   @Test
   void oversizedChunkedBodyWithoutContentLengthIsRejected() throws Exception {
-    byte[] payload = (VALID + " ".repeat(3000)).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    byte[] payload = (VALID + " ".repeat(5000)).getBytes(java.nio.charset.StandardCharsets.UTF_8);
     var req =
         HttpRequest.newBuilder(URI.create(base + "/api/resume/otp/request"))
             .header("Content-Type", "application/json")
@@ -372,7 +372,19 @@ class OtpControllerIntegrationTest {
 
   @Test
   void bodiesAtTheLimitStillWork() throws Exception {
-    var r = post("/api/resume/otp/request", "application/json", VALID + " ".repeat(2048 - VALID.length()));
+    var r = post("/api/resume/otp/request", "application/json", VALID + " ".repeat(4096 - VALID.length()));
     assertEquals(202, r.statusCode());
+  }
+
+  @Test
+  void maximumSizeValidBodyPasses() throws Exception {
+    String email =
+        "a".repeat(64) + "@" + "x".repeat(63) + "." + "y".repeat(63) + "." + "z".repeat(57) + ".com";
+    assertEquals(254, email.length());
+    String token = "t".repeat(2048);
+    String json = JSON.writeValueAsString(Map.of("email", email, "turnstileToken", token));
+    assertTrue(json.length() > 2048 && json.length() <= 4096, "" + json.length());
+    var r = post("/api/resume/otp/request", "application/json", json);
+    assertEquals(202, r.statusCode(), r.body());
   }
 }
