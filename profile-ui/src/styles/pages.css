@@ -1029,3 +1029,85 @@ html:has(.studio-case-nav) {
     flex: 1 1 100%;
   }
 }
+
+/* ---------- Admin visitors panel ---------- */
+.visitors-panel {
+  display: grid;
+  gap: 16px;
+}
+.visitors-panel .panel-title {
+  margin: 0;
+}
+.visitors-panel .page-notice {
+  margin: 0;
+}
+.ops-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+.ops-table-wrap:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+.ops-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.ops-table th,
+.ops-table td {
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--color-border);
+}
+.ops-table thead th {
+  color: var(--color-textSecondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.ops-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.ops-table-email {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.ops-num {
+  font-variant-numeric: tabular-nums;
+}
+.ops-pager {
+  align-items: center;
+  margin-top: 0;
+}
+.ops-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: color-mix(in srgb, var(--color-background) 30%, black 70%);
+}
+.ops-dialog {
+  position: fixed;
+  z-index: 81;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  gap: 16px;
+  width: min(480px, calc(100vw - 32px));
+  padding: 24px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.ops-dialog .panel-title {
+  margin: 0;
+}
+.ops-dialog .page-copy {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
