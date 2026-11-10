@@ -99,11 +99,13 @@ class OtpControllerIntegrationTest {
         headers);
   }
 
-  static HttpResponse<String> verify(String challengeId, String code) throws Exception {
+  static HttpResponse<String> verify(String challengeId, String code, String... headers)
+      throws Exception {
     return post(
         "/api/resume/otp/verify",
         "application/json",
-        JSON.writeValueAsString(Map.of("challengeId", challengeId, "code", code)));
+        JSON.writeValueAsString(Map.of("challengeId", challengeId, "code", code)),
+        headers);
   }
 
   static String codeFor(String challengeId) throws Exception {
@@ -266,15 +268,13 @@ class OtpControllerIntegrationTest {
 
   @Test
   void lockedResponseCarriesRetryAfter() throws Exception {
-    for (int c = 0; c < 2; c++) {
-      var id = body(requestOtp("lock" + c + "@x.com", "ok", "X-Forwarded-For", "198.51.100." + c)).get("challengeId").asString();
-      sql.update(
-          "UPDATE resume_otp_challenge SET email='lock@x.com', attempts=5, created_at=now() -"
-              + " interval '2 minutes' WHERE id=?::uuid",
-          id);
+    String[] fwd = {"X-Forwarded-For", "9.9.9.9, 198.51.100.200"};
+    for (int c = 0; c < 4; c++) {
+      requestOtp("lock" + c + "@x.com", "ok", fwd);
     }
-    var id = body(requestOtp("lock@x.com", "ok", "X-Forwarded-For", "198.51.100.77")).get("challengeId").asString();
-    var r = verify(id, codeFor(id));
+    sql.update("UPDATE resume_otp_challenge SET attempts=5");
+    var id = body(requestOtp("lockfresh@x.com", "ok", fwd)).get("challengeId").asString();
+    var r = verify(id, codeFor(id), fwd);
     assertEquals(429, r.statusCode());
     assertEquals("locked", body(r).get("code").asString());
     assertTrue(r.headers().firstValue("Retry-After").isPresent());

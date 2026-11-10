@@ -265,17 +265,37 @@ class OtpServiceTest {
   }
 
   @Test
-  void cumulativeFailuresLockTheEmailEvenForTheCorrectCode() throws Exception {
+  void attackerBurningAttemptsOnTheirOwnChallengesDoesNotLockTheVictim() throws Exception {
+    var victim = seed("v@x.com", "123456", "198.51.100.5");
     for (int c = 0; c < 2; c++) {
-      var id = seed("a@x.com", "123456", "198.51.100." + c);
-      for (int i = 0; i < 5; i++) assertThrows(OtpException.class, () -> svc.verify(id, "000000", "198.51.100.99"));
+      var own = seed("v@x.com", "999999", "198.51.100.66");
+      for (int i = 0; i < 5; i++)
+        assertThrows(OtpException.class, () -> svc.verify(own, "000000", "198.51.100.66"));
     }
-    var fresh = seed("a@x.com", "123456", "198.51.100.77");
-    var ex = failure(() -> svc.verify(fresh, "123456", "198.51.100.88"));
-    assertEquals(429, ex.status());
-    assertEquals("locked", ex.code());
-    assertTrue(ex.retryAfterSeconds() > 0);
-    assertEquals(0, visitors.count());
+    assertNotNull(svc.verify(victim, "123456", "198.51.100.5"));
+  }
+
+  @Test
+  void requestFromAnotherIpDoesNotInvalidateTheVictimsOpenCode() throws Exception {
+    var victim = svc.request("v@x.com", "tok", "198.51.100.5");
+    String victimCode = codeFor(victim.challengeId());
+    age("true", "2 minutes");
+    svc.request("v@x.com", "tok", "198.51.100.66");
+    assertNotNull(svc.verify(victim.challengeId(), victimCode, "198.51.100.5"));
+  }
+
+  @Test
+  void guessBudgetPerEmailPerDayStaysBounded() throws Exception {
+    for (int i = 0; i < 6; i++) {
+      var id = seed("a@x.com", "123456", "198.51.100." + i);
+      for (int n = 0; n < 5; n++) otp.spendAttempt(id);
+    }
+    age("true", "1 hour");
+    assertEquals("rate_limited", failure(() -> svc.request("a@x.com", "tok", IP)).code());
+    assertEquals(
+        30, sql.queryForObject("SELECT sum(attempts) FROM resume_otp_challenge", Integer.class));
+    assertEquals(
+        6, otp.countSendsByEmail("a@x.com", Instant.now().minus(1, ChronoUnit.DAYS)));
   }
 
   @Test

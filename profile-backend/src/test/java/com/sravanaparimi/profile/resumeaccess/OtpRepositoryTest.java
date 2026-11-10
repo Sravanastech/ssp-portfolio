@@ -62,14 +62,17 @@ class OtpRepositoryTest {
   }
 
   @Test
-  void invalidateOpenForOnlyAffectsThatEmail() {
+  void invalidateOpenForOnlyAffectsThatEmailAndIp() {
     var a = open("a@x.com");
     var b = open("b@x.com");
+    var otherIp = challenge("a@x.com", new byte[] {7}, Instant.now().plusSeconds(600));
     otp.insert(a);
     otp.insert(b);
-    otp.invalidateOpenFor("a@x.com");
+    otp.insert(otherIp);
+    otp.invalidateOpenFor("a@x.com", IP);
     assertTrue(otp.spendAttempt(a.id()).isEmpty());
     assertTrue(otp.spendAttempt(b.id()).isPresent());
+    assertTrue(otp.spendAttempt(otherIp.id()).isPresent());
   }
 
   @Test
@@ -151,7 +154,7 @@ class OtpRepositoryTest {
   void consumeFailsForInvalidatedChallenge() {
     var c = open("a@x.com");
     otp.insert(c);
-    otp.invalidateOpenFor("a@x.com");
+    otp.invalidateOpenFor("a@x.com", IP);
     assertFalse(otp.consume(c.id()));
   }
 
@@ -172,18 +175,17 @@ class OtpRepositoryTest {
   }
 
   @Test
-  void failedVerifiesCountOnlyNonConsumedChallenges() {
+  void failedVerifiesByIpCountOnlyNonConsumedChallenges() {
     var a = open("a@x.com");
-    var b = open("a@x.com");
+    var b = open("b@x.com");
     otp.insert(a);
     otp.insert(b);
     otp.spendAttempt(a.id());
     otp.spendAttempt(a.id());
     otp.spendAttempt(b.id());
-    assertEquals(3, otp.failedVerifiesByEmail("a@x.com", Instant.now().minusSeconds(3600)));
+    assertEquals(3, otp.failedVerifiesByIp(IP, Instant.now().minusSeconds(3600)));
     assertTrue(otp.consume(b.id()));
-    assertEquals(2, otp.failedVerifiesByEmail("a@x.com", Instant.now().minusSeconds(3600)));
-    assertEquals(0, otp.failedVerifiesByEmail("other@x.com", Instant.now().minusSeconds(3600)));
+    assertEquals(2, otp.failedVerifiesByIp(IP, Instant.now().minusSeconds(3600)));
   }
 
   @Test

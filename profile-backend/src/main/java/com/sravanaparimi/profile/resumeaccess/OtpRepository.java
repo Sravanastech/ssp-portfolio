@@ -33,11 +33,13 @@ public class OtpRepository {
         Timestamp.from(c.expiresAt()));
   }
 
-  public void invalidateOpenFor(String email) {
+  /** Invalidates open challenges of this email created from the same (hashed) client IP only. */
+  public void invalidateOpenFor(String email, byte[] ipHash) {
     db.update(
-        "UPDATE resume_otp_challenge SET invalidated_at=now() WHERE email=? AND consumed_at IS"
-            + " NULL AND invalidated_at IS NULL",
-        email);
+        "UPDATE resume_otp_challenge SET invalidated_at=now() WHERE email=? AND ip_hash=? AND"
+            + " consumed_at IS NULL AND invalidated_at IS NULL",
+        email,
+        ipHash);
   }
 
   /** Atomically spends one attempt and returns the stored HMAC; empty if no longer open. */
@@ -99,10 +101,6 @@ public class OtpRepository {
         "SELECT count(*) FROM resume_otp_challenge WHERE created_at>=?",
         Integer.class,
         Timestamp.from(since));
-  }
-
-  public int failedVerifiesByEmail(String email, Instant since) {
-    return failed("email=?", email, since);
   }
 
   public int failedVerifiesByIp(byte[] ipHash, Instant since) {

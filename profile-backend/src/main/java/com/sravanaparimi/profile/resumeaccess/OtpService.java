@@ -21,7 +21,6 @@ public class OtpService {
   static final int EMAIL_PER_DAY = 6;
   static final int IP_SENDS_PER_HOUR = 10;
   static final int GLOBAL_PER_DAY = 80;
-  static final int EMAIL_FAILED_PER_HOUR = 10;
   static final int IP_FAILED_PER_HOUR = 20;
   static final Duration RETENTION = Duration.ofHours(24);
   static final int PURGE_BATCH = 500;
@@ -82,7 +81,7 @@ public class OtpService {
     if (otp.countSendsByEmail(email, now.minus(Duration.ofDays(1))) >= EMAIL_PER_DAY)
       throw OtpException.rateLimited(3600);
 
-    otp.invalidateOpenFor(email);
+    otp.invalidateOpenFor(email, ipHash);
     UUID id = UUID.randomUUID();
     String code = crypto.generateCode();
     otp.insert(
@@ -105,8 +104,9 @@ public class OtpService {
     var info = otp.find(challengeId).orElseThrow(() -> OtpException.invalidCode(0));
     byte[] ipHash = ipHash(clientIp);
     Instant hourAgo = Instant.now().minus(Duration.ofHours(1));
-    if (otp.failedVerifiesByEmail(info.email(), hourAgo) >= EMAIL_FAILED_PER_HOUR
-        || otp.failedVerifiesByIp(ipHash, hourAgo) >= IP_FAILED_PER_HOUR)
+    // Only the per-IP limit: a third party must not be able to lock a victim's own challenge.
+    // Each challenge has its own 5 attempts, and sends per email are capped (6/day).
+    if (otp.failedVerifiesByIp(ipHash, hourAgo) >= IP_FAILED_PER_HOUR)
       throw OtpException.locked(3600);
     // Spend the attempt before comparing so parallel guesses still cost one attempt each.
     byte[] stored = otp.spendAttempt(challengeId).orElseThrow(() -> OtpException.invalidCode(0));
