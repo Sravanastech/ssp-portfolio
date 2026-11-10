@@ -289,4 +289,53 @@ class OtpControllerIntegrationTest {
                 HttpResponse.BodyHandlers.ofString());
     assertTrue(List.of(401, 403, 405).contains(r.statusCode()), "" + r.statusCode());
   }
+
+  @Test
+  void distinctClientIpsGetDistinctBucketsAndSpoofedLeftmostEntriesDoNot() throws Exception {
+    // Same leftmost (spoofed) entry for everyone; only the rightmost entry is the real client.
+    for (int i = 0; i < 10; i++)
+      assertEquals(
+          202,
+          requestOtp("a" + i + "@x.com", "ok", "X-Forwarded-For", "1.1.1.1, 203.0.113.50")
+              .statusCode());
+    assertEquals(
+        429,
+        requestOtp("a10@x.com", "ok", "X-Forwarded-For", "1.1.1.1, 203.0.113.50").statusCode());
+    // A different spoofed leftmost entry does not escape the exhausted bucket.
+    assertEquals(
+        429,
+        requestOtp("a11@x.com", "ok", "X-Forwarded-For", "2.2.2.2, 203.0.113.50").statusCode());
+    // A different real client (same spoofed leftmost entry) has its own bucket.
+    assertEquals(
+        202,
+        requestOtp("b0@x.com", "ok", "X-Forwarded-For", "1.1.1.1, 203.0.113.51").statusCode());
+  }
+
+  @Test
+  void ipv6ClientsInTheSame64ShareOneBucket() throws Exception {
+    requestOtp("v6a@x.com", "ok", "X-Forwarded-For", "1.1.1.1, 2001:db8:0:7::1");
+    requestOtp("v6b@x.com", "ok", "X-Forwarded-For", "1.1.1.1, 2001:db8:0:7:abcd::2");
+    requestOtp("v6c@x.com", "ok", "X-Forwarded-For", "1.1.1.1, 2001:db8:0:8::1");
+    var hashes = sql.queryForList("SELECT ip_hash FROM resume_otp_challenge ORDER BY email", byte[].class);
+    assertEquals(3, hashes.size());
+    assertArrayEquals(hashes.get(0), hashes.get(1));
+    assertFalse(Arrays.equals(hashes.get(0), hashes.get(2)));
+  }
+
+  @Test
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  void captureFilterRunsExplicitlyBeforeForwardedHeaderFilter() {
+    int capture = Integer.MAX_VALUE, forwarded = Integer.MIN_VALUE;
+    boolean sawForwarded = false;
+    for (var bean : ((Map<String, org.springframework.boot.web.servlet.FilterRegistrationBean>) (Map) app.getBeansOfType(org.springframework.boot.web.servlet.FilterRegistrationBean.class)).values()) {
+      if (bean.getFilter() instanceof org.springframework.web.filter.ForwardedHeaderFilter) {
+        forwarded = bean.getOrder();
+        sawForwarded = true;
+      }
+      if (bean.getUrlPatterns().contains("/api/resume/otp/*") && bean.getOrder() < capture)
+        capture = bean.getOrder();
+    }
+    assertTrue(sawForwarded, "framework strategy must register ForwardedHeaderFilter");
+    assertTrue(capture < forwarded, capture + " must be strictly before " + forwarded);
+  }
 }

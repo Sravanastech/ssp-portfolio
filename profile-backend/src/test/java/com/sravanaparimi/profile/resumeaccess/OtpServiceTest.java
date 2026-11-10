@@ -352,6 +352,12 @@ class OtpServiceTest {
   }
 
   @Test
+  void ipv6AddressesInTheSame64ShareAnIpHash() {
+    assertArrayEquals(svc.ipHash("2001:db8:0:1::1"), svc.ipHash("2001:db8:0:1:ffff::2"));
+    assertFalse(Arrays.equals(svc.ipHash("2001:db8:0:1::1"), svc.ipHash("2001:db8:0:2::1")));
+  }
+
+  @Test
   void ipHashIsStableSaltedAndNotTheRawAddress() {
     assertArrayEquals(svc.ipHash(IP), svc.ipHash(IP));
     assertFalse(Arrays.equals(svc.ipHash(IP), svc.ipHash("203.0.113.8")));

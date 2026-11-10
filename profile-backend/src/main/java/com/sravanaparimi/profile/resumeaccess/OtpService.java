@@ -124,7 +124,7 @@ public class OtpService {
     try {
       Mac mac = Mac.getInstance("HmacSHA256");
       mac.init(new SecretKeySpec(ipSalt.length == 0 ? new byte[1] : ipSalt, "HmacSHA256"));
-      return mac.doFinal(String.valueOf(ip).getBytes(StandardCharsets.UTF_8));
+      return mac.doFinal(ClientIp.bucketKey(ip).getBytes(StandardCharsets.UTF_8));
     } catch (GeneralSecurityException ex) {
       throw new IllegalStateException("HMAC unavailable", ex);
     }
