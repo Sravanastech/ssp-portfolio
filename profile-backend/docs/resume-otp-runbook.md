@@ -70,9 +70,12 @@ The visitor list is owner-only: it requires an Auth0 admin account, MFA, and `su
 
 1. Owner id: Auth0 dashboard, User Management, Users, open your user, copy the User ID
    (looks like `auth0|...` or `google-oauth2|...`). Set it as `ADMIN_OWNER_SUB`.
-2. MFA: enforce MFA for your user with a post-login Action that sets the namespaced claim
-   `https://sravanasparimi.com/amr` to include `mfa` only after a real MFA challenge. Confirm a login
-   without MFA is refused by the admin API (403).
+2. MFA: use TWO post-login Actions, in this order (files in `infra/auth0/`): `1-challenge-admin-mfa.js`
+   (asks admin emails to enroll or enter a second factor) then `2-emit-mfa-claim.js` (sets the namespaced
+   `amr` claim only when Auth0 reports that MFA happened). They must be two Actions because Auth0 does not
+   re-run an Action after the MFA screen; the result is visible only to the next Action. Also enable a factor
+   under Security > Multi-factor Auth and leave the policy on Never. Confirm a login without MFA is refused by
+   the admin API (403) and that a login with MFA reaches `/admin`.
 3. Connections: disable every connection and social login you do not use.
 4. Tenant members: Settings, Tenant Members; remove anyone who does not need access and require MFA for them.
 5. `is_admin` can only be set by SQL on the `accounts` table; there is no API path.
