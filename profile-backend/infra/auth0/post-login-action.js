@@ -33,9 +33,12 @@ exports.onExecutePostLogin = async (event, api) => {
     api.authentication.challengeWithAny([{ type: 'otp' }, { type: 'webauthn-roaming' }, { type: 'webauthn-platform' }]);
   }
 
-  // Emit the claim only when MFA actually happened in this session. Runs again after the challenge completes.
-  // A challenge issued above completes before tokens are minted, so the claim is safe to set for admin candidates.
-  if (hasMfa() || isAdminCandidate) {
+  // Emit the claim ONLY when MFA actually happened in this session (event.authentication.methods contains
+  // "mfa"). Never emit it from the email address alone: if the challenge above cannot run (for example no MFA
+  // factor is enabled in Security > Multi-factor Auth), the user would otherwise get an "mfa" claim without any
+  // second factor. Failing closed here means the admin API answers 403 until MFA really works.
+  // After a challenge completes Auth0 runs this Action again, and then hasMfa() is true.
+  if (hasMfa()) {
     api.accessToken.setCustomClaim(NAMESPACE + 'amr', ['mfa']);
     api.idToken.setCustomClaim(NAMESPACE + 'amr', ['mfa']);
   }
