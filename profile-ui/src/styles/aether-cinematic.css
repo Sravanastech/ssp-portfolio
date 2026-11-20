@@ -61,18 +61,18 @@
   --border-strong: rgba(15, 23, 42, 0.24);
   --text-primary: #0b0f19;
   --text-muted: #475569;
-  --accent-primary: #ff4500;
-  --accent-amber: #d97706;
+  --accent-primary: #c2410c;
+  --accent-amber: #b45309;
   --dot-color: rgba(15, 23, 42, 0.09);
 
   /* Derived FUI Surface & Motion Tokens */
   --fui-glass: rgba(255, 255, 255, 0.88);
   --fui-chrome-bg: rgba(244, 246, 249, 0.88);
   --fui-backdrop: rgba(11, 15, 25, 0.42);
-  --fui-accent-soft: rgba(255, 69, 0, 0.08);
-  --fui-accent-glow: rgba(255, 69, 0, 0.2);
+  --fui-accent-soft: rgba(194, 65, 12, 0.08);
+  --fui-accent-glow: rgba(194, 65, 12, 0.2);
   --fui-accent-ink: #ffffff;
-  --fui-amber-soft: rgba(217, 119, 6, 0.12);
+  --fui-amber-soft: rgba(180, 83, 9, 0.12);
   --fui-hover-surface: rgba(15, 23, 42, 0.05);
 
   /* Sync shared shell/interior design tokens */
@@ -80,15 +80,15 @@
   --color-surface: #ffffff !important;
   --color-text: #0b0f19 !important;
   --color-textSecondary: #475569 !important;
-  --color-primary: #ff4500 !important;
+  --color-primary: #c2410c !important;
   --color-secondary: #475569 !important;
   --color-accent: #ffffff !important;
   --color-border: rgba(15, 23, 42, 0.16) !important;
   --color-borderLight: rgba(15, 23, 42, 0.09) !important;
-  --color-focus-ring: #ff4500 !important;
-  --color-cta-bg: #ff4500 !important;
+  --color-focus-ring: #c2410c !important;
+  --color-cta-bg: #c2410c !important;
   --color-cta-text: #ffffff !important;
-  --color-cta-hover: #e03d00 !important;
+  --color-cta-hover: #9a3412 !important;
 
   color-scheme: light;
 }
@@ -1384,6 +1384,13 @@
   outline: none;
 }
 
+/* Input has no own ring; show it on the wrapping row. Inset so the panel
+   clip-path never crops it. */
+:root[data-paradigm="aether"] .fui-palette-search:focus-within {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
+
 :root[data-paradigm="aether"] .fui-palette-input::placeholder {
   color: var(--text-muted);
 }
@@ -1573,7 +1580,11 @@
   background: var(--fui-accent-soft);
   border-color: var(--border-hairline);
   border-left-color: var(--accent-primary);
-  outline: none;
+}
+
+:root[data-paradigm="aether"] .fui-palette-item:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
 }
 
 :root[data-paradigm="aether"] .fui-palette-item:hover .fui-palette-item-title,

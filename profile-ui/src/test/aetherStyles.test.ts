@@ -35,6 +35,15 @@ describe("aether-cinematic.css (FUI Minimalism Dual-Theme)", () => {
     expect(css).toContain(".fui-closing");
   });
 
+  it("uses AA-contrast Cleanroom accents and a visible palette focus ring", () => {
+    const css = readFileSync(aetherCssPath, "utf8");
+    expect(css).toContain("--accent-primary: #c2410c;");
+    expect(css).toContain("--accent-amber: #b45309;");
+    expect(css).not.toContain("#ff4500");
+    expect(css).not.toContain("#d97706");
+    expect(css).toContain(".fui-palette-search:focus-within");
+  });
+
   it("includes strict prefers-reduced-motion fallback", () => {
     const css = readFileSync(aetherCssPath, "utf8");
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
