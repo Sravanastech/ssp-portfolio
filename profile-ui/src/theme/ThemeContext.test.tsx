@@ -58,6 +58,22 @@ describe("ThemeProvider", () => {
     expect(screen.getByRole("button")).toHaveTextContent("midnight");
   });
 
+  it("maps the removed woodland id to sunrise", () => {
+    mockMedia(true);
+    localStorage.setItem("theme", "woodland");
+    renderProbe();
+    expect(screen.getByRole("button")).toHaveTextContent("sunrise");
+  });
+
+  it("migrates the legacy Aether key once", () => {
+    mockMedia(false);
+    localStorage.setItem("portfolio-fui-theme", "void");
+    renderProbe();
+    expect(screen.getByRole("button")).toHaveTextContent("midnight");
+    expect(localStorage.getItem("theme")).toBe("midnight");
+    expect(localStorage.getItem("portfolio-fui-theme")).toBeNull();
+  });
+
   it("follows OS changes until the visitor chooses", () => {
     mockMedia(false);
     renderProbe();

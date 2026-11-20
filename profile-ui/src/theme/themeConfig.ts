@@ -1,15 +1,19 @@
-export type Theme = "woodland" | "sunrise" | "midnight";
+export type Theme = "sunrise" | "midnight";
 
 /** Color scheme each theme declares on the root (drives native controls and scrollbars). */
 export const themeScheme: Record<Theme, "light" | "dark"> = {
-  woodland: "light",
   sunrise: "light",
   midnight: "dark",
 };
 
+/** Every theme other than the dark one is light. */
+export const isDarkTheme = (theme: Theme): boolean =>
+  themeScheme[theme] === "dark";
+
 /** Theme ids that were persisted by earlier versions, mapped to their replacement. */
 export const legacyThemeIds: Record<string, Theme> = {
   ocean: "midnight",
+  woodland: "sunrise",
 };
 
 export interface ThemeColors {
@@ -30,23 +34,6 @@ export interface ThemeColors {
 }
 
 export const themeConfig: Record<Theme, ThemeColors> = {
-  woodland: {
-    // Sulu (light sage) & Deep Fir (dark forest green)
-    primary: "#0D3F35",
-    secondary: "#4A7C72",
-    accent: "#F5F9F7",
-    background: "#F9FCFB",
-    surface: "#FFFFFF",
-    text: "#0D3F35",
-    textSecondary: "#2D5A50",
-    border: "#D4E0DC",
-    borderLight: "#E8EFED",
-    success: "#059669",
-    warning: "#D97706",
-    error: "#DC2626",
-    info: "#0284C7",
-    shadow: "rgba(13, 63, 53, 0.15)",
-  },
   sunrise: {
     // Studio daylight: cobalt ink on cool paper.
     primary: "#244CE4",

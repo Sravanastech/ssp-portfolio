@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useParadigm } from "@/theme/ParadigmContext";
+import { useTheme } from "@/theme/theme-context";
+import { isDarkTheme } from "@/theme/themeConfig";
 import { useSiteContent } from "@/content/siteContentContext";
 import { useRouteHeadingDecipher } from "@/lib/motion";
 import HudFrame from "@/components/hud/HudFrame";
@@ -9,23 +11,11 @@ import FuiDossierModal from "@/components/hud/FuiDossierModal";
 
 export type FuiTheme = "void" | "cleanroom";
 
-const FUI_THEME_KEY = "portfolio-fui-theme";
 export const FUI_OPEN_COMMAND_EVENT = "fui:open-command";
-
-function readFuiTheme(): FuiTheme {
-  if (typeof window === "undefined") return "void";
-  try {
-    return localStorage.getItem(FUI_THEME_KEY) === "cleanroom"
-      ? "cleanroom"
-      : "void";
-  } catch {
-    return "void";
-  }
-}
 
 /**
  * Persistent FUI Minimalism chrome mounted only when paradigm === "aether":
- * - Dual-theme hardware state (`void` dark obsidian vs `cleanroom` clinical light)
+ * - View of the shared light/dark theme (dark -> `void`, light -> `cleanroom`)
  * - Fixed perimeter HUD frame (corner brackets, crosshairs, clock, scroll %)
  * - Global `⌘K` / `Ctrl+K` System Command Palette + Dossier Modal
  */
@@ -33,7 +23,9 @@ export default function AetherStage(): React.ReactElement | null {
   const { isAether } = useParadigm();
   const { pathname } = useLocation();
   const { profile, caseStudies } = useSiteContent();
-  const [fuiTheme, setFuiTheme] = useState<FuiTheme>(() => readFuiTheme());
+  const { currentTheme, setTheme } = useTheme();
+  const dark = isDarkTheme(currentTheme);
+  const fuiTheme: FuiTheme = dark ? "void" : "cleanroom";
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
 
@@ -52,17 +44,10 @@ export default function AetherStage(): React.ReactElement | null {
     };
   }, [isAether, fuiTheme]);
 
-  const toggleFuiTheme = useCallback(() => {
-    setFuiTheme((prev) => {
-      const next: FuiTheme = prev === "void" ? "cleanroom" : "void";
-      try {
-        localStorage.setItem(FUI_THEME_KEY, next);
-      } catch {
-        /* Keep in-memory preference. */
-      }
-      return next;
-    });
-  }, []);
+  const toggleFuiTheme = useCallback(
+    () => setTheme(dark ? "sunrise" : "midnight"),
+    [dark, setTheme],
+  );
 
   useEffect(() => {
     if (!isAether || typeof window === "undefined") return;
