@@ -72,7 +72,9 @@ const ErrorPage = ({
             <AlertCircle size={24} aria-hidden="true" />
             {code}
           </p>
-          <h1 className="studio-page-heading">{getErrorTitle()}</h1>
+          <h1 className="studio-page-heading" data-no-decipher>
+            {getErrorTitle()}
+          </h1>
           <p className="studio-lede">{getErrorDescription()}</p>
           {autoRedirect && (
             <div className="error-countdown">

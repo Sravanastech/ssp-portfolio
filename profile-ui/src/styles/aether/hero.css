@@ -100,10 +100,6 @@
   color: var(--accent-primary);
 }
 
-:root[data-paradigm="aether"] .fui-boot-eyebrow {
-  animation: fui-mask-reveal 400ms var(--ease-out) 100ms both;
-}
-
 :root[data-paradigm="aether"] .fui-replay-btn {
   display: inline-flex;
   align-items: center;
@@ -117,7 +113,6 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
-  animation: fui-mask-reveal 350ms var(--ease-out) 150ms both;
   transition:
     border-color var(--motion-base),
     color var(--motion-base);
@@ -275,9 +270,9 @@
   align-items: center;
   min-height: 44px;
   padding: 0 14px;
-  border: 1px solid var(--accent-primary);
+  border: 1px solid var(--border-strong);
   background: var(--bg-primary);
-  color: var(--accent-primary);
+  color: var(--text-muted);
   font: 700 13px/1 var(--fui-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -288,4 +283,19 @@
 
 :root[data-paradigm="aether"] .fui-skip-intro:hover {
   background: var(--fui-accent-soft);
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .fui-skip-intro:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* Touch-only devices have no keyboard: hide shortcut hints. */
+@media (pointer: coarse), (hover: none) {
+  :root[data-paradigm="aether"] .fui-touch-hide {
+    display: none !important;
+  }
 }

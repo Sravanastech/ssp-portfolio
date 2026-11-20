@@ -28,7 +28,7 @@ const BENTO_SPANS = [
 
 const BOOT_SEEN_KEY = "aether:boot-seen";
 /** Full boot sequence length; the Skip button is shown until then. */
-const BOOT_TOTAL_MS = 2600;
+const BOOT_TOTAL_MS = 2400;
 
 type BootPhase = "full" | "quick" | "done";
 
@@ -52,7 +52,7 @@ const useIsoLayoutEffect =
  * Staged boot (~2.4s) plays in full on the first Aether home visit per session;
  * later visits fade in at once. "Skip intro" / Escape jump to the final state.
  *   0–0.8s:   grid axes + scanline; eyebrow, replay button
- *   0.15–1.05s: headline decryption (final text legible by ~1.05s)
+ *   0–0.8s: headline decryption (final text legible by ~0.8s)
  *   0.7–1.3s: identity line, bio, action dock
  *   1.0–2.4s: 5 mission modules cascade, then career log rows
  */
@@ -76,7 +76,15 @@ export default function AetherHomeStage(): React.ReactElement {
   const skipIntro = useCallback(() => {
     setSkipped(true);
     setPhase("done");
-    replayRef.current?.focus();
+    if (!document.querySelector('[role="dialog"]')) {
+      replayRef.current?.focus();
+    }
+  }, []);
+
+  /** Ends the boot without touching focus (a dialog/palette just opened). */
+  const endBootQuietly = useCallback(() => {
+    setSkipped(true);
+    setPhase((p) => (p === "full" ? "done" : p));
   }, []);
 
   const replay = () => {
@@ -89,27 +97,35 @@ export default function AetherHomeStage(): React.ReactElement {
     if (phase !== "full") return;
     const timer = window.setTimeout(() => setPhase("done"), BOOT_TOTAL_MS);
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") skipIntro();
+      if (e.key !== "Escape" || e.defaultPrevented) return;
+      if (document.querySelector('[role="dialog"]')) return;
+      skipIntro();
     };
     window.addEventListener("keydown", onKey);
+    window.addEventListener(FUI_OPEN_COMMAND_EVENT, endBootQuietly);
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener("keydown", onKey);
+      window.removeEventListener(FUI_OPEN_COMMAND_EVENT, endBootQuietly);
     };
-  }, [phase, bootKey, skipIntro]);
+  }, [phase, bootKey, skipIntro, endBootQuietly]);
+
+  useEffect(() => {
+    if (dossierIndex !== null) endBootQuietly();
+  }, [dossierIndex, endBootQuietly]);
 
   const animate = phase === "full";
   const bootMode = skipped ? "skipped" : phase === "quick" ? "quick" : "full";
 
   const bootEyebrowText = `SYS.BOOT // ${profile.name.toUpperCase()} // SINCE ${profile.careerStartYear}`;
   const bootEyebrow = useAsciiScramble(bootEyebrowText, animate, {
-    delayMs: 100,
-    durationMs: 700,
+    delayMs: 0,
+    durationMs: 600,
     seedKey: bootKey,
   });
   const decryptedHeadline = useAsciiScramble(profile.headline, animate, {
-    delayMs: 150,
-    durationMs: 900,
+    delayMs: 0,
+    durationMs: 800,
     seedKey: bootKey,
   });
 
@@ -184,7 +200,7 @@ export default function AetherHomeStage(): React.ReactElement {
               </PrefetchLink>
               <button
                 type="button"
-                className="fui-cmd-pill"
+                className="fui-cmd-pill fui-touch-hide"
                 onClick={openCommandPalette}
               >
                 <Command size={14} aria-hidden="true" />

@@ -111,7 +111,7 @@ export function decipherHeadingElement(
     return () => {};
   }
 
-  const { delayMs = 220, durationMs = 1250 } = options;
+  const { delayMs = 40, durationMs = 480 } = options;
   const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
   const entries: Array<{ node: Text; original: string; offset: number }> = [];
   let totalLength = 0;
@@ -217,13 +217,15 @@ export function useRouteHeadingDecipher(
 
     const tryAttach = (): boolean => {
       const root = document.getElementById("main-content") ?? document;
-      const heading = root.querySelector<HTMLElement>("h1.studio-page-heading");
+      const heading = root.querySelector<HTMLElement>(
+        "h1.studio-page-heading:not([data-no-decipher])",
+      );
       if (!heading || !heading.textContent?.trim()) {
         return false;
       }
       cancelScramble = decipherHeadingElement(heading, {
-        delayMs: 220,
-        durationMs: 1250,
+        delayMs: 40,
+        durationMs: 480,
       });
       return true;
     };
