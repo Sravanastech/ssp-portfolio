@@ -1,6 +1,14 @@
 import { test, expect, type Page, type ConsoleMessage } from "./fixtures";
 
-const ROUTES = ["/", "/work", "/about", "/contact"];
+const ROUTES = [
+  "/",
+  "/work",
+  "/work/enterprise-application-modernization",
+  "/about",
+  "/contact",
+  "/privacy",
+  "/termsconditions",
+];
 
 function trackConsole(page: Page): string[] {
   const errors: string[] = [];
@@ -94,7 +102,7 @@ test.describe("Aether FUI Minimalism (desktop)", () => {
     expect(errors).toEqual([]);
   });
 
-  test("all public routes render in Aether without console errors", async ({
+  test("all public routes render in Aether with sharp 0px corners, aligned 1180px rails, and zero console errors", async ({
     page,
   }) => {
     const errors = trackConsole(page);
@@ -108,6 +116,28 @@ test.describe("Aether FUI Minimalism (desktop)", () => {
       expect(
         await page.evaluate(() => document.documentElement.dataset.paradigm),
       ).toBe("aether");
+
+      const layoutAudit = await page.evaluate(() => {
+        const rounded: string[] = [];
+        document.querySelectorAll("*").forEach((el) => {
+          const r = getComputedStyle(el).borderRadius;
+          if (r && r !== "0px") {
+            rounded.push(`${el.tagName}.${el.className}:${r}`);
+          }
+        });
+        const containers = Array.from(
+          document.querySelectorAll(".studio-container, .fui-container"),
+        ).map((el) => Math.round(el.getBoundingClientRect().width));
+        const overflow =
+          document.documentElement.scrollWidth - window.innerWidth;
+        return { roundedCount: rounded.length, containers, overflow };
+      });
+
+      expect(layoutAudit.roundedCount).toBe(0);
+      expect(layoutAudit.overflow).toBeLessThanOrEqual(1);
+      for (const width of layoutAudit.containers) {
+        expect(width).toBeLessThanOrEqual(1180);
+      }
     }
     expect(errors).toEqual([]);
   });
