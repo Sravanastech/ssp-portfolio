@@ -68,4 +68,28 @@ describe("aether-cinematic.css (FUI Minimalism Dual-Theme)", () => {
     const css = aetherCss;
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
   });
+
+  it("applies skipped and quick boot modes to staged home elements", () => {
+    const motion = readFileSync(
+      resolve(aetherPartialsDir, "motion.css"),
+      "utf8",
+    );
+    for (const cls of ["fui-hero-title", "fui-module", "fui-timeline-row"]) {
+      for (const mode of ["skipped", "quick"]) {
+        const re = new RegExp(
+          `\\.fui-page\\[data-boot="${mode}"\\] \\.${cls}(?![\\w-])`,
+        );
+        expect(motion).toMatch(re);
+      }
+    }
+  });
+
+  it("has no collapsed selector lists (missing commas between .fui- classes)", () => {
+    const collapsed =
+      /\.fui-[a-z-]+ \.fui-[a-z-]+ \.fui-[a-z-]+ \.fui-[a-z-]+ \.fui-/;
+    const offending = aetherCss
+      .split("\n")
+      .filter((line) => collapsed.test(line));
+    expect(offending).toEqual([]);
+  });
 });

@@ -125,14 +125,30 @@
 
 /* ============================================ BOOT MODES (home) */
 /* skipped: jump every staged element to its final state instantly. */
-:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-grid-line-x .fui-grid-line-y .fui-boot-eyebrow .fui-replay-btn .fui-hero-title .fui-hero-sub .fui-hero-desc .fui-hero-actions .fui-module .fui-timeline-row
- {
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-grid-line-x,
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-grid-line-y,
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-boot-eyebrow,
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-replay-btn,
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-hero-title,
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-hero-sub,
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-hero-desc,
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-hero-actions,
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-module,
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-timeline-row {
   animation: none;
 }
 
 /* quick (repeat visit in session): short fade, no stagger. */
-:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-grid-line-x .fui-grid-line-y .fui-boot-eyebrow .fui-replay-btn .fui-hero-title .fui-hero-sub .fui-hero-desc .fui-hero-actions .fui-module .fui-timeline-row
- {
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-grid-line-x,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-grid-line-y,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-boot-eyebrow,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-replay-btn,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-hero-title,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-hero-sub,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-hero-desc,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-hero-actions,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-module,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-timeline-row {
   animation: fui-backdrop-in var(--motion-slow) var(--ease-out) both;
 }
 
