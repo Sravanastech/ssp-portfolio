@@ -4,6 +4,7 @@ import HudFrame from "../HudFrame";
 import {
   FUI_DURATIONS,
   FUI_EASE,
+  decipherHeadingElement,
   prefersReducedMotion,
   useAsciiScramble,
 } from "@/lib/motion";
@@ -244,5 +245,37 @@ describe("motion helpers", () => {
     activeRender.rerender(<ScrambleProbe target="UPDATED" />);
     activeRender.unmount();
     expect(cancelSpy).toHaveBeenCalled();
+  });
+
+  it("deciphers heading text nodes across <br /> boundaries and restores exact text on finish or cancel", () => {
+    mockReducedMotion(false);
+    const frames: FrameRequestCallback[] = [];
+    let now = 500;
+    vi.spyOn(performance, "now").mockImplementation(() => now);
+    vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+      frames.push(cb);
+      return frames.length;
+    });
+
+    const heading = document.createElement("h1");
+    heading.className = "studio-page-heading";
+    heading.innerHTML = "<span>Selected</span><br /><span>Work</span>";
+
+    const cancel = decipherHeadingElement(heading, {
+      delayMs: 100,
+      durationMs: 1000,
+    });
+    expect(heading.getAttribute("aria-label")).toBe("Selected Work");
+    expect(frames).toHaveLength(1);
+
+    now = 800;
+    frames[0](now);
+    expect(heading.querySelector("br")).not.toBeNull();
+
+    now = 1700;
+    frames[1](now);
+    expect(heading.textContent).toBe("SelectedWork");
+    expect(heading.hasAttribute("aria-label")).toBe(false);
+    cancel();
   });
 });

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useParadigm } from "@/theme/ParadigmContext";
 import { useSiteContent } from "@/content/siteContentContext";
+import { useRouteHeadingDecipher } from "@/lib/motion";
 import HudFrame from "@/components/hud/HudFrame";
 import FuiCommandPalette from "@/components/hud/FuiCommandPalette";
 import FuiDossierModal from "@/components/hud/FuiDossierModal";
@@ -29,10 +31,13 @@ function readFuiTheme(): FuiTheme {
  */
 export default function AetherStage(): React.ReactElement | null {
   const { isAether } = useParadigm();
+  const { pathname } = useLocation();
   const { profile, caseStudies } = useSiteContent();
   const [fuiTheme, setFuiTheme] = useState<FuiTheme>(() => readFuiTheme());
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
+
+  useRouteHeadingDecipher(isAether, pathname);
 
   useEffect(() => {
     if (!isAether || typeof document === "undefined") {
