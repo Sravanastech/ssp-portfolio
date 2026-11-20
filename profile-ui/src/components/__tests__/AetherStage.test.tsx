@@ -5,10 +5,6 @@ import { staticContent } from "@/content/siteContentContext";
 import * as aetherAudio from "@/lib/aetherAudio";
 import AetherStage from "../AetherStage";
 
-vi.mock("../AetherCanvas", () => ({
-  default: () => <div data-testid="aether-canvas-mock" />,
-}));
-
 function mockMedia(matching: string[]) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches: matching.includes(query),
@@ -54,16 +50,14 @@ describe("AetherStage", () => {
     const studio = renderStage("studio");
     expect(studio.container.querySelector(".aether-hud")).toBeNull();
     expect(studio.container.querySelector(".aether-scroll-beam")).toBeNull();
-    expect(screen.queryByTestId("aether-canvas-mock")).toBeNull();
     studio.unmount();
 
     const kinetic = renderStage("kinetic");
     expect(kinetic.container.querySelector(".aether-hud")).toBeNull();
     expect(kinetic.container.querySelector(".aether-scroll-beam")).toBeNull();
-    expect(screen.queryByTestId("aether-canvas-mock")).toBeNull();
   });
 
-  it("renders beam, canvas, and telemetry HUD with location and muted sound toggle in aether", () => {
+  it("renders beam and telemetry HUD with location and muted sound toggle in aether", () => {
     const audioCtorSpy = vi.fn();
     window.AudioContext = audioCtorSpy as unknown as typeof AudioContext;
 
@@ -73,7 +67,6 @@ describe("AetherStage", () => {
       "aria-hidden",
       "true",
     );
-    expect(screen.getByTestId("aether-canvas-mock")).toBeInTheDocument();
 
     const hud = screen.getByRole("region", {
       name: /aether observatory telemetry/i,

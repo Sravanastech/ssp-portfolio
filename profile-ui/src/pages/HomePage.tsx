@@ -1,13 +1,27 @@
+import { lazy, Suspense } from "react";
 import { SiteText } from "@/content/SiteContent";
 import { useSiteContent } from "@/content/siteContentContext";
+import { useParadigm } from "@/theme/ParadigmContext";
 import PrefetchLink from "@/components/PrefetchLink";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import HeroSection from "@/components/HeroSection";
 import ProjectArtwork from "@/components/ProjectArtwork";
 import EmployerTimeline from "@/components/EmployerTimeline";
 
+const LazyAetherHomeStage = lazy(() => import("@/components/AetherHomeStage"));
+
 export default function HomePage() {
+  const { isAether } = useParadigm();
   const { caseStudies, experiences, copy } = useSiteContent();
+
+  if (isAether) {
+    return (
+      <Suspense fallback={null}>
+        <LazyAetherHomeStage />
+      </Suspense>
+    );
+  }
+
   const copyMap = copy as Record<string, string>;
   const workHeadingGhost = [
     copyMap["pages.HomePage.text.1"],

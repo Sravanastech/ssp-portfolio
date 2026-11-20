@@ -7,11 +7,10 @@ import {
   playHoverTick,
   playSwitchChime,
 } from "@/lib/aetherAudio";
-import AetherCanvas from "./AetherCanvas";
 
 const FINE_POINTER = "(pointer: fine)";
 const GLASS_CARD_SELECTOR =
-  ".studio-project, .studio-case, .system-studio, .page-panel, .studio-contact form, .project-related a";
+  ".studio-project, .studio-case, .system-studio, .page-panel, .studio-contact form, .project-related a, .aether-shard";
 const HOVER_AUDIO_THROTTLE_MS = 90;
 
 function matches(query: string): boolean {
@@ -150,7 +149,6 @@ export default function AetherStage(): React.ReactElement | null {
   return (
     <>
       <div className="aether-scroll-beam" aria-hidden="true" />
-      <AetherCanvas />
       <aside
         className="aether-hud"
         role="region"
