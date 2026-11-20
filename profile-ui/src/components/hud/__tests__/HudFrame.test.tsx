@@ -201,7 +201,7 @@ describe("motion helpers", () => {
 
   it("exports FUI motion constants and reduced-motion helper", () => {
     expect(FUI_EASE).toBe("cubic-bezier(0.16, 1, 0.3, 1)");
-    expect(FUI_DURATIONS).toEqual({ grid: 600, reveal: 480, modal: 320 });
+    expect(FUI_DURATIONS).toEqual({ grid: 900, reveal: 750, modal: 320 });
 
     mockReducedMotion(false);
     expect(prefersReducedMotion()).toBe(false);
@@ -237,7 +237,7 @@ describe("motion helpers", () => {
       "NOMINAL".length,
     );
 
-    now = 1420;
+    now = 2700;
     act(() => frames[1](now));
     expect(screen.getByTestId("scramble-output")).toHaveTextContent("NOMINAL");
 

@@ -1,5 +1,11 @@
 import { useState } from "react";
-import { ArrowRight, ArrowUpRight, Command, Terminal } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Command,
+  RotateCcw,
+  Terminal,
+} from "lucide-react";
 import { useSiteContent } from "@/content/siteContentContext";
 import PrefetchLink from "@/components/PrefetchLink";
 import { useAsciiScramble } from "@/lib/motion";
@@ -8,23 +14,36 @@ import FuiDossierModal from "@/components/hud/FuiDossierModal";
 
 const BENTO_SPANS = [
   "fui-module--wide",
-  "fui-module--tall",
-  "fui-module--tall",
+  "fui-module--narrow",
+  "fui-module--narrow",
   "fui-module--wide",
   "fui-module--full",
 ] as const;
 
 /**
  * FUI Minimalism Homepage ("Oblivion" / "The Martian" / "Tron: Legacy" + Swiss Precision):
- * 1. The Boot Sequence Hero (GPU grid-line draw + masked slide + ASCII decryption + ⌘K trigger)
- * 2. Asymmetric Chamfered Bento Grid ("Mission Modules" — all 5 real case studies)
- * 3. Interactive Technical Dossier Modal (inline SVG system flow + breakdown)
- * 4. Career Telemetry Roll & Closing Dock
+ * 7-second staged cinematic boot sequence:
+ *   0.0s–1.0s: Grid axes draw outward + scanline sweep
+ *   0.6s–3.0s: Telemetry eyebrow + ASCII headline decryption
+ *   2.7s–3.7s: Identity telemetry + bio + action dock
+ *   3.8s–6.5s: 5 Chamfered Bento Mission Modules cascade in one-by-one
+ *   6.3s–7.1s: Career Service Log + Closing Comms Dock lock into place
  */
 export default function AetherHomeStage(): React.ReactElement {
   const { profile, caseStudies, experiences } = useSiteContent();
   const [dossierIndex, setDossierIndex] = useState<number | null>(null);
-  const decryptedHeadline = useAsciiScramble(profile.headline, true);
+  const [bootKey, setBootKey] = useState(0);
+
+  const bootEyebrow = useAsciiScramble(
+    `SYS.BOOT // ${profile.name.toUpperCase()} // SINCE ${profile.careerStartYear}`,
+    true,
+    { delayMs: 450, durationMs: 1100, seedKey: bootKey },
+  );
+  const decryptedHeadline = useAsciiScramble(profile.headline, true, {
+    delayMs: 950,
+    durationMs: 1850,
+    seedKey: bootKey,
+  });
 
   const openCommandPalette = () => {
     if (typeof window !== "undefined") {
@@ -36,52 +55,63 @@ export default function AetherHomeStage(): React.ReactElement {
     dossierIndex !== null ? (caseStudies[dossierIndex] ?? null) : null;
 
   return (
-    <div className="fui-page">
-      {/* 1. HERO: THE BOOT SEQUENCE */}
+    <div className="fui-page" key={bootKey}>
+      {/* 1. HERO: THE 7-SECOND BOOT SEQUENCE */}
       <section className="fui-hero" aria-labelledby="fui-hero-heading">
-        <div className="fui-grid-line-x" aria-hidden="true" />
-        <div className="fui-grid-line-y" aria-hidden="true" />
+        <div className="fui-container fui-hero-frame">
+          <div className="fui-grid-line-x" aria-hidden="true" />
+          <div className="fui-grid-line-y" aria-hidden="true" />
+          <div className="fui-boot-scan" aria-hidden="true" />
 
-        <div className="fui-container fui-hero-inner">
-          <div className="fui-boot-eyebrow">
-            <Terminal size={14} aria-hidden="true" />
-            <span>
-              SYS.BOOT // {profile.name.toUpperCase()} // SINCE{" "}
-              {profile.careerStartYear}
-            </span>
-          </div>
+          <div className="fui-hero-inner">
+            <div className="fui-boot-bar">
+              <div className="fui-boot-eyebrow">
+                <Terminal size={14} aria-hidden="true" />
+                <span>{bootEyebrow}</span>
+              </div>
+              <button
+                type="button"
+                className="fui-replay-btn"
+                onClick={() => setBootKey((k) => k + 1)}
+                aria-label="Replay cinematic boot sequence"
+              >
+                <RotateCcw size={12} aria-hidden="true" />
+                <span>Replay boot</span>
+              </button>
+            </div>
 
-          <h1 id="fui-hero-heading" className="fui-hero-title">
-            {decryptedHeadline}
-          </h1>
+            <h1 id="fui-hero-heading" className="fui-hero-title">
+              {decryptedHeadline}
+            </h1>
 
-          <p className="fui-hero-sub">
-            <span>{profile.role}</span>
-            <span aria-hidden="true"> // </span>
-            <span>{profile.employer}</span>
-            <span aria-hidden="true"> // </span>
-            <span>{profile.location}</span>
-          </p>
+            <p className="fui-hero-sub">
+              <span>{profile.role}</span>
+              <span aria-hidden="true"> // </span>
+              <span>{profile.employer}</span>
+              <span aria-hidden="true"> // </span>
+              <span>{profile.location}</span>
+            </p>
 
-          <p className="fui-hero-desc">{profile.description}</p>
+            <p className="fui-hero-desc">{profile.description}</p>
 
-          <div className="fui-hero-actions">
-            <PrefetchLink to="/work" className="fui-btn-primary">
-              Inspect mission archive
-              <ArrowUpRight size={16} aria-hidden="true" />
-            </PrefetchLink>
-            <PrefetchLink to="/contact" className="fui-btn-secondary">
-              Initiate contact
-              <ArrowRight size={15} aria-hidden="true" />
-            </PrefetchLink>
-            <button
-              type="button"
-              className="fui-cmd-pill"
-              onClick={openCommandPalette}
-            >
-              <Command size={14} aria-hidden="true" />
-              <span>Press ⌘K for System Menu</span>
-            </button>
+            <div className="fui-hero-actions">
+              <PrefetchLink to="/work" className="fui-btn-primary">
+                Inspect mission archive
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </PrefetchLink>
+              <PrefetchLink to="/contact" className="fui-btn-secondary">
+                Initiate contact
+                <ArrowRight size={15} aria-hidden="true" />
+              </PrefetchLink>
+              <button
+                type="button"
+                className="fui-cmd-pill"
+                onClick={openCommandPalette}
+              >
+                <Command size={14} aria-hidden="true" />
+                <span>Press ⌘K for System Menu</span>
+              </button>
+            </div>
           </div>
         </div>
       </section>
@@ -94,10 +124,15 @@ export default function AetherHomeStage(): React.ReactElement {
       >
         <div className="fui-container">
           <header className="fui-section-head">
-            <p className="fui-kicker">MISSION MODULES // 01–05</p>
-            <h2 id="fui-missions-heading" className="fui-section-title">
-              Selected production systems
-            </h2>
+            <div>
+              <p className="fui-kicker">MISSION MODULES // 01–05</p>
+              <h2 id="fui-missions-heading" className="fui-section-title">
+                Selected production systems
+              </h2>
+            </div>
+            <span className="fui-section-code">
+              CLICK MODULE TO INSPECT DOSSIER
+            </span>
           </header>
 
           <div className="fui-bento">
@@ -105,6 +140,7 @@ export default function AetherHomeStage(): React.ReactElement {
               <article
                 key={study.id}
                 className={`fui-module ${BENTO_SPANS[index % BENTO_SPANS.length]}`}
+                style={{ "--module-index": index } as React.CSSProperties}
               >
                 <div className="fui-module-top">
                   <span className="fui-module-id">

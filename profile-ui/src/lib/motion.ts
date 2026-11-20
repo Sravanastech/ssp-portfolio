@@ -3,14 +3,20 @@ import { useEffect, useState } from "react";
 export const FUI_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 
 export const FUI_DURATIONS = {
-  grid: 600,
-  reveal: 480,
+  grid: 900,
+  reveal: 750,
   modal: 320,
 } as const;
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
-const SCRAMBLE_GLYPHS = "01/_<>[]#";
-const SCRAMBLE_DURATION_MS = 420;
+const SCRAMBLE_GLYPHS = "01/_<>[]#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const DEFAULT_SCRAMBLE_MS = 1650;
+
+export interface ScrambleOptions {
+  delayMs?: number;
+  durationMs?: number;
+  seedKey?: number;
+}
 
 /** SSR-safe check for the user's reduced-motion preference. */
 export function prefersReducedMotion(): boolean {
@@ -23,11 +29,20 @@ export function prefersReducedMotion(): boolean {
 }
 
 /**
- * Decrypts `target` over ~420ms using subtle monospace glyphs via
- * requestAnimationFrame when `active && !prefersReducedMotion()`.
+ * Decrypts `target` over `durationMs` (default 1650ms) after optional `delayMs`
+ * using monospace glyphs via requestAnimationFrame when `active && !prefersReducedMotion()`.
  * Immediately returns `target` unchanged on SSR or reduced motion.
  */
-export function useAsciiScramble(target: string, active = true): string {
+export function useAsciiScramble(
+  target: string,
+  active = true,
+  options: ScrambleOptions = {},
+): string {
+  const {
+    delayMs = 0,
+    durationMs = DEFAULT_SCRAMBLE_MS,
+    seedKey = 0,
+  } = options;
   const [display, setDisplay] = useState(target);
 
   useEffect(() => {
@@ -42,11 +57,11 @@ export function useAsciiScramble(target: string, active = true): string {
     }
 
     let frameId = 0;
-    const startTime = performance.now();
+    const startTime = performance.now() + delayMs;
 
     const step = (now: number) => {
       const elapsed = now - startTime;
-      const progress = Math.min(1, Math.max(0, elapsed / SCRAMBLE_DURATION_MS));
+      const progress = Math.min(1, Math.max(0, elapsed / durationMs));
       if (progress >= 1) {
         setDisplay(target);
         return;
@@ -74,7 +89,7 @@ export function useAsciiScramble(target: string, active = true): string {
         window.cancelAnimationFrame(frameId);
       }
     };
-  }, [target, active]);
+  }, [target, active, delayMs, durationMs, seedKey]);
 
   if (!active || typeof window === "undefined" || prefersReducedMotion()) {
     return target;
