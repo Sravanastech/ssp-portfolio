@@ -188,6 +188,33 @@ describe("FuiCommandPalette", () => {
     expect(screen.getByText("COPIED_TO_CLIPBOARD")).toBeInTheDocument();
   });
 
+  it("supports tech-stack filter chips and ArrowDown/Enter keyboard execution", () => {
+    const onClose = vi.fn();
+    const onSelectStudy = vi.fn();
+
+    render(
+      <MemoryRouter>
+        <FuiCommandPalette
+          open
+          onClose={onClose}
+          fuiTheme="void"
+          onToggleFuiTheme={vi.fn()}
+          onSelectStudy={onSelectStudy}
+        />
+      </MemoryRouter>,
+    );
+
+    const reactChip = screen.getByRole("button", { name: "React" });
+    fireEvent.click(reactChip);
+    expect(reactChip).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.keyDown(window, { key: "ArrowDown" });
+    fireEvent.keyDown(window, { key: "Enter" });
+
+    expect(onSelectStudy).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it("closes on Escape key", () => {
     const onClose = vi.fn();
     render(

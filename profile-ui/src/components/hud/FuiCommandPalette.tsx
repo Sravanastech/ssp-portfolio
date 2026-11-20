@@ -14,6 +14,7 @@ export interface FuiCommandPaletteProps {
 interface PaletteCommand {
   id: string;
   label: string;
+  category: string;
   keywords: string;
   badge?: string;
   run: () => void;
@@ -30,40 +31,52 @@ function FuiCommandPaletteDialog({
   const navigate = useNavigate();
 
   const [query, setQuery] = useState("");
+  const [selectedTech, setSelectedTech] = useState<string>("ALL");
+  const [activeIndex, setActiveIndex] = useState(0);
   const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const copyTimerRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    inputRef.current?.focus();
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        onClose();
+  const techFilters = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const study of caseStudies) {
+      for (const tech of study.technologies) {
+        counts.set(tech, (counts.get(tech) ?? 0) + 1);
       }
-    };
+    }
+    const sorted = Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .slice(0, 7)
+      .map(([tech]) => tech);
+    return ["ALL", ...sorted];
+  }, [caseStudies]);
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      if (copyTimerRef.current !== null) {
-        window.clearTimeout(copyTimerRef.current);
-      }
-    };
-  }, [onClose]);
-
-  const normalizedQuery = query.trim().toLowerCase();
+  const tokens = useMemo(
+    () => query.trim().toLowerCase().split(/\s+/).filter(Boolean),
+    [query],
+  );
 
   const filteredStudies = useMemo(() => {
-    if (!normalizedQuery) return caseStudies;
     return caseStudies.filter((study) => {
-      const haystack = [study.name, study.organization, ...study.technologies]
+      if (
+        selectedTech !== "ALL" &&
+        !study.technologies.includes(selectedTech)
+      ) {
+        return false;
+      }
+      if (tokens.length === 0) return true;
+      const haystack = [
+        study.name,
+        study.organization,
+        study.role,
+        study.summary,
+        ...study.technologies,
+      ]
         .join(" ")
         .toLowerCase();
-      return haystack.includes(normalizedQuery);
+      return tokens.every((token) => haystack.includes(token));
     });
-  }, [caseStudies, normalizedQuery]);
+  }, [caseStudies, selectedTech, tokens]);
 
   const commands = useMemo<PaletteCommand[]>(() => {
     const nextThemeLabel = fuiTheme === "void" ? "CLEANROOM" : "VOID";
@@ -71,6 +84,7 @@ function FuiCommandPaletteDialog({
       {
         id: "toggle-fui-theme",
         label: `Switch FUI Theme (${nextThemeLabel})`,
+        category: "THEME",
         keywords: `theme void cleanroom light dark ${nextThemeLabel}`,
         run: () => {
           onToggleFuiTheme();
@@ -79,6 +93,7 @@ function FuiCommandPaletteDialog({
       {
         id: "copy-email",
         label: `Copy Contact Email (${profile.email})`,
+        category: "COMMS",
         keywords: `copy contact email mail ${profile.email}`,
         badge: copied ? "COPIED_TO_CLIPBOARD" : undefined,
         run: () => {
@@ -94,8 +109,29 @@ function FuiCommandPaletteDialog({
         },
       },
       {
+        id: "open-work",
+        label: "Open Work & Case Studies",
+        category: "ROUTE",
+        keywords: "work projects portfolio case studies",
+        run: () => {
+          void navigate("/work");
+          onClose();
+        },
+      },
+      {
+        id: "open-about",
+        label: "Open About & Career Log",
+        category: "ROUTE",
+        keywords: "about bio background experience career",
+        run: () => {
+          void navigate("/about");
+          onClose();
+        },
+      },
+      {
         id: "open-resume",
         label: "Open Resume",
+        category: "ROUTE",
         keywords: "resume cv pdf experience career",
         run: () => {
           void navigate("/resume");
@@ -105,6 +141,7 @@ function FuiCommandPaletteDialog({
       {
         id: "open-contact",
         label: "Contact / Inquiry",
+        category: "ROUTE",
         keywords: "contact inquiry message hire reach out",
         run: () => {
           void navigate("/contact");
@@ -114,6 +151,7 @@ function FuiCommandPaletteDialog({
       {
         id: "paradigm-studio",
         label: "Switch Paradigm: Studio",
+        category: "MODE",
         keywords: "paradigm mode studio editorial",
         run: () => {
           setParadigm("studio");
@@ -123,6 +161,7 @@ function FuiCommandPaletteDialog({
       {
         id: "paradigm-kinetic",
         label: "Switch Paradigm: Kinetic",
+        category: "MODE",
         keywords: "paradigm mode kinetic maximalist",
         run: () => {
           setParadigm("kinetic");
@@ -131,22 +170,84 @@ function FuiCommandPaletteDialog({
       },
     ];
 
-    if (!normalizedQuery) return allCommands;
-    return allCommands.filter((cmd) =>
-      `${cmd.label} ${cmd.keywords}`.toLowerCase().includes(normalizedQuery),
-    );
+    if (selectedTech !== "ALL" && tokens.length === 0) return [];
+    if (tokens.length === 0) return allCommands;
+    return allCommands.filter((cmd) => {
+      const haystack =
+        `${cmd.label} ${cmd.category} ${cmd.keywords}`.toLowerCase();
+      return tokens.every((token) => haystack.includes(token));
+    });
   }, [
     copied,
     fuiTheme,
     navigate,
-    normalizedQuery,
     onClose,
     onToggleFuiTheme,
     profile.email,
+    selectedTech,
     setParadigm,
+    tokens,
   ]);
 
-  const hasResults = filteredStudies.length > 0 || commands.length > 0;
+  const totalResults = filteredStudies.length + commands.length;
+  const clampedActiveIndex =
+    totalResults > 0 ? Math.min(activeIndex, totalResults - 1) : -1;
+
+  useEffect(() => {
+    inputRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (totalResults === 0) return;
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setActiveIndex((prev) => (prev + 1) % totalResults);
+      } else if (event.key === "ArrowUp") {
+        event.preventDefault();
+        setActiveIndex((prev) => (prev - 1 + totalResults) % totalResults);
+      } else if (event.key === "Enter") {
+        const target = event.target as HTMLElement | null;
+        if (target?.tagName === "BUTTON") return;
+        event.preventDefault();
+        if (clampedActiveIndex < 0) return;
+        if (clampedActiveIndex < filteredStudies.length) {
+          const study = filteredStudies[clampedActiveIndex];
+          onSelectStudy(study.slug);
+          onClose();
+        } else {
+          const cmd = commands[clampedActiveIndex - filteredStudies.length];
+          cmd?.run();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    clampedActiveIndex,
+    commands,
+    filteredStudies,
+    onClose,
+    onSelectStudy,
+    totalResults,
+  ]);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimerRef.current !== null) {
+        window.clearTimeout(copyTimerRef.current);
+      }
+    };
+  }, []);
+
+  const hasResults = totalResults > 0;
 
   return (
     <div
@@ -164,15 +265,36 @@ function FuiCommandPaletteDialog({
         aria-label="System command palette"
       >
         <div className="fui-palette-search">
+          <span className="fui-palette-prompt" aria-hidden="true">
+            &gt;
+          </span>
           <input
             ref={inputRef}
             type="search"
             className="fui-palette-input"
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => {
+              setQuery(event.target.value);
+              setActiveIndex(0);
+            }}
             placeholder="Search projects, tech stack, or commands..."
             aria-label="Search projects, tech stack, or commands"
           />
+          {query || selectedTech !== "ALL" ? (
+            <button
+              type="button"
+              className="fui-palette-clear"
+              onClick={() => {
+                setQuery("");
+                setSelectedTech("ALL");
+                setActiveIndex(0);
+                inputRef.current?.focus();
+              }}
+              aria-label="Clear search and filter"
+            >
+              CLEAR
+            </button>
+          ) : null}
           <button
             type="button"
             className="fui-palette-esc"
@@ -183,16 +305,50 @@ function FuiCommandPaletteDialog({
           </button>
         </div>
 
+        <div
+          className="fui-palette-filters"
+          role="group"
+          aria-label="Filter projects by tech stack"
+        >
+          {techFilters.map((tech) => {
+            const active = selectedTech === tech;
+            return (
+              <button
+                key={tech}
+                type="button"
+                className="fui-palette-chip"
+                aria-pressed={active}
+                onClick={() => {
+                  setSelectedTech(tech);
+                  setActiveIndex(0);
+                }}
+              >
+                {tech}
+              </button>
+            );
+          })}
+        </div>
+
         <div className="fui-palette-results">
           {filteredStudies.length > 0 ? (
             <section className="fui-palette-group" aria-label="Mission Modules">
-              <div className="fui-palette-group-label">Mission Modules</div>
+              <div className="fui-palette-group-label">
+                <span>Mission Modules</span>
+                <span>
+                  {String(filteredStudies.length).padStart(2, "0")} /{" "}
+                  {String(caseStudies.length).padStart(2, "0")}
+                </span>
+              </div>
               <ul className="fui-palette-list">
-                {filteredStudies.map((study) => (
+                {filteredStudies.map((study, idx) => (
                   <li key={study.slug}>
                     <button
                       type="button"
                       className="fui-palette-item"
+                      data-active={
+                        clampedActiveIndex === idx ? "true" : undefined
+                      }
+                      onMouseEnter={() => setActiveIndex(idx)}
                       onClick={() => {
                         onSelectStudy(study.slug);
                         onClose();
@@ -203,7 +359,7 @@ function FuiCommandPaletteDialog({
                           {study.name}
                         </span>
                         <span className="fui-palette-item-meta">
-                          {study.organization}
+                          {study.organization} · {study.role}
                         </span>
                       </span>
                       <span className="fui-palette-item-tags">
@@ -218,30 +374,44 @@ function FuiCommandPaletteDialog({
 
           {commands.length > 0 ? (
             <section className="fui-palette-group" aria-label="System Commands">
-              <div className="fui-palette-group-label">System Commands</div>
+              <div className="fui-palette-group-label">
+                <span>System Commands</span>
+                <span>{String(commands.length).padStart(2, "0")}</span>
+              </div>
               <ul className="fui-palette-list">
-                {commands.map((cmd) => (
-                  <li key={cmd.id}>
-                    <button
-                      type="button"
-                      className="fui-palette-item"
-                      onClick={cmd.run}
-                    >
-                      <span className="fui-palette-item-title">
-                        {cmd.label}
-                      </span>
-                      {cmd.badge ? (
-                        <span
-                          className="fui-palette-badge"
-                          role="status"
-                          aria-live="polite"
-                        >
-                          {cmd.badge}
+                {commands.map((cmd, idx) => {
+                  const flatIndex = filteredStudies.length + idx;
+                  return (
+                    <li key={cmd.id}>
+                      <button
+                        type="button"
+                        className="fui-palette-item"
+                        data-active={
+                          clampedActiveIndex === flatIndex ? "true" : undefined
+                        }
+                        onMouseEnter={() => setActiveIndex(flatIndex)}
+                        onClick={cmd.run}
+                      >
+                        <span className="fui-palette-item-title">
+                          {cmd.label}
                         </span>
-                      ) : null}
-                    </button>
-                  </li>
-                ))}
+                        {cmd.badge ? (
+                          <span
+                            className="fui-palette-badge"
+                            role="status"
+                            aria-live="polite"
+                          >
+                            {cmd.badge}
+                          </span>
+                        ) : (
+                          <span className="fui-palette-cat">
+                            {cmd.category}
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </section>
           ) : null}
@@ -251,6 +421,12 @@ function FuiCommandPaletteDialog({
               NO_MATCHING_RECORDS
             </p>
           ) : null}
+        </div>
+
+        <div className="fui-palette-footer" aria-hidden="true">
+          <span>↑↓ NAVIGATE</span>
+          <span>↵ EXECUTE</span>
+          <span>ESC CLOSE</span>
         </div>
       </div>
     </div>
