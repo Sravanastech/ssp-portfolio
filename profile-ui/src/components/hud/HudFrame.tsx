@@ -136,7 +136,7 @@ export default function HudFrame({
       </div>
 
       <div
-        className="fui-hud-dock pointer-events-auto fixed bottom-3 right-8 flex items-center gap-2 font-mono text-[11px] tracking-[0.12em] uppercase"
+        className="fui-hud-dock pointer-events-auto fixed bottom-3 right-8 flex items-center gap-2 font-mono text-[13px] tracking-[0.12em] uppercase"
         style={{ pointerEvents: "auto" }}
       >
         <button

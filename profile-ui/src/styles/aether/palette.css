@@ -9,7 +9,7 @@
   background: var(--fui-backdrop);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  animation: fui-backdrop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fui-backdrop-in var(--motion-base) var(--ease-out) both;
 }
 
 :root[data-paradigm="aether"] .fui-palette {
@@ -29,7 +29,7 @@
     14px 100%,
     0 calc(100% - 14px)
   );
-  animation: fui-panel-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fui-panel-in var(--motion-slow) var(--ease-out) both;
 }
 
 :root[data-paradigm="aether"] .fui-palette-search {
@@ -81,7 +81,7 @@
   border: 1px solid var(--border-strong);
   background: var(--bg-elevated);
   color: var(--text-muted);
-  font: 600 10px/1 var(--fui-mono);
+  font: 600 13px/1 var(--fui-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
@@ -118,7 +118,7 @@
   border: 1px solid var(--border-hairline);
   background: var(--bg-primary);
   color: var(--text-muted);
-  font: 600 10px/1 var(--fui-mono);
+  font: 600 13px/1 var(--fui-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
@@ -160,7 +160,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 4px 10px;
-  font: 700 10px/1 var(--fui-mono);
+  font: 700 13px/1 var(--fui-mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent-primary);
@@ -190,9 +190,9 @@
   text-align: left;
   cursor: pointer;
   transition:
-    background-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    background-color 0.18s var(--ease-out),
+    border-color 0.18s var(--ease-out),
+    color 0.18s var(--ease-out);
 }
 
 :root[data-paradigm="aether"] .fui-palette-item-main {
@@ -211,14 +211,14 @@
 }
 
 :root[data-paradigm="aether"] .fui-palette-item-meta {
-  font: 500 11px/1.3 var(--fui-mono);
+  font: 500 13px/1.3 var(--fui-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 :root[data-paradigm="aether"] .fui-palette-item-tags {
-  font: 500 10px/1.3 var(--fui-mono);
+  font: 500 13px/1.3 var(--fui-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -232,7 +232,7 @@
   border: 1px solid var(--border-hairline);
   background: var(--bg-primary);
   color: var(--text-muted);
-  font: 600 10px/1 var(--fui-mono);
+  font: 600 13px/1 var(--fui-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   flex-shrink: 0;
@@ -243,7 +243,7 @@
   border: 1px solid var(--accent-primary);
   background: var(--fui-accent-soft);
   color: var(--accent-primary);
-  font: 700 10px/1 var(--fui-mono);
+  font: 700 13px/1 var(--fui-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   flex-shrink: 0;
@@ -274,7 +274,7 @@
   margin: 0;
   padding: 28px 16px;
   text-align: center;
-  font: 600 12px/1.4 var(--fui-mono);
+  font: 600 13px/1.4 var(--fui-mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -289,7 +289,7 @@
   border-top: 1px solid var(--border-hairline);
   background: var(--bg-primary);
   color: var(--text-muted);
-  font: 500 10px/1 var(--fui-mono);
+  font: 500 13px/1 var(--fui-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   flex-shrink: 0;
@@ -305,7 +305,7 @@
   background: var(--bg-elevated);
   border: 1px solid var(--accent-primary);
   color: var(--accent-primary);
-  font: 600 11px/1 var(--fui-mono);
+  font: 600 13px/1 var(--fui-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   clip-path: polygon(
@@ -316,5 +316,5 @@
     8px 100%,
     0 calc(100% - 8px)
   );
-  animation: fui-panel-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fui-panel-in var(--motion-slow) var(--ease-out) both;
 }

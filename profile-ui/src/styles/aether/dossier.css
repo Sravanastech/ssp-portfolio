@@ -9,7 +9,7 @@
   background: var(--fui-backdrop);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  animation: fui-backdrop-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fui-backdrop-in var(--motion-base) var(--ease-out) both;
 }
 
 :root[data-paradigm="aether"] .fui-dossier {
@@ -30,7 +30,7 @@
     18px 100%,
     0 calc(100% - 18px)
   );
-  animation: fui-panel-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fui-panel-in var(--motion-slow) var(--ease-out) both;
 }
 
 :root[data-paradigm="aether"] .fui-dossier-header {
@@ -50,7 +50,7 @@
 }
 
 :root[data-paradigm="aether"] .fui-dossier-code {
-  font: 700 11px/1 var(--fui-mono);
+  font: 700 13px/1 var(--fui-mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent-primary);
@@ -58,7 +58,7 @@
 
 :root[data-paradigm="aether"] .fui-dossier-org {
   margin: 0;
-  font: 500 12px/1.3 var(--fui-mono);
+  font: 500 13px/1.3 var(--fui-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -82,7 +82,7 @@
 
 :root[data-paradigm="aether"] .fui-section-label {
   margin: 0 0 8px;
-  font: 700 11px/1.2 var(--fui-mono);
+  font: 700 13px/1.2 var(--fui-mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent-primary);
@@ -90,7 +90,7 @@
 
 :root[data-paradigm="aether"] .fui-arch-note {
   margin: 0;
-  font: 500 12px/1.5 var(--fui-mono);
+  font: 500 13px/1.5 var(--fui-mono);
   color: var(--text-muted);
 }
 
@@ -137,7 +137,7 @@
   border: 1px solid var(--border-hairline);
   background: var(--bg-primary);
   color: var(--text-muted);
-  font: 500 11px/1.2 var(--fui-mono);
+  font: 500 13px/1.2 var(--fui-mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -152,14 +152,14 @@
   border: 1px solid var(--border-strong);
   background: var(--bg-primary);
   color: var(--text-primary);
-  font: 600 11px/1 var(--fui-mono);
+  font: 600 13px/1 var(--fui-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
   transition:
-    border-color 0.2s ease,
-    color 0.2s ease,
-    background-color 0.2s ease;
+    border-color var(--motion-base),
+    color var(--motion-base),
+    background-color var(--motion-base);
 }
 
 :root[data-paradigm="aether"] .fui-dossier-close:hover {
@@ -185,8 +185,8 @@
   stroke: var(--border-strong);
   stroke-width: 1.25;
   transition:
-    stroke 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-    fill 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    stroke var(--motion-base) var(--ease-out),
+    fill var(--motion-base) var(--ease-out);
 }
 
 :root[data-paradigm="aether"] .fui-arch-node:hover,

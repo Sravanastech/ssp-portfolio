@@ -17,20 +17,20 @@
   align-items: baseline;
   padding: 18px 14px;
   border-bottom: 1px solid var(--border-hairline);
-  animation: fui-row-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 6.2s both;
+  animation: fui-row-in 500ms var(--ease-out) 1900ms both;
   transition:
-    background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    background-color var(--motion-base) var(--ease-out),
+    border-color var(--motion-base) var(--ease-out);
 }
 
 :root[data-paradigm="aether"] .fui-timeline-idx {
-  font: 700 11px/1 var(--fui-mono);
+  font: 700 13px/1 var(--fui-mono);
   font-variant-numeric: tabular-nums;
   color: var(--accent-primary);
 }
 
 :root[data-paradigm="aether"] .fui-timeline-year {
-  font: 500 12px/1.3 var(--fui-mono);
+  font: 500 13px/1.3 var(--fui-mono);
   font-variant-numeric: tabular-nums;
   color: var(--text-muted);
 }
@@ -144,7 +144,7 @@
   background: var(--accent-primary);
   opacity: 0.7;
   transform-origin: left center;
-  animation: fui-draw-x 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+  animation: fui-draw-x 0.9s var(--ease-out) 0.05s both;
   pointer-events: none;
 }
 
@@ -161,7 +161,7 @@
     var(--accent-primary) 50%,
     transparent 52%
   );
-  animation: fui-boot-scan 1.35s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  animation: fui-boot-scan 1.35s var(--ease-out) 0.1s both;
 }
 
 :root[data-paradigm="aether"] .studio-page-heading {
@@ -171,18 +171,18 @@
   letter-spacing: -0.04em;
   color: var(--text-primary);
   margin: 0 0 20px;
-  animation: fui-mask-reveal 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+  animation: fui-mask-reveal 0.85s var(--ease-out) 0.25s both;
 }
 
 :root[data-paradigm="aether"] .studio-page-intro .studio-lede,
 :root[data-paradigm="aether"] .studio-page-intro .about-intro-split {
-  animation: fui-mask-reveal 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both;
+  animation: fui-mask-reveal 0.75s var(--ease-out) 0.55s both;
 }
 
 :root[data-paradigm="aether"] .studio-page-intro .work-note,
 :root[data-paradigm="aether"] .studio-page-intro .project-meta,
 :root[data-paradigm="aether"] .studio-page-intro .project-stack {
-  animation: fui-mask-reveal 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.8s both;
+  animation: fui-mask-reveal 0.75s var(--ease-out) 0.8s both;
 }
 
 :root[data-paradigm="aether"] .studio-lede,
@@ -219,8 +219,8 @@
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition:
-    border-color 0.2s ease,
-    opacity 0.2s ease;
+    border-color var(--motion-base),
+    opacity var(--motion-base);
 }
 
 :root[data-paradigm="aether"] .studio-link:hover,
@@ -251,8 +251,8 @@
     0 calc(100% - 10px)
   );
   transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.25s ease;
+    transform var(--motion-base) var(--ease-out),
+    filter var(--motion-base);
 }
 
 :root[data-paradigm="aether"] .studio-button:hover:not(:disabled) {
@@ -275,10 +275,10 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   transition:
-    border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-    color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-    background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    border-color var(--motion-base) var(--ease-out),
+    color var(--motion-base) var(--ease-out),
+    background-color var(--motion-base) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
 }
 
 :root[data-paradigm="aether"] .studio-button-secondary:hover:not(:disabled) {
