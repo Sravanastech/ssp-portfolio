@@ -26,6 +26,32 @@ if (typeof window.requestIdleCallback === "function")
   window.requestIdleCallback(startMonitoring, { timeout: 3000 });
 else window.setTimeout(startMonitoring, 1500);
 
+// Stored theme ids (current and legacy) mapped to the Aether chrome theme they imply.
+const FUI_BY_THEME = new Map<string, "void" | "cleanroom">([
+  ["midnight", "void"],
+  ["ocean", "void"],
+  ["sunrise", "cleanroom"],
+  ["woodland", "cleanroom"],
+]);
+
+/**
+ * Mirrors ThemeContext's initial theme (same keys, legacy ids and OS fallback) so the
+ * pre-paint Aether attribute never disagrees with React's choice.
+ */
+function prePaintFuiTheme(): "void" | "cleanroom" {
+  const stored = localStorage.getItem("theme");
+  if (stored) {
+    const mapped = FUI_BY_THEME.get(stored);
+    if (mapped) return mapped;
+  } else {
+    const legacy = localStorage.getItem("portfolio-fui-theme");
+    if (legacy === "void" || legacy === "cleanroom") return legacy;
+  }
+  const prefersDark =
+    window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
+  return prefersDark ? "void" : "cleanroom";
+}
+
 // Apply a saved non-Studio paradigm before first paint of React and warm its CSS chunk.
 // Module code only: the CSP forbids inline scripts.
 try {
@@ -35,10 +61,7 @@ try {
     void prefetchKineticStyles();
   } else if (savedParadigm === "aether") {
     document.documentElement.dataset.paradigm = "aether";
-    document.documentElement.dataset.fuiTheme =
-      localStorage.getItem("portfolio-fui-theme") === "cleanroom"
-        ? "cleanroom"
-        : "void";
+    document.documentElement.dataset.fuiTheme = prePaintFuiTheme();
     void prefetchAetherStyles();
   }
 } catch {
