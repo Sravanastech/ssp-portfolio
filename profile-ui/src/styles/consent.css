@@ -7,7 +7,7 @@
 }
 .consent-banner {
   position: fixed;
-  z-index: 40;
+  z-index: var(--z-header);
   inset: auto 16px 16px 16px;
   max-width: 760px;
   margin-inline: auto;
