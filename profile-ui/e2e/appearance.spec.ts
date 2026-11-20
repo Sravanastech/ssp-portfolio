@@ -16,7 +16,9 @@ for (const width of [1440, 390]) {
       const toggle = page.locator(".mode-toggle:visible");
       await toggle.click();
       await expect(html).toHaveAttribute("data-theme", "midnight");
-      await expect(toggle).toHaveAccessibleName("Switch to light mode");
+      await expect(toggle).toHaveAccessibleName("Dark mode");
+      await expect(toggle).toHaveAttribute("role", "switch");
+      await expect(toggle).toHaveAttribute("aria-checked", "true");
     } else {
       await page.getByRole("button", { name: "Open navigation menu" }).click();
       const dialog = page.getByRole("dialog");
