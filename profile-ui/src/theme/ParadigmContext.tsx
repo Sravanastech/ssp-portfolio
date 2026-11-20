@@ -11,7 +11,7 @@ import {
 } from "react";
 import { flushSync } from "react-dom";
 
-export type Paradigm = "studio" | "kinetic";
+export type Paradigm = "studio" | "kinetic" | "aether";
 
 export interface ParadigmOrigin {
   x: number;
@@ -21,9 +21,11 @@ export interface ParadigmOrigin {
 export interface ParadigmContextValue {
   paradigm: Paradigm;
   isKinetic: boolean;
+  isAether: boolean;
   setParadigm: (next: Paradigm, origin?: ParadigmOrigin) => void;
   toggleParadigm: (origin?: ParadigmOrigin) => void;
   prefetchKinetic: () => void;
+  prefetchAether: () => void;
 }
 
 interface ViewTransitionLike {
@@ -44,16 +46,18 @@ const noop = () => undefined;
 const ParadigmContext = createContext<ParadigmContextValue>({
   paradigm: "studio",
   isKinetic: false,
+  isAether: false,
   setParadigm: noop,
   toggleParadigm: noop,
   prefetchKinetic: noop,
+  prefetchAether: noop,
 });
 
 function readStoredParadigm(): Paradigm {
   try {
-    return localStorage.getItem(STORAGE_KEY) === "kinetic"
-      ? "kinetic"
-      : "studio";
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === "kinetic" || stored === "aether") return stored;
+    return "studio";
   } catch {
     return "studio"; // Storage can be disabled.
   }
@@ -83,31 +87,54 @@ function getStartViewTransition(): StartViewTransition | null {
   return typeof start === "function" ? start.bind(document) : null;
 }
 
-// Kinetic stylesheet is code-split: loaded once, only when a visitor asks for Kinetic.
+// Paradigm stylesheets are code-split: loaded once, only when a visitor asks for them.
 // Written as import.meta.glob (a dynamic import under the hood) so a missing file
 // resolves to an empty map instead of failing the build or the test transform.
 const KINETIC_CSS_KEY = "/src/styles/kinetic-maximalist.css";
+const AETHER_CSS_KEY = "/src/styles/aether-cinematic.css";
 const kineticStyleLoaders = import.meta.glob(
   "/src/styles/kinetic-maximalist.css",
 );
-let kineticLoad: Promise<void> | null = null;
+const aetherStyleLoaders = import.meta.glob("/src/styles/aether-cinematic.css");
 
-export function prefetchKineticStyles(): Promise<void> {
-  if (typeof window === "undefined") return Promise.resolve();
-  if (!kineticLoad) {
-    kineticLoad = (async () => {
-      try {
-        await kineticStyleLoaders[KINETIC_CSS_KEY]?.();
-      } catch {
-        // Failed chunk must never break Studio; Kinetic just stays unstyled.
-      }
-    })();
-  }
-  return kineticLoad;
+function createStylePrefetcher(
+  loaders: Record<string, () => Promise<unknown>>,
+  key: string,
+): () => Promise<void> {
+  let cached: Promise<void> | null = null;
+  return () => {
+    if (typeof window === "undefined") return Promise.resolve();
+    if (!cached) {
+      cached = (async () => {
+        try {
+          await loaders[key]?.();
+        } catch {
+          // Failed chunk must never break Studio; the target paradigm just stays unstyled.
+        }
+      })();
+    }
+    return cached;
+  };
 }
 
+export const prefetchKineticStyles = createStylePrefetcher(
+  kineticStyleLoaders,
+  KINETIC_CSS_KEY,
+);
+
+export const prefetchAetherStyles = createStylePrefetcher(
+  aetherStyleLoaders,
+  AETHER_CSS_KEY,
+);
+
+const PARADIGM_ANNOUNCEMENTS: Record<Paradigm, string> = {
+  studio: "Switched to Studio minimalist design",
+  kinetic: "Switched to Kinetic maximalist design",
+  aether: "Switched to Aether cinematic design",
+};
+
 // Never hold the toggle hostage to a slow stylesheet chunk: after this, snapshot anyway.
-const KINETIC_READY_TIMEOUT_MS = 1000;
+const STYLE_READY_TIMEOUT_MS = 1000;
 
 function boundedWait(p: Promise<void>, ms: number): Promise<void> {
   return new Promise((resolve) => {
@@ -154,26 +181,29 @@ export function ParadigmProvider({ children }: { children: ReactNode }) {
   }, [paradigm]);
 
   useEffect(() => {
-    if (readStoredParadigm() === "kinetic") void prefetchKineticStyles();
+    const stored = readStoredParadigm();
+    if (stored === "kinetic") void prefetchKineticStyles();
+    else if (stored === "aether") void prefetchAetherStyles();
   }, []);
 
   const prefetchKinetic = useCallback(() => {
     void prefetchKineticStyles();
   }, []);
 
+  const prefetchAether = useCallback(() => {
+    void prefetchAetherStyles();
+  }, []);
+
   const setParadigm = useCallback(
     (next: Paradigm, origin?: ParadigmOrigin) => {
       if (typeof window === "undefined") return;
       if (next === "kinetic") void prefetchKineticStyles();
+      else if (next === "aether") void prefetchAetherStyles();
 
       targetRef.current = next;
       writeStoredParadigm(next);
       const root = document.documentElement;
-      setAnnouncement(
-        next === "kinetic"
-          ? "Switched to Kinetic maximalist design"
-          : "Switched to Studio minimalist design",
-      );
+      setAnnouncement(PARADIGM_ANNOUNCEMENTS[next]);
 
       // Supersede any transition still in flight; its update callback still runs.
       inflightRef.current?.skipTransition();
@@ -190,10 +220,12 @@ export function ParadigmProvider({ children }: { children: ReactNode }) {
       const y = origin?.y ?? window.innerHeight / 2;
 
       root.dataset.paradigmTransition = "portal";
-      // Snapshot only after the Kinetic CSS is in, so the portal never reveals unstyled Kinetic.
+      // Snapshot only after the target CSS is in, so the portal never reveals unstyled content.
       const vt = startViewTransition(async () => {
         if (targetRef.current === "kinetic") {
-          await boundedWait(prefetchKineticStyles(), KINETIC_READY_TIMEOUT_MS);
+          await boundedWait(prefetchKineticStyles(), STYLE_READY_TIMEOUT_MS);
+        } else if (targetRef.current === "aether") {
+          await boundedWait(prefetchAetherStyles(), STYLE_READY_TIMEOUT_MS);
         }
         apply(targetRef.current);
       });
@@ -246,11 +278,13 @@ export function ParadigmProvider({ children }: { children: ReactNode }) {
     () => ({
       paradigm,
       isKinetic: paradigm === "kinetic",
+      isAether: paradigm === "aether",
       setParadigm,
       toggleParadigm,
       prefetchKinetic,
+      prefetchAether,
     }),
-    [paradigm, setParadigm, toggleParadigm, prefetchKinetic],
+    [paradigm, setParadigm, toggleParadigm, prefetchKinetic, prefetchAether],
   );
 
   return (

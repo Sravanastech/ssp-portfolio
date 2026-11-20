@@ -14,8 +14,9 @@ import {
 
 import { ParadigmProvider, useParadigm } from "@/theme/ParadigmContext";
 
-// Kinetic-only code: Studio visitors never download this chunk.
+// Kinetic-only and Aether-only code: Studio visitors never download these chunks.
 const LazyKineticStage = lazy(() => import("@/components/KineticStage"));
+const LazyAetherStage = lazy(() => import("@/components/AetherStage"));
 
 function KineticStageSlot() {
   const { isKinetic } = useParadigm();
@@ -23,6 +24,16 @@ function KineticStageSlot() {
   return (
     <Suspense fallback={null}>
       <LazyKineticStage />
+    </Suspense>
+  );
+}
+
+function AetherStageSlot() {
+  const { isAether } = useParadigm();
+  if (!isAether) return null;
+  return (
+    <Suspense fallback={null}>
+      <LazyAetherStage />
     </Suspense>
   );
 }
@@ -72,6 +83,7 @@ export default function Layout({ children }: Props) {
           </a>
           <ModeStrip />
           <KineticStageSlot />
+          <AetherStageSlot />
           <Header />
           <PageMetadata />
           <main id="main-content" tabIndex={-1} className="flex-1 w-full">

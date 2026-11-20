@@ -10,7 +10,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { ThemeProvider } from "./theme/ThemeContext";
 import ErrorBoundary from "./components/ErrorBoundary";
-import { prefetchKineticStyles } from "./theme/ParadigmContext";
+import {
+  prefetchAetherStyles,
+  prefetchKineticStyles,
+} from "./theme/ParadigmContext";
 import { startMonitoring } from "./lib/monitoring";
 import { applyPerfTier } from "./lib/perfTier";
 import { prefetchRoute } from "./lib/routePrefetch";
@@ -23,12 +26,16 @@ if (typeof window.requestIdleCallback === "function")
   window.requestIdleCallback(startMonitoring, { timeout: 3000 });
 else window.setTimeout(startMonitoring, 1500);
 
-// Apply a saved Kinetic choice before first paint of React and warm its CSS chunk.
+// Apply a saved non-Studio paradigm before first paint of React and warm its CSS chunk.
 // Module code only: the CSP forbids inline scripts.
 try {
-  if (localStorage.getItem("portfolio-paradigm") === "kinetic") {
+  const savedParadigm = localStorage.getItem("portfolio-paradigm");
+  if (savedParadigm === "kinetic") {
     document.documentElement.dataset.paradigm = "kinetic";
     void prefetchKineticStyles();
+  } else if (savedParadigm === "aether") {
+    document.documentElement.dataset.paradigm = "aether";
+    void prefetchAetherStyles();
   }
 } catch {
   /* Storage can be disabled; Studio stays the default. */

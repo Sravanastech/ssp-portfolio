@@ -1,0 +1,675 @@
+/*
+ * Aether — Cinematic Spatial Observatory paradigm.
+ * Lazy-loaded via ParadigmContext.tsx; never imported by index.css.
+ * Every rule is strictly scoped to :root[data-paradigm="aether"].
+ * Motion is compositor-only (translate, scale, transform, opacity) and gated behind
+ * prefers-reduced-motion: no-preference + @supports for scroll-driven timelines.
+ */
+
+/* ---------------------------------------------------------------- tokens */
+/*
+ * ThemeContext writes --color-* inline on :root, so Aether overrides core color
+ * roles with !important to guarantee deep-space obsidian contrast across all routes.
+ */
+:root[data-paradigm="aether"] {
+  --color-background: #03040a !important;
+  --color-surface: rgba(11, 16, 32, 0.58) !important;
+  --color-primary: #38bdf8 !important;
+  --color-secondary: #94a3b8 !important;
+  --color-accent: #03040a !important;
+  --color-text: #f1f5f9 !important;
+  --color-textSecondary: #94a3b8 !important;
+  --color-border: rgba(148, 163, 184, 0.2) !important;
+  --color-borderLight: rgba(148, 163, 184, 0.14) !important;
+  --color-focus-ring: #38bdf8 !important;
+  --color-cta-bg: rgba(56, 189, 248, 0.16) !important;
+  --color-cta-text: #f1f5f9 !important;
+  --color-cta-hover: rgba(56, 189, 248, 0.28) !important;
+  --color-success: #34d399 !important;
+  --color-warning: #f59e0b !important;
+  --color-error: #fb7185 !important;
+  --color-info: #38bdf8 !important;
+
+  --aether-obsidian: #03040a;
+  --aether-sapphire: #2563eb;
+  --aether-cyan: #38bdf8;
+  --aether-amber: #f59e0b;
+  --aether-glass-bg: rgba(10, 15, 30, 0.56);
+  --aether-glass-border: rgba(255, 255, 255, 0.14);
+  --aether-glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 24px 60px -20px rgba(0, 0, 0, 0.7);
+  --aether-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --studio-blue: transparent;
+  --studio-ink: #03040a;
+  --studio-lime: #38bdf8;
+  --studio-paper: rgba(10, 15, 30, 0.56);
+  --studio-on-ink: #f1f5f9;
+  --studio-on-ink-soft: #cbd5e1;
+  --studio-ink-line: rgba(148, 163, 184, 0.24);
+  --studio-ink-line-strong: rgba(56, 189, 248, 0.42);
+  --studio-ink-hover: rgba(56, 189, 248, 0.12);
+  --studio-ink-rule: rgba(148, 163, 184, 0.16);
+  --studio-on-blue: #f1f5f9;
+  --studio-on-blue-muted: #cbd5e1;
+  --studio-on-blue-line: rgba(148, 163, 184, 0.24);
+  --studio-blue-line: rgba(148, 163, 184, 0.24);
+  --diagram-line: rgba(56, 189, 248, 0.45);
+
+  color-scheme: dark;
+  accent-color: #38bdf8;
+}
+
+/* ------------------------------------------- hide legacy studio controls */
+:root[data-paradigm="aether"] .theme-switcher,
+:root[data-paradigm="aether"] .mode-toggle,
+:root[data-paradigm="aether"] .composition-switcher,
+:root[data-paradigm="aether"] .studio-rail-nav {
+  display: none !important;
+}
+
+/* ---------------------------------------- volumetric backdrop & layering */
+:root[data-paradigm="aether"] body {
+  background-color: var(--aether-obsidian);
+  color: var(--color-text);
+  background-image:
+    radial-gradient(
+      ellipse 80% 55% at 18% 12% in oklch,
+      oklch(0.46 0.2 260 / 0.34),
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 65% 50% at 84% 22% in oklch,
+      oklch(0.68 0.15 220 / 0.22),
+      transparent 66%
+    ),
+    radial-gradient(
+      ellipse 70% 55% at 52% 92% in oklch,
+      oklch(0.58 0.16 65 / 0.14),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 110% 90% at 50% 45% in oklch,
+      oklch(0.16 0.05 258 / 0.85),
+      oklch(0.08 0.02 260 / 1) 75%
+    );
+  background-attachment: fixed;
+}
+
+:root[data-paradigm="aether"] .aether-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+:root[data-paradigm="aether"] .studio-shell {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+:root[data-paradigm="aether"] ::selection {
+  background: rgba(56, 189, 248, 0.32);
+  color: #f8fafc;
+}
+
+:root[data-paradigm="aether"] :focus-visible {
+  outline: 2px solid var(--aether-cyan);
+  outline-offset: 3px;
+}
+
+/* ----------------------------------------------------- mode strip (glass) */
+:root[data-paradigm="aether"] .mode-strip {
+  position: relative;
+  z-index: 50;
+  background: rgba(3, 4, 10, 0.72);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-block-end: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--color-textSecondary);
+  font:
+    500 11px/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+:root[data-paradigm="aether"] .mode-strip-lead {
+  color: var(--color-textSecondary);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+:root[data-paradigm="aether"] .mode-switch {
+  align-items: center;
+  gap: 4px;
+}
+
+:root[data-paradigm="aether"] .mode-switch button {
+  padding: 0 11px;
+  block-size: 24px;
+  border-radius: 999px;
+  color: var(--color-textSecondary);
+  text-decoration: none;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+:root[data-paradigm="aether"] .mode-switch button:hover {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+:root[data-paradigm="aether"] .mode-switch button[aria-pressed="true"] {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+:root[data-paradigm="aether"]
+  .mode-switch
+  button[data-mode="aether"][aria-pressed="true"] {
+  color: #f8fafc;
+  background: linear-gradient(
+    135deg in oklch,
+    oklch(0.68 0.16 225 / 0.32),
+    oklch(0.55 0.2 260 / 0.32)
+  );
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 0 16px -2px rgba(56, 189, 248, 0.5);
+}
+
+:root[data-paradigm="aether"] .mode-switch button:focus-visible {
+  outline: 2px solid var(--aether-cyan);
+  outline-offset: -2px;
+}
+
+@media (pointer: coarse) {
+  :root[data-paradigm="aether"] .mode-switch button {
+    block-size: 36px;
+  }
+}
+
+/* ------------------------------------------- visionOS spatial frosted glass */
+:root[data-paradigm="aether"] .studio-project,
+:root[data-paradigm="aether"] .studio-case,
+:root[data-paradigm="aether"] .system-studio,
+:root[data-paradigm="aether"] .page-panel,
+:root[data-paradigm="aether"] .studio-contact form,
+:root[data-paradigm="aether"] .project-related a,
+:root[data-paradigm="aether"] .studio-header {
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  background: var(--aether-glass-bg);
+  border: 1px solid var(--aether-glass-border);
+  box-shadow: var(--aether-glass-shadow);
+}
+
+:root[data-paradigm="aether"] .studio-header {
+  border-inline: 0;
+  border-top: 0;
+  border-bottom: 1px solid var(--aether-glass-border);
+}
+
+:root[data-paradigm="aether"] .studio-header a,
+:root[data-paradigm="aether"] .studio-header button {
+  color: var(--color-text);
+}
+
+:root[data-paradigm="aether"] .studio-navigation a::after {
+  background: linear-gradient(
+    90deg in oklch,
+    var(--aether-sapphire),
+    var(--aether-cyan)
+  );
+}
+
+:root[data-paradigm="aether"] .studio-desktop-nav a:hover,
+:root[data-paradigm="aether"] .studio-desktop-nav a:focus-visible {
+  color: var(--aether-cyan);
+}
+
+:root[data-paradigm="aether"] .studio-mobile-sheet {
+  background: rgba(6, 10, 22, 0.92);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  color: var(--color-text);
+}
+
+/* Spatial glass cards: rounded geometry + pointer-lit specular glare halo */
+:root[data-paradigm="aether"] .studio-project,
+:root[data-paradigm="aether"] .studio-case,
+:root[data-paradigm="aether"] .system-studio,
+:root[data-paradigm="aether"] .page-panel,
+:root[data-paradigm="aether"] .studio-contact form,
+:root[data-paradigm="aether"] .project-related a {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 20px;
+  color: var(--color-text);
+  transition:
+    border-color 0.3s var(--aether-ease),
+    translate 0.35s var(--aether-ease);
+}
+
+:root[data-paradigm="aether"] .studio-project {
+  display: block;
+  width: auto;
+  align-self: auto;
+  padding: 24px;
+}
+
+:root[data-paradigm="aether"] .studio-case {
+  padding: 28px;
+}
+
+:root[data-paradigm="aether"] .system-studio {
+  padding: 24px;
+  transform: none;
+}
+
+:root[data-paradigm="aether"] .studio-project::before,
+:root[data-paradigm="aether"] .studio-case::before,
+:root[data-paradigm="aether"] .system-studio::before,
+:root[data-paradigm="aether"] .page-panel::before,
+:root[data-paradigm="aether"] .studio-contact form::before,
+:root[data-paradigm="aether"] .project-related a::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: radial-gradient(
+    520px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    rgba(56, 189, 248, 0.22),
+    rgba(37, 99, 235, 0.1) 42%,
+    transparent 70%
+  );
+  transition: opacity 0.35s ease;
+}
+
+:root[data-paradigm="aether"] .studio-project:hover::before,
+:root[data-paradigm="aether"] .studio-case:hover::before,
+:root[data-paradigm="aether"] .system-studio:hover::before,
+:root[data-paradigm="aether"] .page-panel:hover::before,
+:root[data-paradigm="aether"] .studio-contact form:hover::before,
+:root[data-paradigm="aether"] .project-related a:hover::before {
+  opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :root[data-paradigm="aether"] .studio-project:hover,
+  :root[data-paradigm="aether"] .studio-case:hover,
+  :root[data-paradigm="aether"] .project-related a:hover {
+    border-color: rgba(56, 189, 248, 0.42);
+    translate: 0 -4px;
+  }
+}
+
+/* ------------------------------------------- cinematic hero & typography */
+:root[data-paradigm="aether"] .studio-hero::before {
+  content: none;
+}
+
+:root[data-paradigm="aether"] .studio-hero {
+  background: transparent;
+  color: var(--color-text);
+  position: relative;
+}
+
+:root[data-paradigm="aether"] .studio-hero-description,
+:root[data-paradigm="aether"] .studio-hero-foot {
+  color: #cbd5e1;
+}
+
+:root[data-paradigm="aether"] .studio-hero-foot {
+  background: transparent;
+  margin-inline: 0;
+  padding-inline: 0;
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+:root[data-paradigm="aether"] .studio-page-intro {
+  background: transparent;
+  color: var(--color-text);
+  border-radius: 0;
+}
+
+:root[data-paradigm="aether"] .studio-page-intro .studio-lede,
+:root[data-paradigm="aether"] .studio-page-intro p {
+  color: #cbd5e1;
+  opacity: 1;
+}
+
+:root[data-paradigm="aether"] .studio-hero h1,
+:root[data-paradigm="aether"] .studio-page-heading {
+  color: #f1f5f9;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  :root[data-paradigm="aether"] .studio-hero h1,
+  :root[data-paradigm="aether"] .studio-page-heading {
+    background-image: linear-gradient(
+      120deg in oklch,
+      #f8fafc 12%,
+      #bae6fd 58%,
+      #38bdf8 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+}
+
+:root[data-paradigm="aether"] .studio-kicker,
+:root[data-paradigm="aether"] .studio-eyebrow {
+  color: var(--aether-cyan);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* ------------------------------------------------------- buttons & links */
+:root[data-paradigm="aether"] .studio-link,
+:root[data-paradigm="aether"] .studio-hero-link,
+:root[data-paradigm="aether"] .link-button {
+  color: var(--aether-cyan);
+}
+
+:root[data-paradigm="aether"] .studio-button,
+:root[data-paradigm="aether"] .studio-button-secondary,
+:root[data-paradigm="aether"] .studio-button-light,
+:root[data-paradigm="aether"] .consent-button {
+  min-height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  background: linear-gradient(
+    135deg in oklch,
+    oklch(0.68 0.15 225 / 0.24),
+    oklch(0.5 0.19 260 / 0.28)
+  );
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  color: #f8fafc;
+  font-weight: 600;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 12px 30px -12px rgba(56, 189, 248, 0.45);
+  transition:
+    translate 0.25s var(--aether-ease),
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease;
+}
+
+:root[data-paradigm="aether"] .studio-button-secondary {
+  background: rgba(10, 15, 30, 0.45);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #f1f5f9;
+}
+
+:root[data-paradigm="aether"] .studio-button:hover:not(:disabled),
+:root[data-paradigm="aether"] .studio-button-secondary:hover:not(:disabled),
+:root[data-paradigm="aether"] .studio-button-light:hover:not(:disabled),
+:root[data-paradigm="aether"] .consent-button:hover:not(:disabled) {
+  translate: 0 -2px;
+  border-color: var(--aether-cyan);
+  background: rgba(56, 189, 248, 0.28);
+  color: #ffffff;
+}
+
+:root[data-paradigm="aether"] .studio-button:active:not(:disabled),
+:root[data-paradigm="aether"] .studio-button-secondary:active:not(:disabled) {
+  translate: 0 0;
+}
+
+/* -------------------------------------------------------- forms & footer */
+:root[data-paradigm="aether"] .field-input,
+:root[data-paradigm="aether"] .studio-contact form input:not([type="checkbox"]),
+:root[data-paradigm="aether"] .studio-contact form textarea {
+  background: rgba(3, 4, 10, 0.72);
+  color: var(--color-text);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  border-radius: 12px;
+}
+
+:root[data-paradigm="aether"] .field-input::placeholder,
+:root[data-paradigm="aether"] .studio-contact form input::placeholder,
+:root[data-paradigm="aether"] .studio-contact form textarea::placeholder {
+  color: var(--color-textSecondary);
+}
+
+:root[data-paradigm="aether"] .field-input:hover:not(:disabled) {
+  border-color: rgba(56, 189, 248, 0.55);
+}
+
+:root[data-paradigm="aether"] .field-input:focus-visible,
+:root[data-paradigm="aether"] .studio-contact form input:focus-visible,
+:root[data-paradigm="aether"] .studio-contact form textarea:focus-visible {
+  outline: 2px solid var(--aether-cyan);
+  outline-offset: 2px;
+  border-color: var(--aether-cyan);
+}
+
+:root[data-paradigm="aether"] .studio-footer {
+  background: rgba(3, 4, 10, 0.76);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  color: var(--color-text);
+  border-top: 1px solid var(--aether-glass-border);
+}
+
+:root[data-paradigm="aether"] .studio-footer a {
+  color: var(--aether-cyan);
+}
+
+/* ------------------------------------------- scroll progress beam & HUD */
+:root[data-paradigm="aether"] .aether-scroll-beam {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 90;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(
+    90deg in oklch,
+    var(--aether-sapphire),
+    var(--aether-cyan) 65%,
+    var(--aether-amber)
+  );
+}
+
+:root[data-paradigm="aether"] .aether-hud {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100vw - 32px);
+  padding: 4px 6px 4px 16px;
+  border-radius: 999px;
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  background: rgba(10, 15, 30, 0.74);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 18px 40px -12px rgba(0, 0, 0, 0.75);
+  color: #f1f5f9;
+  font:
+    500 11px/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:root[data-paradigm="aether"] .aether-hud-metric,
+:root[data-paradigm="aether"] .aether-hud-location {
+  white-space: nowrap;
+  color: #cbd5e1;
+}
+
+:root[data-paradigm="aether"] .aether-hud-metric strong {
+  color: var(--aether-cyan);
+  font-weight: 600;
+}
+
+:root[data-paradigm="aether"] .aether-hud-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f1f5f9;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+:root[data-paradigm="aether"] .aether-hud-btn:hover {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #ffffff;
+}
+
+:root[data-paradigm="aether"] .aether-hud-btn[aria-pressed="true"] {
+  background: rgba(56, 189, 248, 0.24);
+  border-color: var(--aether-cyan);
+  color: #ffffff;
+}
+
+:root[data-paradigm="aether"] .aether-hud-btn:focus-visible {
+  outline: 2px solid var(--aether-cyan);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  :root[data-paradigm="aether"] .aether-hud {
+    right: 12px;
+    bottom: 12px;
+    max-width: calc(100vw - 24px);
+    gap: 8px;
+    padding: 3px 4px 3px 12px;
+    font-size: 10px;
+  }
+
+  :root[data-paradigm="aether"] .aether-hud-location {
+    max-width: 112px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :root[data-paradigm="aether"] .aether-hud-btn {
+    padding: 0 10px;
+  }
+}
+
+/* -------------------------------- 2026 native scroll choreography (@supports) */
+@keyframes aether-scroll-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes aether-depth-reveal {
+  from {
+    opacity: 0;
+    translate: 0 36px;
+    scale: 0.96;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    :root[data-paradigm="aether"] .aether-scroll-beam {
+      animation: aether-scroll-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    :root[data-paradigm="aether"] .studio-project,
+    :root[data-paradigm="aether"] .studio-case {
+      animation: aether-depth-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 28%;
+    }
+  }
+}
+
+/* ------------------------------------------- strict reduced-motion safety */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-paradigm="aether"] .aether-scroll-beam,
+  :root[data-paradigm="aether"] .studio-project,
+  :root[data-paradigm="aether"] .studio-case {
+    animation: none !important;
+    animation-timeline: auto !important;
+    translate: none !important;
+    scale: none !important;
+  }
+
+  :root[data-paradigm="aether"] .studio-project,
+  :root[data-paradigm="aether"] .studio-case,
+  :root[data-paradigm="aether"] .system-studio,
+  :root[data-paradigm="aether"] .page-panel,
+  :root[data-paradigm="aether"] .studio-contact form,
+  :root[data-paradigm="aether"] .project-related a,
+  :root[data-paradigm="aether"] .studio-project::before,
+  :root[data-paradigm="aether"] .studio-case::before,
+  :root[data-paradigm="aether"] .system-studio::before,
+  :root[data-paradigm="aether"] .page-panel::before,
+  :root[data-paradigm="aether"] .studio-contact form::before,
+  :root[data-paradigm="aether"] .project-related a::before,
+  :root[data-paradigm="aether"] .studio-button,
+  :root[data-paradigm="aether"] .studio-button-secondary,
+  :root[data-paradigm="aether"] .studio-button-light,
+  :root[data-paradigm="aether"] .consent-button,
+  :root[data-paradigm="aether"] .mode-switch button,
+  :root[data-paradigm="aether"] .aether-hud-btn {
+    transition: none !important;
+  }
+}

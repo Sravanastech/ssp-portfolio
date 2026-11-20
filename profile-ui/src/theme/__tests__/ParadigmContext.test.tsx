@@ -1,17 +1,58 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { ParadigmProvider, useParadigm } from "../ParadigmContext";
+import {
+  ParadigmProvider,
+  prefetchAetherStyles,
+  useParadigm,
+} from "../ParadigmContext";
 
 function Harness() {
-  const { paradigm, isKinetic, toggleParadigm } = useParadigm();
+  const {
+    paradigm,
+    isKinetic,
+    isAether,
+    setParadigm,
+    toggleParadigm,
+    prefetchAether,
+  } = useParadigm();
   return (
-    <button
-      type="button"
-      onClick={() => toggleParadigm({ x: 120, y: 40 })}
-      data-testid="paradigm-btn"
-    >
-      {paradigm}:{String(isKinetic)}
-    </button>
+    <div>
+      <button
+        type="button"
+        onClick={() => toggleParadigm({ x: 120, y: 40 })}
+        data-testid="paradigm-btn"
+      >
+        {paradigm}:{String(isKinetic)}:{String(isAether)}
+      </button>
+      <button
+        type="button"
+        onClick={() => setParadigm("studio", { x: 40, y: 20 })}
+        data-testid="set-studio"
+      >
+        Studio
+      </button>
+      <button
+        type="button"
+        onClick={() => setParadigm("kinetic", { x: 80, y: 30 })}
+        data-testid="set-kinetic"
+      >
+        Kinetic
+      </button>
+      <button
+        type="button"
+        onClick={() => setParadigm("aether", { x: 200, y: 60 })}
+        data-testid="set-aether"
+      >
+        Aether
+      </button>
+      <button
+        type="button"
+        onClick={prefetchAether}
+        data-testid="prefetch-aether"
+      >
+        Prefetch Aether
+      </button>
+    </div>
   );
 }
 
@@ -52,7 +93,7 @@ describe("ParadigmContext", () => {
       </ParadigmProvider>,
     );
     expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
-      "studio:false",
+      "studio:false:false",
     );
     expect(document.documentElement.dataset.paradigm).toBe("studio");
   });
@@ -65,16 +106,84 @@ describe("ParadigmContext", () => {
     );
     fireEvent.click(screen.getByTestId("paradigm-btn"));
     expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
-      "kinetic:true",
+      "kinetic:true:false",
     );
     expect(document.documentElement.dataset.paradigm).toBe("kinetic");
     expect(localStorage.getItem("portfolio-paradigm")).toBe("kinetic");
 
     fireEvent.click(screen.getByTestId("paradigm-btn"));
     expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
-      "studio:false",
+      "studio:false:false",
     );
     expect(document.documentElement.dataset.paradigm).toBe("studio");
+  });
+
+  it("supports aether selection, persistence, restoration, and 3-way transitions", () => {
+    render(
+      <ParadigmProvider>
+        <Harness />
+      </ParadigmProvider>,
+    );
+
+    fireEvent.click(screen.getByTestId("set-aether"));
+    expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
+      "aether:false:true",
+    );
+    expect(document.documentElement.dataset.paradigm).toBe("aether");
+    expect(localStorage.getItem("portfolio-paradigm")).toBe("aether");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Switched to Aether cinematic design",
+    );
+
+    fireEvent.click(screen.getByTestId("set-kinetic"));
+    expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
+      "kinetic:true:false",
+    );
+    expect(document.documentElement.dataset.paradigm).toBe("kinetic");
+    expect(localStorage.getItem("portfolio-paradigm")).toBe("kinetic");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Switched to Kinetic maximalist design",
+    );
+
+    fireEvent.click(screen.getByTestId("set-aether"));
+    expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
+      "aether:false:true",
+    );
+    expect(document.documentElement.dataset.paradigm).toBe("aether");
+
+    fireEvent.click(screen.getByTestId("set-studio"));
+    expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
+      "studio:false:false",
+    );
+    expect(document.documentElement.dataset.paradigm).toBe("studio");
+    expect(localStorage.getItem("portfolio-paradigm")).toBe("studio");
+    expect(screen.getByRole("status")).toHaveTextContent(
+      "Switched to Studio minimalist design",
+    );
+  });
+
+  it("restores aether from localStorage on mount", () => {
+    localStorage.setItem("portfolio-paradigm", "aether");
+    render(
+      <ParadigmProvider>
+        <Harness />
+      </ParadigmProvider>,
+    );
+    expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
+      "aether:false:true",
+    );
+    expect(document.documentElement.dataset.paradigm).toBe("aether");
+  });
+
+  it("provides safe defaults outside ParadigmProvider and prefetches aether without throwing", async () => {
+    render(<Harness />);
+    expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
+      "studio:false:false",
+    );
+    expect(() =>
+      fireEvent.click(screen.getByTestId("prefetch-aether")),
+    ).not.toThrow();
+    await expect(prefetchAetherStyles()).resolves.toBeUndefined();
   });
 
   it("uses document.startViewTransition when available and motion is allowed", async () => {
@@ -145,6 +254,35 @@ describe("ParadigmContext", () => {
     expect(done).toBeInstanceOf(Promise);
     await done;
     expect(document.documentElement.dataset.paradigm).toBe("kinetic");
+  });
+
+  it("defers the view-transition snapshot until the Aether CSS has loaded", async () => {
+    document.documentElement.animate =
+      vi.fn() as unknown as typeof document.documentElement.animate;
+    let snapshot: (() => Promise<void> | void) | undefined;
+    const startVT = vi.fn((cb: () => Promise<void> | void) => {
+      snapshot = cb;
+      return fakeTransition();
+    });
+    Object.defineProperty(document, "startViewTransition", {
+      value: startVT,
+      configurable: true,
+      writable: true,
+    });
+
+    render(
+      <ParadigmProvider>
+        <Harness />
+      </ParadigmProvider>,
+    );
+    fireEvent.click(screen.getByTestId("set-aether"));
+    expect(startVT).toHaveBeenCalledTimes(1);
+    expect(document.documentElement.dataset.paradigm).toBe("studio");
+
+    const done = snapshot!();
+    expect(done).toBeInstanceOf(Promise);
+    await done;
+    expect(document.documentElement.dataset.paradigm).toBe("aether");
   });
 
   it("removes the paradigm-transition marker when a later toggle skips the portal", () => {

@@ -9,13 +9,20 @@ const LazyTicker = lazy(() =>
 );
 
 export default function ModeStrip() {
-  const { paradigm, isKinetic, toggleParadigm, prefetchKinetic } =
-    useParadigm();
+  const {
+    paradigm,
+    isKinetic,
+    isAether,
+    setParadigm,
+    prefetchKinetic,
+    prefetchAether,
+  } = useParadigm();
 
   const select = (mode: Paradigm) => (event: MouseEvent<HTMLButtonElement>) => {
     if (mode === paradigm) return;
     const rect = event.currentTarget.getBoundingClientRect();
-    toggleParadigm(
+    setParadigm(
+      mode,
       rect.width || rect.height
         ? { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
         : { x: event.clientX, y: event.clientY },
@@ -29,6 +36,10 @@ export default function ModeStrip() {
           <Suspense fallback={null}>
             <LazyTicker />
           </Suspense>
+        ) : isAether ? (
+          <span className="mode-strip-label aether-strip-label">
+            Aether · Observatory
+          </span>
         ) : (
           <span className="mode-strip-label">Design</span>
         )}
@@ -37,7 +48,7 @@ export default function ModeStrip() {
         <button
           type="button"
           data-mode="studio"
-          aria-pressed={!isKinetic}
+          aria-pressed={paradigm === "studio"}
           onClick={select("studio")}
         >
           Studio
@@ -52,6 +63,17 @@ export default function ModeStrip() {
           onTouchStart={prefetchKinetic}
         >
           Kinetic
+        </button>
+        <button
+          type="button"
+          data-mode="aether"
+          aria-pressed={isAether}
+          onClick={select("aether")}
+          onPointerEnter={prefetchAether}
+          onFocus={prefetchAether}
+          onTouchStart={prefetchAether}
+        >
+          Aether
         </button>
       </div>
     </div>
