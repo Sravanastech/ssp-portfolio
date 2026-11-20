@@ -1,0 +1,98 @@
+/*
+ * Aether — FUI (Fantasy User Interface) Minimalism Dual-Theme Stylesheet.
+ * Inspired by Oblivion / The Martian / Tron: Legacy + Swiss Editorial Precision.
+ *
+ * Lazy-loaded via import("@/styles/aether-cinematic.css"); never imported by index.css.
+ * 100% scoped to :root[data-paradigm="aether"].
+ * Dual themes: VOID (default dark) and CLEANROOM (clinical sci-fi light).
+ */
+
+/* ================================================== DUAL-THEME TOKENS */
+:root[data-paradigm="aether"],
+:root[data-paradigm="aether"][data-fui-theme="void"] {
+  /* FUI Core Palette — VOID (Default Dark) */
+  --bg-primary: #06070a;
+  --bg-elevated: #0d1017;
+  --border-hairline: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --text-primary: #f0f2f5;
+  --text-muted: #8b95a7;
+  --accent-primary: #00f0ff;
+  --accent-amber: #ffb800;
+  --dot-color: rgba(255, 255, 255, 0.07);
+
+  /* Derived FUI Surface & Motion Tokens */
+  --fui-glass: rgba(13, 16, 23, 0.84);
+  --fui-chrome-bg: rgba(6, 7, 10, 0.86);
+  --fui-backdrop: rgba(3, 5, 10, 0.78);
+  --fui-accent-soft: rgba(0, 240, 255, 0.1);
+  --fui-accent-glow: rgba(0, 240, 255, 0.22);
+  --fui-accent-ink: #06070a;
+  --fui-amber-soft: rgba(255, 184, 0, 0.14);
+  --fui-hover-surface: rgba(255, 255, 255, 0.05);
+  --fui-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fui-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+
+  /* Sync shared shell/interior design tokens.
+     !important is required: ThemeContext writes --color-* as inline styles on <html>,
+     which outrank any selector; these must win to keep Aether's palette. */
+  --color-background: var(--bg-primary) !important;
+  --color-surface: var(--bg-elevated) !important;
+  --color-text: var(--text-primary) !important;
+  --color-textSecondary: var(--text-muted) !important;
+  --color-primary: var(--accent-primary) !important;
+  --color-secondary: var(--text-muted) !important;
+  --color-accent: var(--fui-accent-ink) !important;
+  --color-border: rgba(255, 255, 255, 0.14) !important;
+  --color-borderLight: rgba(255, 255, 255, 0.08) !important;
+  --color-focus-ring: var(--accent-primary) !important;
+  --color-cta-bg: var(--accent-primary) !important;
+  --color-cta-text: var(--fui-accent-ink) !important;
+  --color-cta-hover: #3df5ff !important;
+
+  color-scheme: dark;
+}
+
+:root[data-paradigm="aether"][data-fui-theme="cleanroom"] {
+  /* FUI Core Palette — CLEANROOM (Clinical Sci-Fi Light) */
+  --bg-primary: #f4f6f9;
+  --bg-elevated: #ffffff;
+  --border-hairline: rgba(15, 23, 42, 0.12);
+  --border-strong: rgba(15, 23, 42, 0.24);
+  --text-primary: #0b0f19;
+  --text-muted: #475569;
+  --accent-primary: #c2410c;
+  --accent-amber: #b45309;
+  --dot-color: rgba(15, 23, 42, 0.09);
+
+  /* Derived FUI Surface & Motion Tokens */
+  --fui-glass: rgba(255, 255, 255, 0.88);
+  --fui-chrome-bg: rgba(244, 246, 249, 0.88);
+  --fui-backdrop: rgba(11, 15, 25, 0.42);
+  --fui-accent-soft: rgba(194, 65, 12, 0.08);
+  --fui-accent-glow: rgba(194, 65, 12, 0.2);
+  --fui-accent-ink: #ffffff;
+  --fui-amber-soft: rgba(180, 83, 9, 0.12);
+  --fui-hover-surface: rgba(15, 23, 42, 0.05);
+
+  /* Sync shared shell/interior design tokens.
+     !important is required: ThemeContext writes --color-* as inline styles on <html>,
+     which outrank any selector; these must win to keep Aether's palette. */
+  --color-background: var(--bg-primary) !important;
+  --color-surface: var(--bg-elevated) !important;
+  --color-text: var(--text-primary) !important;
+  --color-textSecondary: var(--text-muted) !important;
+  --color-primary: var(--accent-primary) !important;
+  --color-secondary: var(--text-muted) !important;
+  --color-accent: var(--fui-accent-ink) !important;
+  --color-border: rgba(15, 23, 42, 0.16) !important;
+  --color-borderLight: rgba(15, 23, 42, 0.09) !important;
+  --color-focus-ring: var(--accent-primary) !important;
+  --color-cta-bg: var(--accent-primary) !important;
+  --color-cta-text: var(--fui-accent-ink) !important;
+  --color-cta-hover: #9a3412 !important;
+
+  color-scheme: light;
+}

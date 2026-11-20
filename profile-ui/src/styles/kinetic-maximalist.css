@@ -18,7 +18,7 @@
   z-index: 1;
 }
 :root[data-paradigm-transition="portal"]::view-transition-new(root) {
-  z-index: 9999;
+  z-index: var(--z-transition);
 }
 @media (prefers-reduced-motion: reduce) {
   :root[data-paradigm-transition="portal"]::view-transition-old(root),
@@ -659,7 +659,7 @@
     display: block;
     position: fixed;
     inset: 0 auto auto 0;
-    z-index: 9000;
+    z-index: var(--z-fx-reticle);
     width: 36px;
     height: 36px;
     margin: -18px 0 0 -18px;

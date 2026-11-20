@@ -33,6 +33,37 @@
   --art-rule: #dfe4ef;
   --art-wash: #e6ebf7;
   --art-note-lime: #344626;
+  /*
+   * z-index scale. Values keep the original relative stacking order; equal
+   * old values stay equal. Higher = closer to the viewer.
+   *   sticky 30   work-page case nav
+   *   hud    35   Aether HUD perimeter frame
+   *   header 40   studio header, consent banner
+   *   dock   45   Aether floating command dock
+   *   mode-strip 50   Aether mode strip
+   *   dialog 80/81   ops dialog overlay / panel
+   *   overlay 100  Aether dossier backdrop
+   *   skip   100  skip link (ties with overlay, as before)
+   *   palette 110 / toast 120  Aether command palette / copied toast
+   *   fx-*   8000-9100  Kinetic grain, reticle, scroll progress
+   *   transition 9999  paradigm view-transition snapshot
+   * Local -1/0/1/2/3 literals inside isolated stacking contexts (pseudo-element
+   * art, hero layers) are intentionally not tokenised.
+   */
+  --z-sticky: 30;
+  --z-hud: 35;
+  --z-header: 40;
+  --z-dock: 45;
+  --z-mode-strip: 50;
+  --z-dialog: 80;
+  --z-overlay: 100;
+  --z-skip: 100;
+  --z-palette: 110;
+  --z-toast: 120;
+  --z-fx-grain: 8000;
+  --z-fx-reticle: 9000;
+  --z-fx-progress: 9100;
+  --z-transition: 9999;
   --studio-ease: cubic-bezier(0.16, 1, 0.3, 1);
   --color-focus-ring: var(--color-primary);
   --color-cta-bg: var(--color-primary);
@@ -109,7 +140,7 @@ button:disabled {
   position: fixed;
   top: -100px;
   left: 16px;
-  z-index: 100;
+  z-index: var(--z-skip);
   padding: 12px 20px;
   background: var(--color-primary);
   color: var(--color-accent);

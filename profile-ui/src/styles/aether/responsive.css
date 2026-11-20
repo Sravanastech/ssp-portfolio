@@ -1,0 +1,118 @@
+/* =================================================== RESPONSIVE LAYOUT */
+@media (max-width: 900px) {
+  :root[data-paradigm="aether"] .fui-bento {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :root[data-paradigm="aether"] .fui-module,
+  :root[data-paradigm="aether"] .fui-module--wide,
+  :root[data-paradigm="aether"] .fui-module--narrow,
+  :root[data-paradigm="aether"] .fui-module--tall,
+  :root[data-paradigm="aether"] .fui-module--full {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  :root[data-paradigm="aether"] .fui-hud-frame {
+    inset: 6px;
+  }
+
+  :root[data-paradigm="aether"] .fui-crosshair {
+    display: none;
+  }
+
+  :root[data-paradigm="aether"] .fui-timeline-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    padding: 16px 4px;
+  }
+
+  :root[data-paradigm="aether"] .fui-dock {
+    right: 10px;
+    bottom: 10px;
+    padding: 4px 6px 4px 10px;
+    gap: 6px;
+  }
+
+  :root[data-paradigm="aether"] .fui-status-bar {
+    display: none;
+  }
+
+  :root[data-paradigm="aether"] .fui-dossier-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :root[data-paradigm="aether"] .fui-palette-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  :root[data-paradigm="aether"] .fui-palette-item-tags {
+    text-align: left;
+    max-width: 100%;
+  }
+}
+
+/* ============================================ REDUCED MOTION SAFETY */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-paradigm="aether"],
+  :root[data-paradigm="aether"] *,
+  :root[data-paradigm="aether"] *::before,
+  :root[data-paradigm="aether"] *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  :root[data-paradigm="aether"] .fui-grid-line-x,
+  :root[data-paradigm="aether"] .fui-grid-line-y {
+    transform: none !important;
+  }
+
+  :root[data-paradigm="aether"] .fui-boot-scan {
+    display: none !important;
+  }
+
+  :root[data-paradigm="aether"] .fui-hero-title,
+  :root[data-paradigm="aether"] .fui-hero-sub,
+  :root[data-paradigm="aether"] .fui-hero-desc,
+  :root[data-paradigm="aether"] .fui-hero-actions,
+  :root[data-paradigm="aether"] .fui-boot-eyebrow,
+  :root[data-paradigm="aether"] .fui-replay-btn,
+  :root[data-paradigm="aether"] .fui-module,
+  :root[data-paradigm="aether"] .fui-timeline-row,
+  :root[data-paradigm="aether"] .studio-page-heading,
+  :root[data-paradigm="aether"] .studio-page-intro .studio-lede,
+  :root[data-paradigm="aether"] .studio-page-intro .about-intro-split,
+  :root[data-paradigm="aether"] .studio-page-intro .work-note,
+  :root[data-paradigm="aether"] .studio-page-intro .project-meta,
+  :root[data-paradigm="aether"] .studio-page-intro .project-stack,
+  :root[data-paradigm="aether"] .studio-case,
+  :root[data-paradigm="aether"] .project-figure,
+  :root[data-paradigm="aether"] .project-body > section,
+  :root[data-paradigm="aether"] .about-aside,
+  :root[data-paradigm="aether"] .about-prose,
+  :root[data-paradigm="aether"] .employer-timeline li,
+  :root[data-paradigm="aether"] .contact-aside,
+  :root[data-paradigm="aether"] .studio-contact form,
+  :root[data-paradigm="aether"] .page-panel,
+  :root[data-paradigm="aether"] .resume-panel,
+  :root[data-paradigm="aether"] .ops-dialog,
+  :root[data-paradigm="aether"] .legal-prose {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  :root[data-paradigm="aether"] .studio-page-intro::after {
+    display: none !important;
+  }
+
+  :root[data-paradigm="aether"] .fui-dossier,
+  :root[data-paradigm="aether"] .fui-palette,
+  :root[data-paradigm="aether"] .fui-copied-toast {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

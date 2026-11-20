@@ -473,7 +473,7 @@ html:has(.studio-case-nav) {
 .studio-case-nav {
   position: sticky;
   top: 89px;
-  z-index: 30;
+  z-index: var(--z-sticky);
   margin: 0 0 24px;
   padding-block: 12px;
   background: var(--color-background);
