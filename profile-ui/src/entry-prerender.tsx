@@ -4,7 +4,6 @@ import { Route, Routes, StaticRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import type { HelmetServerState } from "react-helmet-async";
-import { LazyMotion, MotionConfig, domAnimation } from "framer-motion";
 import { ThemeProvider } from "./theme/ThemeContext";
 import Layout from "./layouts/Layout";
 import HomePage from "./pages/HomePage";
@@ -51,27 +50,23 @@ export function render(path: string, content: SiteContent = staticContent) {
   const helmetContext: { helmet?: HelmetServerState } = {};
   const html = renderToString(
     <SnapshotProvider content={content}>
-      <MotionConfig reducedMotion="always">
-        <LazyMotion features={domAnimation}>
-          <ThemeProvider>
-            <HelmetProvider context={helmetContext}>
-              <StaticRouter location={path}>
-                <QueryClientProvider client={client}>
-                  <Layout>
-                    {isProject ? (
-                      <Routes>
-                        <Route path="/work/:slug" element={<ProjectPage />} />
-                      </Routes>
-                    ) : (
-                      <Page />
-                    )}
-                  </Layout>
-                </QueryClientProvider>
-              </StaticRouter>
-            </HelmetProvider>
-          </ThemeProvider>
-        </LazyMotion>
-      </MotionConfig>
+      <ThemeProvider>
+        <HelmetProvider context={helmetContext}>
+          <StaticRouter location={path}>
+            <QueryClientProvider client={client}>
+              <Layout>
+                {isProject ? (
+                  <Routes>
+                    <Route path="/work/:slug" element={<ProjectPage />} />
+                  </Routes>
+                ) : (
+                  <Page />
+                )}
+              </Layout>
+            </QueryClientProvider>
+          </StaticRouter>
+        </HelmetProvider>
+      </ThemeProvider>
     </SnapshotProvider>,
   );
   client.clear();

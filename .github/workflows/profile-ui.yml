@@ -23,10 +23,10 @@ jobs:
       VITE_WEB3FORMS_ACCESS_KEY: test-only-not-a-delivery-key
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: "npm"
