@@ -47,17 +47,24 @@ test.describe("Aether FUI Minimalism (desktop)", () => {
     expect(
       await page.evaluate(() => document.documentElement.dataset.paradigm),
     ).toBe("aether");
+    // Default light theme (sunrise) derives fuiTheme=cleanroom
     expect(
       await page.evaluate(() => document.documentElement.dataset.fuiTheme),
-    ).toBe("void");
+    ).toBe("cleanroom");
 
-    // HUD frame visible & hardware VOID -> CLEANROOM switch works
+    // HUD frame visible & hardware CLEANROOM -> VOID switch works (shared theme -> midnight)
     await expect(page.getByText(/SYS\.NOMINAL \/\/ 60FPS/i)).toBeVisible();
     const hwSwitch = page.getByRole("switch", { name: /toggle fui theme/i });
     await hwSwitch.click();
     expect(
       await page.evaluate(() => document.documentElement.dataset.fuiTheme),
-    ).toBe("cleanroom");
+    ).toBe("void");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "midnight");
+    // Header toggle and HUD switch stay in sync
+    await expect(page.locator(".mode-toggle:visible")).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
 
     // Open Technical Dossier modal from first Mission Module
     await page
@@ -84,7 +91,7 @@ test.describe("Aether FUI Minimalism (desktop)", () => {
     ).toBe("aether");
     expect(
       await page.evaluate(() => document.documentElement.dataset.fuiTheme),
-    ).toBe("cleanroom");
+    ).toBe("void");
 
     // Switch Aether -> Kinetic -> Studio
     await seg(page, "kinetic").click();
