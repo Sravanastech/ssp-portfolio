@@ -9,9 +9,7 @@ test.describe("Responsive portfolio header", () => {
       const brand = page.getByTestId("logo-link");
       const controls = header.locator(".mode-toggle:visible");
       await expect(controls).toHaveCount(1);
-      await expect(controls).toHaveAccessibleName(
-        /Switch to (dark|light) mode/,
-      );
+      await expect(controls).toHaveAccessibleName("Dark mode");
       await expect(header.locator(".composition-switcher")).toHaveCount(0);
       for (const value of ["midnight", "sunrise"]) {
         await controls.click();
