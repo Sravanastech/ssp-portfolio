@@ -1,5 +1,4 @@
 // Public career facts: resume through Kroger + owner's Fifth Third description.
-// See docs/content-accuracy-audit.md for provenance and unresolved dates.
 export const profile = {
   name: "Sravana S Parimi",
   fullName: "Sravana Subramanyam Parimi",

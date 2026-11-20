@@ -57,7 +57,9 @@ private/
 
 # AI tooling & analyzer caches (local only)
 .claude/
+.claude-flow/
 .impeccable/
+.qaforge/
 .superpowers/
 .ua/
 .understand-anything/
