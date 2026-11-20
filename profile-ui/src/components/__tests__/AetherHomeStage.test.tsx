@@ -135,6 +135,43 @@ describe("AetherHomeStage (FUI Minimalism Boot Sequence & Bento Grid)", () => {
       );
     });
 
+    it("does not steal focus or skip when Escape closes a dialog during boot", () => {
+      const { container } = renderStage();
+      fireEvent.click(
+        screen.getAllByRole("button", { name: /open technical dossier/i })[0],
+      );
+      // Opening the dossier ends the boot without moving focus.
+      expect(container.querySelector(".fui-page")).toHaveAttribute(
+        "data-boot",
+        "skipped",
+      );
+      expect(screen.getByRole("button", { name: /replay boot/i })).not.toBe(
+        document.activeElement,
+      );
+      act(() => {
+        fireEvent.keyDown(window, { key: "Escape" });
+      });
+      expect(screen.getByRole("button", { name: /replay boot/i })).not.toBe(
+        document.activeElement,
+      );
+    });
+
+    it("ignores Escape that is already default-prevented", () => {
+      const { container } = renderStage();
+      act(() => {
+        const ev = new KeyboardEvent("keydown", {
+          key: "Escape",
+          cancelable: true,
+        });
+        ev.preventDefault();
+        window.dispatchEvent(ev);
+      });
+      expect(container.querySelector(".fui-page")).toHaveAttribute(
+        "data-boot",
+        "full",
+      );
+    });
+
     it("keeps the h1 accessible name unchanged while booting and after skip", () => {
       renderStage();
       const name = staticContent.profile.headline;

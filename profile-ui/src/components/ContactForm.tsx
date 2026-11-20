@@ -377,7 +377,9 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
               </a>
             )}
           </p>
-          <p className="text-[0.8125rem]">Press ⌘+Enter to send</p>
+          <p className="fui-touch-hide text-[0.8125rem] whitespace-nowrap">
+            ⌘↵ to send
+          </p>
         </div>
 
         <div className="pt-2">

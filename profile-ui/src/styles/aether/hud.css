@@ -404,3 +404,40 @@
   background: var(--accent-primary);
   color: var(--fui-accent-ink);
 }
+
+/* ======================================= HUD DOCK: backing + clearance */
+:root[data-paradigm="aether"] .fui-hud-dock {
+  padding: 4px 6px;
+  background: var(--fui-chrome-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .fui-hud-bottom-left {
+  padding: 2px 6px;
+  background: var(--fui-chrome-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Reserve space under the last content so the dock never covers it. */
+:root[data-paradigm="aether"] .studio-footer {
+  padding-bottom: 84px;
+}
+
+/* Mobile / touch: no bottom HUD (theme stays reachable via header toggle). */
+@media (max-width: 768px), (pointer: coarse) {
+  :root[data-paradigm="aether"] .fui-hud-dock,
+  :root[data-paradigm="aether"] .fui-hud-bottom-left,
+  :root[data-paradigm="aether"] .fui-hud-corner--bl,
+  :root[data-paradigm="aether"] .fui-hud-corner--br {
+    display: none !important;
+  }
+}
+
+@media (max-width: 479px) {
+  :root[data-paradigm="aether"] .aether-strip-label {
+    display: none;
+  }
+}
