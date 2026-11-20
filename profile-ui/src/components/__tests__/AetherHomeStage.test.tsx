@@ -2,9 +2,10 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import AetherHomeStage from "../AetherHomeStage";
+import { FUI_OPEN_COMMAND_EVENT } from "../AetherStage";
 import { staticContent } from "@/content/siteContentContext";
 
-describe("AetherHomeStage (Take 3 — Movie Credits Title Sequence)", () => {
+describe("AetherHomeStage (FUI Minimalism Boot Sequence & Bento Grid)", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -16,59 +17,44 @@ describe("AetherHomeStage (Take 3 — Movie Credits Title Sequence)", () => {
       </MemoryRouter>,
     );
 
-  it("renders the opening title card with real profile name and role", () => {
+  it("renders the Boot Sequence hero with ⌘K trigger dispatching fui:open-command", () => {
+    const listener = vi.fn();
+    window.addEventListener(FUI_OPEN_COMMAND_EVENT, listener);
     renderStage();
+
+    expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+    const cmdBtn = screen.getByRole("button", {
+      name: /press ⌘k for system menu/i,
+    });
+    fireEvent.click(cmdBtn);
+    expect(listener).toHaveBeenCalledTimes(1);
+    window.removeEventListener(FUI_OPEN_COMMAND_EVENT, listener);
+  });
+
+  it("renders all 5 Mission Modules in the chamfered Bento Grid and opens the Dossier Modal", () => {
+    renderStage();
+    for (let i = 0; i < staticContent.caseStudies.length; i++) {
+      expect(
+        screen.getByText(`PRJ // ${String(i + 1).padStart(2, "0")}`),
+      ).toBeInTheDocument();
+    }
+
+    const dossierButtons = screen.getAllByRole("button", {
+      name: /open technical dossier/i,
+    });
+    expect(dossierButtons).toHaveLength(staticContent.caseStudies.length);
+
+    fireEvent.click(dossierButtons[0]);
     expect(
-      screen.getByRole("heading", {
-        level: 1,
-        name: staticContent.profile.name,
+      screen.getByRole("dialog", {
+        name: staticContent.caseStudies[0].name,
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/A PORTFOLIO BY/i)).toBeInTheDocument();
   });
 
-  it("renders the thesis card with the full aligned headline (no scattered word spans)", () => {
+  it("renders all 6 employers in the Career Telemetry timeline", () => {
     const { container } = renderStage();
-    const thesisHeading = container.querySelector("#aether-thesis-title");
-    expect(thesisHeading).toHaveTextContent(staticContent.profile.headline);
-    expect(container.querySelectorAll(".aether-word")).toHaveLength(0);
-  });
-
-  it("renders a dedicated full-screen feature card for each of the 5 case studies with /work/:slug links", () => {
-    const { container } = renderStage();
-    for (const study of staticContent.caseStudies) {
-      const heading = container.querySelector(`#aether-work-${study.id} a`);
-      expect(heading).toHaveTextContent(study.name);
-      expect(heading).toHaveAttribute("href", `/work/${study.slug}`);
-    }
-  });
-
-  it("renders the two-column Hollywood end-credits roll for all real employers", () => {
-    const { container } = renderStage();
-    const rows = container.querySelectorAll(".aether-credits-roll li");
+    const rows = container.querySelectorAll(".fui-timeline-row");
     expect(rows).toHaveLength(staticContent.experiences.length);
-    for (const exp of staticContent.experiences) {
-      expect(screen.getAllByText(exp.company).length).toBeGreaterThan(0);
-    }
-  });
-
-  it("renders the finale CTA and interactive chapter scrubber ticks", () => {
-    const scrollToSpy = vi
-      .spyOn(window, "scrollTo")
-      .mockImplementation(() => undefined);
-    const { container } = renderStage();
-
-    expect(container.querySelector("#aether-finale-title")).toHaveTextContent(
-      /Hiring for a senior engineering role/i,
-    );
-
-    const scrubberNav = screen.getByRole("navigation", {
-      name: /title sequence chapters/i,
-    });
-    const ticks = scrubberNav.querySelectorAll("button.aether-tick");
-    expect(ticks).toHaveLength(staticContent.caseStudies.length + 4);
-
-    fireEvent.click(ticks[2]);
-    expect(scrollToSpy).toHaveBeenCalled();
   });
 });

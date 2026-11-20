@@ -1,375 +1,223 @@
-import { useEffect, useMemo, useRef } from "react";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import { ArrowRight, ArrowUpRight, Command, Terminal } from "lucide-react";
 import { useSiteContent } from "@/content/siteContentContext";
 import PrefetchLink from "@/components/PrefetchLink";
+import { useAsciiScramble } from "@/lib/motion";
+import { FUI_OPEN_COMMAND_EVENT } from "@/components/AetherStage";
+import FuiDossierModal from "@/components/hud/FuiDossierModal";
 
-const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
-
-function prefersReducedMotion(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    return window.matchMedia?.(REDUCED_MOTION)?.matches ?? false;
-  } catch {
-    return false;
-  }
-}
-
-interface SceneMeta {
-  id: string;
-  label: string;
-}
+const BENTO_SPANS = [
+  "fui-module--wide",
+  "fui-module--tall",
+  "fui-module--tall",
+  "fui-module--wide",
+  "fui-module--full",
+] as const;
 
 /**
- * Aether Take 3 — High-Budget Movie Title Sequence & Apple Keynote Sticky Scroll.
- *
- * A single pinned Cinemascope viewport (`position: sticky`) scrubs cleanly through
- * laser-aligned, one-at-a-time film title cards as the visitor scrolls:
- *   01. Opening Title Card (Name + Role)
- *   02. The Thesis (Headline + Bio + Actions)
- *   03–07. Featured Productions (5 real case studies, one full-screen frame each)
- *   08. Filmography / End-Credits Roll (Two-column classic Hollywood credit alignment)
- *   09. Finale / Next Chapter (Closing CTA)
- *
- * Zero WebGL, zero external animation libraries, zero React re-renders on scroll.
+ * FUI Minimalism Homepage ("Oblivion" / "The Martian" / "Tron: Legacy" + Swiss Precision):
+ * 1. The Boot Sequence Hero (GPU grid-line draw + masked slide + ASCII decryption + ⌘K trigger)
+ * 2. Asymmetric Chamfered Bento Grid ("Mission Modules" — all 5 real case studies)
+ * 3. Interactive Technical Dossier Modal (inline SVG system flow + breakdown)
+ * 4. Career Telemetry Roll & Closing Dock
  */
 export default function AetherHomeStage(): React.ReactElement {
   const { profile, caseStudies, experiences } = useSiteContent();
-  const trackRef = useRef<HTMLDivElement>(null);
-  const sceneRefs = useRef<(HTMLElement | null)[]>([]);
-  const tickRefs = useRef<(HTMLButtonElement | null)[]>([]);
-  const activeLabelRef = useRef<HTMLSpanElement>(null);
-  const progressBarRef = useRef<HTMLDivElement>(null);
+  const [dossierIndex, setDossierIndex] = useState<number | null>(null);
+  const decryptedHeadline = useAsciiScramble(profile.headline, true);
 
-  const scenes: SceneMeta[] = useMemo(
-    () => [
-      { id: "scene-opening", label: "01 · Opening" },
-      { id: "scene-thesis", label: "02 · Craft" },
-      ...caseStudies.map((study, idx) => ({
-        id: `scene-work-${study.slug}`,
-        label: `${String(idx + 3).padStart(2, "0")} · ${study.organization}`,
-      })),
-      {
-        id: "scene-credits",
-        label: `${String(caseStudies.length + 3).padStart(2, "0")} · Credits`,
-      },
-      {
-        id: "scene-finale",
-        label: `${String(caseStudies.length + 4).padStart(2, "0")} · Finale`,
-      },
-    ],
-    [caseStudies],
-  );
-
-  const totalScenes = scenes.length;
-
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track || typeof window === "undefined") return;
-
-    const nodes = sceneRefs.current.filter((n): n is HTMLElement => n !== null);
-    if (nodes.length === 0) return;
-
-    const updateActiveTick = (activeIndex: number) => {
-      if (activeLabelRef.current && scenes[activeIndex]) {
-        activeLabelRef.current.textContent = scenes[activeIndex].label;
-      }
-      tickRefs.current.forEach((btn, idx) => {
-        if (!btn) return;
-        const active = idx === activeIndex;
-        btn.dataset.active = active ? "true" : "false";
-        if (active) btn.setAttribute("aria-current", "step");
-        else btn.removeAttribute("aria-current");
-      });
-    };
-
-    if (prefersReducedMotion()) {
-      nodes.forEach((node) => {
-        node.style.opacity = "1";
-        node.style.transform = "none";
-        node.style.filter = "none";
-        node.style.pointerEvents = "auto";
-        node.dataset.active = "true";
-      });
-      updateActiveTick(0);
-      return;
+  const openCommandPalette = () => {
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent(FUI_OPEN_COMMAND_EVENT));
     }
-
-    let frame = 0;
-
-    const flush = () => {
-      frame = 0;
-      const rect = track.getBoundingClientRect();
-      const scrollable = Math.max(1, rect.height - window.innerHeight);
-      const progress = Math.max(0, Math.min(1, -rect.top / scrollable));
-
-      if (progressBarRef.current) {
-        progressBarRef.current.style.transform = `scaleX(${progress.toFixed(4)})`;
-      }
-
-      // Map global progress [0..1] onto scene index [0..totalScenes - 1]
-      const exactPos = progress * (totalScenes - 1);
-      const nearest = Math.round(exactPos);
-      updateActiveTick(nearest);
-
-      nodes.forEach((node, idx) => {
-        // delta: 0 = dead-center in focus; negative = upcoming; positive = exiting
-        const delta = exactPos - idx;
-        const absDelta = Math.abs(delta);
-
-        if (absDelta >= 0.92) {
-          node.style.opacity = "0";
-          node.style.visibility = "hidden";
-          node.style.pointerEvents = "none";
-          node.dataset.active = "false";
-          return;
-        }
-
-        // Smooth bell curve: holds razor-sharp at 1.0 within |delta| <= 0.28,
-        // then smoothly dissolves out to 0 at |delta| = 0.92.
-        const hold = 0.26;
-        const fade =
-          absDelta <= hold
-            ? 1
-            : Math.max(0, 1 - (absDelta - hold) / (0.92 - hold));
-        const eased = fade * fade * (3 - 2 * fade); // smoothstep
-
-        // Subtle Z-depth cinema drift: upcoming starts slightly recessed (0.95),
-        // locked scene is 1.00, exiting scene gently drifts toward lens (1.05).
-        const scale = 1 + delta * 0.055;
-        const translateY = -delta * 26;
-        const blur = (1 - eased) * 7;
-
-        node.style.visibility = "visible";
-        node.style.opacity = eased.toFixed(4);
-        node.style.transform = `translate3d(0, ${translateY.toFixed(1)}px, 0) scale(${scale.toFixed(4)})`;
-        node.style.filter = blur > 0.15 ? `blur(${blur.toFixed(2)}px)` : "none";
-        const isCurrent = absDelta < 0.45;
-        node.style.pointerEvents = isCurrent ? "auto" : "none";
-        node.dataset.active = isCurrent ? "true" : "false";
-      });
-    };
-
-    flush();
-
-    const schedule = () => {
-      if (!frame) frame = window.requestAnimationFrame(flush);
-    };
-
-    window.addEventListener("scroll", schedule, { passive: true });
-    window.addEventListener("resize", schedule, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", schedule);
-      window.removeEventListener("resize", schedule);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, [scenes, totalScenes]);
-
-  const jumpToScene = (index: number) => {
-    const track = trackRef.current;
-    if (!track || typeof window === "undefined") return;
-    if (prefersReducedMotion()) {
-      sceneRefs.current[index]?.scrollIntoView({ behavior: "auto" });
-      return;
-    }
-    const trackTop = track.getBoundingClientRect().top + window.scrollY;
-    const scrollable = Math.max(1, track.offsetHeight - window.innerHeight);
-    const targetY =
-      trackTop + (index / Math.max(1, totalScenes - 1)) * scrollable;
-    window.scrollTo({ top: targetY, behavior: "smooth" });
   };
 
+  const activeStudy =
+    dossierIndex !== null ? (caseStudies[dossierIndex] ?? null) : null;
+
   return (
-    <div
-      className="aether-film"
-      ref={trackRef}
-      style={{ "--scene-count": totalScenes } as React.CSSProperties}
-    >
-      {/* Subtle fixed matte vignette + micro film grain (pointer-events: none) */}
-      <div className="aether-film-vignette" aria-hidden="true" />
-      <div className="aether-film-grain" aria-hidden="true" />
+    <div className="fui-page">
+      {/* 1. HERO: THE BOOT SEQUENCE */}
+      <section className="fui-hero" aria-labelledby="fui-hero-heading">
+        <div className="fui-grid-line-x" aria-hidden="true" />
+        <div className="fui-grid-line-y" aria-hidden="true" />
 
-      {/* Pinned Cinemascope Viewport */}
-      <div className="aether-stage-pin">
-        {/* Top/bottom subtle letterbox hairlines */}
-        <div className="aether-frame-top" aria-hidden="true" />
-        <div className="aether-frame-bottom" aria-hidden="true" />
-
-        {/* SCENE 01 — OPENING TITLE CARD */}
-        <section
-          id="scene-opening"
-          ref={(el) => {
-            sceneRefs.current[0] = el;
-          }}
-          className="aether-card aether-card--opening"
-          aria-labelledby="aether-opening-title"
-        >
-          <p className="aether-kicker">A PORTFOLIO BY</p>
-          <h1 id="aether-opening-title" className="aether-display">
-            {profile.name}
-          </h1>
-          <div className="aether-rule" aria-hidden="true" />
-          <p className="aether-subtitle">
-            {profile.role} · {profile.employer} · {profile.location}
-          </p>
-          <p className="aether-scroll-cue" aria-hidden="true">
-            Scroll to play sequence
-          </p>
-        </section>
-
-        {/* SCENE 02 — THE THESIS */}
-        <section
-          id="scene-thesis"
-          ref={(el) => {
-            sceneRefs.current[1] = el;
-          }}
-          className="aether-card aether-card--thesis"
-          aria-labelledby="aether-thesis-title"
-        >
-          <p className="aether-kicker">
-            02 / THE CRAFT · SINCE {profile.careerStartYear}
-          </p>
-          <h2 id="aether-thesis-title" className="aether-headline">
-            {profile.headline}
-          </h2>
-          <p className="aether-synopsis">{profile.description}</p>
-          <div className="aether-actions">
-            <PrefetchLink to="/work" className="aether-cta">
-              Explore selected work
-              <ArrowUpRight size={17} aria-hidden="true" />
-            </PrefetchLink>
-            <PrefetchLink to="/contact" className="aether-ghost-link">
-              Get in touch
-              <ArrowRight size={16} aria-hidden="true" />
-            </PrefetchLink>
+        <div className="fui-container fui-hero-inner">
+          <div className="fui-boot-eyebrow">
+            <Terminal size={14} aria-hidden="true" />
+            <span>
+              SYS.BOOT // {profile.name.toUpperCase()} // SINCE{" "}
+              {profile.careerStartYear}
+            </span>
           </div>
-        </section>
 
-        {/* SCENES 03–07 — FEATURED PRODUCTIONS (5 REAL CASE STUDIES) */}
-        {caseStudies.map((study, idx) => (
-          <article
-            key={study.id}
-            id={`scene-work-${study.slug}`}
-            ref={(el) => {
-              sceneRefs.current[idx + 2] = el;
-            }}
-            className="aether-card aether-card--feature"
-            aria-labelledby={`aether-work-${study.id}`}
-          >
-            <p className="aether-kicker">
-              FEATURED WORK {String(idx + 1).padStart(2, "0")} /{" "}
-              {String(caseStudies.length).padStart(2, "0")} ·{" "}
-              {study.organization}
-            </p>
-            <h2 id={`aether-work-${study.id}`} className="aether-feature-title">
-              <PrefetchLink to={`/work/${study.slug}`}>
-                {study.name}
-              </PrefetchLink>
-            </h2>
-            <p className="aether-feature-role">{study.role}</p>
-            <div className="aether-rule" aria-hidden="true" />
-            <p className="aether-synopsis">{study.summary}</p>
-            <ul
-              className="aether-tech-credits"
-              role="list"
-              aria-label={`${study.name} technologies`}
+          <h1 id="fui-hero-heading" className="fui-hero-title">
+            {decryptedHeadline}
+          </h1>
+
+          <p className="fui-hero-sub">
+            <span>{profile.role}</span>
+            <span aria-hidden="true"> // </span>
+            <span>{profile.employer}</span>
+            <span aria-hidden="true"> // </span>
+            <span>{profile.location}</span>
+          </p>
+
+          <p className="fui-hero-desc">{profile.description}</p>
+
+          <div className="fui-hero-actions">
+            <PrefetchLink to="/work" className="fui-btn-primary">
+              Inspect mission archive
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </PrefetchLink>
+            <PrefetchLink to="/contact" className="fui-btn-secondary">
+              Initiate contact
+              <ArrowRight size={15} aria-hidden="true" />
+            </PrefetchLink>
+            <button
+              type="button"
+              className="fui-cmd-pill"
+              onClick={openCommandPalette}
             >
-              {study.technologies.slice(0, 6).map((tech) => (
-                <li key={tech}>{tech}</li>
-              ))}
-            </ul>
-            <div className="aether-actions">
-              <PrefetchLink to={`/work/${study.slug}`} className="aether-cta">
-                Read case study
-                <ArrowUpRight size={17} aria-hidden="true" />
-              </PrefetchLink>
-            </div>
-          </article>
-        ))}
+              <Command size={14} aria-hidden="true" />
+              <span>Press ⌘K for System Menu</span>
+            </button>
+          </div>
+        </div>
+      </section>
 
-        {/* SCENE 08 — CLASSIC HOLLYWOOD END-CREDITS ROLL (CAREER FILMOGRAPHY) */}
-        <section
-          id="scene-credits"
-          ref={(el) => {
-            sceneRefs.current[caseStudies.length + 2] = el;
-          }}
-          className="aether-card aether-card--credits"
-          aria-labelledby="aether-credits-title"
-        >
-          <p className="aether-kicker">CAREER CREDITS</p>
-          <h2 id="aether-credits-title" className="aether-credits-heading">
-            Production History
-          </h2>
-          <ol className="aether-credits-roll" role="list">
-            {experiences.map((exp) => (
-              <li key={`${exp.company}-${exp.year}`}>
-                <span className="aether-credit-left">
-                  <span className="aether-credit-role">{exp.title}</span>
-                  <span className="aether-credit-year">{exp.year}</span>
+      {/* 2. ASYMMETRIC BENTO GRID: MISSION MODULES */}
+      <section
+        id="fui-missions"
+        className="fui-section"
+        aria-labelledby="fui-missions-heading"
+      >
+        <div className="fui-container">
+          <header className="fui-section-head">
+            <p className="fui-kicker">MISSION MODULES // 01–05</p>
+            <h2 id="fui-missions-heading" className="fui-section-title">
+              Selected production systems
+            </h2>
+          </header>
+
+          <div className="fui-bento">
+            {caseStudies.map((study, index) => (
+              <article
+                key={study.id}
+                className={`fui-module ${BENTO_SPANS[index % BENTO_SPANS.length]}`}
+              >
+                <div className="fui-module-top">
+                  <span className="fui-module-id">
+                    PRJ // {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="fui-module-org">
+                    {study.organization} · {study.role}
+                  </span>
+                </div>
+
+                <h3 className="fui-module-title">
+                  <PrefetchLink to={`/work/${study.slug}`}>
+                    {study.name}
+                  </PrefetchLink>
+                </h3>
+
+                <p className="fui-module-summary">{study.summary}</p>
+                <p className="fui-module-preview">{study.preview}</p>
+
+                <ul
+                  className="fui-tags"
+                  role="list"
+                  aria-label={`${study.name} architecture stack`}
+                >
+                  {study.technologies.slice(0, 5).map((tech) => (
+                    <li key={tech}>{tech}</li>
+                  ))}
+                </ul>
+
+                <div className="fui-module-footer">
+                  <button
+                    type="button"
+                    className="fui-module-cta"
+                    onClick={() => setDossierIndex(index)}
+                  >
+                    Open technical dossier
+                    <ArrowUpRight size={15} aria-hidden="true" />
+                  </button>
+                  <PrefetchLink
+                    to={`/work/${study.slug}`}
+                    className="fui-module-link"
+                  >
+                    Full page
+                    <ArrowRight size={14} aria-hidden="true" />
+                  </PrefetchLink>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. CAREER TELEMETRY TIMELINE */}
+      <section className="fui-section" aria-labelledby="fui-career-heading">
+        <div className="fui-container">
+          <header className="fui-section-head">
+            <p className="fui-kicker">SERVICE LOG // 2016–PRESENT</p>
+            <h2 id="fui-career-heading" className="fui-section-title">
+              Engineering leadership &amp; delivery
+            </h2>
+          </header>
+
+          <ol className="fui-timeline" role="list">
+            {experiences.map((exp, idx) => (
+              <li
+                key={`${exp.company}-${exp.year}`}
+                className="fui-timeline-row"
+              >
+                <span className="fui-timeline-idx">
+                  {String(idx + 1).padStart(2, "0")}
                 </span>
-                <span className="aether-credit-right">{exp.company}</span>
+                <span className="fui-timeline-year">{exp.year}</span>
+                <strong className="fui-timeline-company">{exp.company}</strong>
+                <span className="fui-timeline-role">{exp.title}</span>
               </li>
             ))}
           </ol>
-        </section>
+        </div>
+      </section>
 
-        {/* SCENE 09 — FINALE / NEXT CHAPTER */}
-        <section
-          id="scene-finale"
-          ref={(el) => {
-            sceneRefs.current[caseStudies.length + 3] = el;
-          }}
-          className="aether-card aether-card--finale"
-          aria-labelledby="aether-finale-title"
-        >
-          <p className="aether-kicker">NEXT CHAPTER</p>
-          <h2 id="aether-finale-title" className="aether-display">
-            Hiring for a senior engineering role?
-          </h2>
-          <div className="aether-rule" aria-hidden="true" />
-          <p className="aether-synopsis">
-            Full-stack architecture, UI leadership, and calm production delivery
-            in React, TypeScript, Java, and Spring Boot.
-          </p>
-          <div className="aether-actions">
-            <PrefetchLink to="/contact" className="aether-cta">
-              Get in touch
-              <ArrowUpRight size={17} aria-hidden="true" />
-            </PrefetchLink>
-            <PrefetchLink to="/resume" className="aether-ghost-link">
-              View resume
-              <ArrowRight size={16} aria-hidden="true" />
-            </PrefetchLink>
+      {/* 4. CLOSING DOCK */}
+      <section className="fui-section" aria-labelledby="fui-closing-heading">
+        <div className="fui-container">
+          <div className="fui-closing">
+            <div>
+              <p className="fui-kicker">COMMS CHANNEL // OPEN</p>
+              <h2 id="fui-closing-heading" className="fui-section-title">
+                Hiring for a senior engineering role?
+              </h2>
+              <p className="fui-hero-desc">
+                Share the role, team, and technical direction — or press ⌘K to
+                copy my direct email.
+              </p>
+            </div>
+            <div className="fui-hero-actions">
+              <PrefetchLink to="/contact" className="fui-btn-primary">
+                Get in touch
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </PrefetchLink>
+              <PrefetchLink to="/resume" className="fui-btn-secondary">
+                View resume
+                <ArrowRight size={15} aria-hidden="true" />
+              </PrefetchLink>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Bottom-center Cinema Scrubber Timeline */}
-        <nav className="aether-scrubber" aria-label="Title sequence chapters">
-          <span className="aether-scrubber-label" ref={activeLabelRef}>
-            {scenes[0]?.label}
-          </span>
-          <div className="aether-scrubber-track" aria-hidden="true">
-            <div className="aether-scrubber-fill" ref={progressBarRef} />
-          </div>
-          <div className="aether-scrubber-ticks">
-            {scenes.map((scene, idx) => (
-              <button
-                key={scene.id}
-                ref={(el) => {
-                  tickRefs.current[idx] = el;
-                }}
-                type="button"
-                className="aether-tick"
-                data-active={idx === 0 ? "true" : "false"}
-                aria-current={idx === 0 ? "step" : undefined}
-                aria-label={`Jump to ${scene.label}`}
-                onClick={() => jumpToScene(idx)}
-              >
-                <span className="aether-tick-dot" aria-hidden="true" />
-              </button>
-            ))}
-          </div>
-        </nav>
-      </div>
+      <FuiDossierModal
+        study={activeStudy}
+        index={dossierIndex ?? 0}
+        onClose={() => setDossierIndex(null)}
+      />
     </div>
   );
 }

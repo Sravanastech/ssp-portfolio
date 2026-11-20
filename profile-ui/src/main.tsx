@@ -35,6 +35,10 @@ try {
     void prefetchKineticStyles();
   } else if (savedParadigm === "aether") {
     document.documentElement.dataset.paradigm = "aether";
+    document.documentElement.dataset.fuiTheme =
+      localStorage.getItem("portfolio-fui-theme") === "cleanroom"
+        ? "cleanroom"
+        : "void";
     void prefetchAetherStyles();
   }
 } catch {

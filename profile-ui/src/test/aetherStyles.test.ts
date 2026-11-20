@@ -6,32 +6,37 @@ const stylesDir = resolve(import.meta.dirname, "../styles");
 const indexCssPath = resolve(import.meta.dirname, "../index.css");
 const aetherCssPath = resolve(stylesDir, "aether-cinematic.css");
 
-describe("aether-cinematic.css (Take 3 — Movie Credits Cinema)", () => {
+describe("aether-cinematic.css (FUI Minimalism Dual-Theme)", () => {
   it("is lazy-loaded and never imported in index.css", () => {
     const indexCss = readFileSync(indexCssPath, "utf8");
     expect(indexCss).not.toContain("aether-cinematic.css");
   });
 
-  it("scopes all rules to :root[data-paradigm='aether'] and uses solid cinema dark ground", () => {
+  it("scopes rules to :root[data-paradigm='aether'] and defines VOID + CLEANROOM themes", () => {
     const css = readFileSync(aetherCssPath, "utf8");
     expect(css).toContain(':root[data-paradigm="aether"]');
-    expect(css).toContain("background-image: none !important");
-    expect(css).not.toContain("aether-canvas");
+    expect(css).toContain('[data-fui-theme="void"]');
+    expect(css).toContain('[data-fui-theme="cleanroom"]');
+    expect(css).toContain("radial-gradient(");
+    expect(css).toContain("24px 24px");
   });
 
-  it("defines the sticky Cinemascope stage, two-column end-credits roll, and scrubber", () => {
+  it("defines chamfered FUI bento modules, HUD frame, hardware switch, dossier, and command palette", () => {
     const css = readFileSync(aetherCssPath, "utf8");
-    expect(css).toContain(".aether-film");
-    expect(css).toContain(".aether-stage-pin");
-    expect(css).toContain(".aether-card");
-    expect(css).toContain(".aether-credits-roll");
-    expect(css).toContain(".aether-scrubber");
-    expect(css).toContain(".aether-hud");
+    expect(css).toContain("clip-path: polygon(");
+    expect(css).toContain("cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(css).toContain(".fui-hud-frame");
+    expect(css).toContain(".fui-hw-switch");
+    expect(css).toContain(".fui-bento");
+    expect(css).toContain(".fui-module");
+    expect(css).toContain(".fui-dossier");
+    expect(css).toContain(".fui-palette");
+    expect(css).toContain(".fui-timeline");
+    expect(css).toContain(".fui-closing");
   });
 
-  it("includes @supports scroll-driven beam and prefers-reduced-motion fallback", () => {
+  it("includes strict prefers-reduced-motion fallback", () => {
     const css = readFileSync(aetherCssPath, "utf8");
-    expect(css).toContain("@supports (animation-timeline: scroll(root block))");
     expect(css).toContain("@media (prefers-reduced-motion: reduce)");
   });
 });

@@ -24,10 +24,10 @@ async function settle(page: Page) {
   );
 }
 
-test.describe("Aether 3rd paradigm (desktop)", () => {
+test.describe("Aether FUI Minimalism (desktop)", () => {
   test.use({ viewport: { width: 1440, height: 900 } });
 
-  test("switches Studio -> Aether -> Kinetic -> Studio cleanly with HUD and sound toggle", async ({
+  test("switches Studio -> Aether (VOID & CLEANROOM) -> Dossier -> ⌘K -> Kinetic -> Studio", async ({
     page,
   }) => {
     const errors = trackConsole(page);
@@ -39,33 +39,44 @@ test.describe("Aether 3rd paradigm (desktop)", () => {
     expect(
       await page.evaluate(() => document.documentElement.dataset.paradigm),
     ).toBe("aether");
-    expect(await seg(page, "aether").getAttribute("aria-pressed")).toBe("true");
-    expect(await seg(page, "studio").getAttribute("aria-pressed")).toBe(
-      "false",
-    );
+    expect(
+      await page.evaluate(() => document.documentElement.dataset.fuiTheme),
+    ).toBe("void");
 
-    // HUD mounts with Sound muted by default and toggles cleanly
-    const hud = page.getByRole("region", {
-      name: /aether observatory telemetry/i,
-    });
-    await expect(hud).toBeVisible();
-    const soundBtn = page.getByRole("button", {
-      name: /enable aether soundscape/i,
-    });
-    await expect(soundBtn).toHaveAttribute("aria-pressed", "false");
-    await soundBtn.click();
+    // HUD frame visible & hardware VOID -> CLEANROOM switch works
+    await expect(page.getByText(/SYS\.NOMINAL \/\/ 60FPS/i)).toBeVisible();
+    const hwSwitch = page.getByRole("switch", { name: /toggle fui theme/i });
+    await hwSwitch.click();
+    expect(
+      await page.evaluate(() => document.documentElement.dataset.fuiTheme),
+    ).toBe("cleanroom");
+
+    // Open Technical Dossier modal from first Mission Module
+    await page
+      .getByRole("button", { name: /open technical dossier/i })
+      .first()
+      .click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+
+    // Open ⌘K Command Palette via hero button
+    await page
+      .getByRole("button", { name: /press ⌘k for system menu/i })
+      .click();
     await expect(
-      page.getByRole("button", { name: /mute aether soundscape/i }),
-    ).toHaveAttribute("aria-pressed", "true");
+      page.getByRole("dialog", { name: /system command palette/i }),
+    ).toBeVisible();
+    await page.keyboard.press("Escape");
 
     // Persistence across reload
     await page.reload();
     expect(
       await page.evaluate(() => document.documentElement.dataset.paradigm),
     ).toBe("aether");
-    await expect(
-      page.getByRole("region", { name: /aether observatory telemetry/i }),
-    ).toBeVisible();
+    expect(
+      await page.evaluate(() => document.documentElement.dataset.fuiTheme),
+    ).toBe("cleanroom");
 
     // Switch Aether -> Kinetic -> Studio
     await seg(page, "kinetic").click();
@@ -73,9 +84,6 @@ test.describe("Aether 3rd paradigm (desktop)", () => {
     expect(
       await page.evaluate(() => document.documentElement.dataset.paradigm),
     ).toBe("kinetic");
-    await expect(
-      page.getByRole("region", { name: /aether observatory telemetry/i }),
-    ).toHaveCount(0);
 
     await seg(page, "studio").click();
     await settle(page);
@@ -105,10 +113,10 @@ test.describe("Aether 3rd paradigm (desktop)", () => {
   });
 });
 
-test.describe("Aether mobile 390x844", () => {
+test.describe("Aether FUI mobile 390x844", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("3-way mode strip and Aether HUD fit with zero horizontal overflow", async ({
+  test("3-way mode strip, Bento grid, and HUD fit with zero horizontal overflow", async ({
     page,
   }) => {
     const errors = trackConsole(page);

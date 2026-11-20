@@ -1,72 +1,141 @@
 /*
- * Aether Take 3 — High-Budget Movie Credits & Apple Keynote Sticky Scroll.
+ * Aether — FUI (Fantasy User Interface) Minimalism Dual-Theme Stylesheet.
+ * Inspired by Oblivion / The Martian / Tron: Legacy + Swiss Editorial Precision.
  *
  * Lazy-loaded via import("@/styles/aether-cinematic.css"); never imported by index.css.
  * 100% scoped to :root[data-paradigm="aether"].
- * Zero WebGL, zero nebula backgrounds, laser-aligned film title sequence typography.
+ * Dual themes: VOID (default dark) and CLEANROOM (clinical sci-fi light).
  */
 
-:root[data-paradigm="aether"] {
-  --color-background: #060608 !important;
-  --color-surface: #0e0f14 !important;
-  --color-primary: #f5f5f7 !important;
-  --color-secondary: #a1a1aa !important;
-  --color-accent: #060608 !important;
-  --color-text: #f5f5f7 !important;
-  --color-textSecondary: #a1a1aa !important;
+/* ================================================== DUAL-THEME TOKENS */
+:root[data-paradigm="aether"],
+:root[data-paradigm="aether"][data-fui-theme="void"] {
+  /* FUI Core Palette — VOID (Default Dark) */
+  --bg-primary: #06070a;
+  --bg-elevated: #0d1017;
+  --border-hairline: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --text-primary: #f0f2f5;
+  --text-muted: #8b95a7;
+  --accent-primary: #00f0ff;
+  --accent-amber: #ffb800;
+  --dot-color: rgba(255, 255, 255, 0.07);
+
+  /* Derived FUI Surface & Motion Tokens */
+  --fui-glass: rgba(13, 16, 23, 0.84);
+  --fui-chrome-bg: rgba(6, 7, 10, 0.86);
+  --fui-backdrop: rgba(3, 5, 10, 0.78);
+  --fui-accent-soft: rgba(0, 240, 255, 0.1);
+  --fui-accent-glow: rgba(0, 240, 255, 0.22);
+  --fui-accent-ink: #06070a;
+  --fui-amber-soft: rgba(255, 184, 0, 0.14);
+  --fui-hover-surface: rgba(255, 255, 255, 0.05);
+  --fui-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fui-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+
+  /* Sync shared shell/interior design tokens */
+  --color-background: #06070a !important;
+  --color-surface: #0d1017 !important;
+  --color-text: #f0f2f5 !important;
+  --color-textSecondary: #8b95a7 !important;
+  --color-primary: #00f0ff !important;
+  --color-secondary: #8b95a7 !important;
+  --color-accent: #06070a !important;
   --color-border: rgba(255, 255, 255, 0.14) !important;
   --color-borderLight: rgba(255, 255, 255, 0.08) !important;
-  --color-focus-ring: #f5f5f7 !important;
-  --color-cta-bg: #f5f5f7 !important;
-  --color-cta-text: #060608 !important;
-  --color-cta-hover: #ffffff !important;
+  --color-focus-ring: #00f0ff !important;
+  --color-cta-bg: #00f0ff !important;
+  --color-cta-text: #06070a !important;
+  --color-cta-hover: #3df5ff !important;
 
-  --aether-bg: #060608;
-  --aether-surface: #0e0f14;
-  --aether-ink: #f5f5f7;
-  --aether-muted: #9898a3;
-  --aether-gold: #e5c687;
-  --aether-rule: rgba(255, 255, 255, 0.14);
   color-scheme: dark;
 }
 
+:root[data-paradigm="aether"][data-fui-theme="cleanroom"] {
+  /* FUI Core Palette — CLEANROOM (Clinical Sci-Fi Light) */
+  --bg-primary: #f4f6f9;
+  --bg-elevated: #ffffff;
+  --border-hairline: rgba(15, 23, 42, 0.12);
+  --border-strong: rgba(15, 23, 42, 0.24);
+  --text-primary: #0b0f19;
+  --text-muted: #475569;
+  --accent-primary: #ff4500;
+  --accent-amber: #d97706;
+  --dot-color: rgba(15, 23, 42, 0.09);
+
+  /* Derived FUI Surface & Motion Tokens */
+  --fui-glass: rgba(255, 255, 255, 0.88);
+  --fui-chrome-bg: rgba(244, 246, 249, 0.88);
+  --fui-backdrop: rgba(11, 15, 25, 0.42);
+  --fui-accent-soft: rgba(255, 69, 0, 0.08);
+  --fui-accent-glow: rgba(255, 69, 0, 0.2);
+  --fui-accent-ink: #ffffff;
+  --fui-amber-soft: rgba(217, 119, 6, 0.12);
+  --fui-hover-surface: rgba(15, 23, 42, 0.05);
+
+  /* Sync shared shell/interior design tokens */
+  --color-background: #f4f6f9 !important;
+  --color-surface: #ffffff !important;
+  --color-text: #0b0f19 !important;
+  --color-textSecondary: #475569 !important;
+  --color-primary: #ff4500 !important;
+  --color-secondary: #475569 !important;
+  --color-accent: #ffffff !important;
+  --color-border: rgba(15, 23, 42, 0.16) !important;
+  --color-borderLight: rgba(15, 23, 42, 0.09) !important;
+  --color-focus-ring: #ff4500 !important;
+  --color-cta-bg: #ff4500 !important;
+  --color-cta-text: #ffffff !important;
+  --color-cta-hover: #e03d00 !important;
+
+  color-scheme: light;
+}
+
+/* ============================================ BASE CANVAS & DOT MATRIX */
 :root[data-paradigm="aether"] body {
-  background: var(--aether-bg) !important;
-  background-image: none !important;
-  color: var(--aether-ink);
+  background-color: var(--bg-primary) !important;
+  background-image: radial-gradient(
+    var(--dot-color) 1px,
+    transparent 1px
+  ) !important;
+  background-size: 24px 24px !important;
+  background-position: 0 0 !important;
+  color: var(--text-primary);
+  overflow-x: clip;
+  transition:
+    background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root[data-paradigm="aether"] .studio-shell {
   position: relative;
   z-index: 1;
-  background: var(--aether-bg);
+  background: transparent;
+  overflow-x: clip;
 }
 
 :root[data-paradigm="aether"] ::selection {
-  background: rgba(229, 198, 135, 0.3);
-  color: #ffffff;
+  background: var(--accent-primary);
+  color: var(--fui-accent-ink);
 }
 
 :root[data-paradigm="aether"] :focus-visible {
-  outline: 2px solid var(--aether-gold);
+  outline: 2px solid var(--accent-primary);
   outline-offset: 3px;
 }
 
-/* ------------------------------------------- Mode Strip & Header Chrome */
+/* ========================================== MODE STRIP & HEADER CHROME */
 :root[data-paradigm="aether"] .mode-strip {
   position: relative;
   z-index: 50;
-  background: rgba(6, 6, 8, 0.88);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-block-end: 1px solid var(--aether-rule);
-  color: var(--aether-muted);
-  font:
-    500 11px/1 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
+  background: var(--fui-chrome-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-block-end: 1px solid var(--border-hairline);
+  color: var(--text-muted);
+  font: 500 11px/1 var(--fui-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -74,26 +143,27 @@
 :root[data-paradigm="aether"] .mode-switch button {
   padding: 0 11px;
   block-size: 24px;
-  border-radius: 999px;
+  border-radius: 2px;
   border: 1px solid transparent;
-  color: var(--aether-muted);
+  color: var(--text-muted);
   transition:
-    color 0.2s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease;
+    color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root[data-paradigm="aether"] .mode-switch button:hover {
-  color: var(--aether-ink);
-  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  background: var(--fui-hover-surface);
+  border-color: var(--border-hairline);
 }
 
 :root[data-paradigm="aether"]
   .mode-switch
   button[data-mode="aether"][aria-pressed="true"] {
-  color: #060608;
-  background: var(--aether-ink);
-  border-color: var(--aether-ink);
+  color: var(--fui-accent-ink);
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
   font-weight: 700;
 }
 
@@ -104,50 +174,284 @@
 }
 
 :root[data-paradigm="aether"] .studio-header {
-  background: rgba(6, 6, 8, 0.82);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--aether-rule);
+  background: var(--fui-chrome-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-hairline);
 }
 
 :root[data-paradigm="aether"] .studio-header a,
 :root[data-paradigm="aether"] .studio-header button {
-  color: var(--aether-ink);
+  color: var(--text-primary);
 }
 
 :root[data-paradigm="aether"] .studio-navigation a::after {
-  background: var(--aether-gold);
+  background: var(--accent-primary);
 }
 
 :root[data-paradigm="aether"] .studio-mobile-sheet {
-  background: #060608;
-  color: var(--aether-ink);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-hairline);
 }
 
-/* ------------------------------------------- Top Scroll Beam */
-:root[data-paradigm="aether"] .aether-scroll-beam {
+/* =================================================== HUD PERIMETER FRAME */
+:root[data-paradigm="aether"] .fui-hud-frame {
   position: fixed;
+  inset: 10px;
+  z-index: 35;
+  pointer-events: none;
+}
+
+:root[data-paradigm="aether"] .fui-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+:root[data-paradigm="aether"] .fui-corner--tl {
   top: 0;
   left: 0;
+  border-top: 1.5px solid var(--accent-primary);
+  border-left: 1.5px solid var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-corner--tr {
+  top: 0;
   right: 0;
-  height: 2px;
-  z-index: 60;
+  border-top: 1.5px solid var(--accent-primary);
+  border-right: 1.5px solid var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-corner--bl {
+  bottom: 0;
+  left: 0;
+  border-bottom: 1.5px solid var(--accent-primary);
+  border-left: 1.5px solid var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-corner--br {
+  bottom: 0;
+  right: 0;
+  border-bottom: 1.5px solid var(--accent-primary);
+  border-right: 1.5px solid var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-crosshair {
+  position: absolute;
+  width: 11px;
+  height: 11px;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent, var(--aether-gold), #ffffff);
-  transform-origin: left center;
-  transform: scaleX(0);
+  color: var(--border-strong);
+  font: 400 11px/1 var(--fui-mono);
+  display: grid;
+  place-items: center;
+  user-select: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: scroll(root block)) {
-    :root[data-paradigm="aether"] .aether-scroll-beam {
-      animation: aether-beam-fill linear both;
-      animation-timeline: scroll(root block);
-    }
-  }
+:root[data-paradigm="aether"] .fui-crosshair::before,
+:root[data-paradigm="aether"] .fui-crosshair::after {
+  content: "";
+  position: absolute;
+  background: var(--border-strong);
 }
 
-@keyframes aether-beam-fill {
+:root[data-paradigm="aether"] .fui-crosshair::before {
+  width: 9px;
+  height: 1px;
+}
+
+:root[data-paradigm="aether"] .fui-crosshair::after {
+  width: 1px;
+  height: 9px;
+}
+
+:root[data-paradigm="aether"] .fui-crosshair--l,
+:root[data-paradigm="aether"] .fui-crosshair--left {
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:root[data-paradigm="aether"] .fui-crosshair--r,
+:root[data-paradigm="aether"] .fui-crosshair--right {
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:root[data-paradigm="aether"] .fui-crosshair--t,
+:root[data-paradigm="aether"] .fui-crosshair--top {
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:root[data-paradigm="aether"] .fui-crosshair--b,
+:root[data-paradigm="aether"] .fui-crosshair--bottom {
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Telemetry Status Bar & Scroll Readout */
+:root[data-paradigm="aether"] .fui-status-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 11px/1 var(--fui-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .fui-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent-primary);
+  box-shadow: 0 0 8px var(--fui-accent-glow);
+  flex-shrink: 0;
+}
+
+:root[data-paradigm="aether"] .fui-scroll-readout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 11px/1 var(--fui-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+:root[data-paradigm="aether"] .fui-scroll-readout strong,
+:root[data-paradigm="aether"] .fui-scroll-readout span {
+  color: var(--accent-primary);
+}
+
+/* Floating Interactive Command Dock */
+:root[data-paradigm="aether"] .fui-dock {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 45;
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px 5px 14px;
+  background: var(--fui-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-strong);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
+  color: var(--text-muted);
+  font: 500 11px/1 var(--fui-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  max-width: calc(100vw - 24px);
+}
+
+/* Mechanical Hardware Toggle Switch (VOID / CLEANROOM) */
+:root[data-paradigm="aether"] .fui-hw-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--border-hairline);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--text-primary);
+  font: 600 11px/1 var(--fui-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-paradigm="aether"] .fui-hw-switch:hover {
+  border-color: var(--accent-primary);
+  background: var(--fui-accent-soft);
+}
+
+:root[data-paradigm="aether"] .fui-hw-switch-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 34px;
+  height: 18px;
+  padding: 2px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--bg-primary);
+  flex-shrink: 0;
+}
+
+:root[data-paradigm="aether"] .fui-hw-switch-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 1px;
+  background: var(--accent-primary);
+  transform: translateX(0);
+  transition:
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.24s ease;
+}
+
+:root[data-paradigm="aether"]
+  .fui-hw-switch[aria-pressed="true"]
+  .fui-hw-switch-thumb,
+:root[data-paradigm="aether"]
+  .fui-hw-switch[aria-checked="true"]
+  .fui-hw-switch-thumb,
+:root[data-paradigm="aether"][data-fui-theme="cleanroom"] .fui-hw-switch-thumb {
+  transform: translateX(16px);
+}
+
+/* Command Palette Trigger Button */
+:root[data-paradigm="aether"] .fui-cmd-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font: 600 11px/1 var(--fui-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-paradigm="aether"] .fui-cmd-trigger:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary);
+  color: var(--fui-accent-ink);
+}
+
+/* ============================================== HERO "BOOT SEQUENCE" */
+@keyframes fui-draw-x {
   from {
     transform: scaleX(0);
   }
@@ -156,537 +460,792 @@
   }
 }
 
-/* ============================ TAKE 3: CINEMASCOPE MOVIE CREDITS STAGE */
-:root[data-paradigm="aether"] .aether-film {
+@keyframes fui-draw-y {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes fui-mask-reveal {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translateY(18px);
+    opacity: 0;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fui-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fui-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+:root[data-paradigm="aether"] .fui-stage {
   position: relative;
-  /* ~115vh scroll runway per scene for buttery Apple-keynote pacing */
-  height: calc(var(--scene-count, 9) * 115svh);
-  background: var(--aether-bg);
-  color: var(--aether-ink);
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(28px, 4.5vw, 56px) clamp(16px, 4vw, 48px) 128px;
   overflow-x: clip;
 }
 
-/* Subtle theatrical lens vignette (darkens edges only, zero colorful blobs) */
-:root[data-paradigm="aether"] .aether-film-vignette {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2;
-  background: radial-gradient(
-    ellipse 78% 72% at 50% 50%,
-    transparent 52%,
-    rgba(0, 0, 0, 0.72) 100%
-  );
-}
-
-/* Micro 35mm film grain via lightweight inline SVG turbulence */
-:root[data-paradigm="aether"] .aether-film-grain {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
-  opacity: 0.032;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Sticky full-screen cinema stage */
-:root[data-paradigm="aether"] .aether-stage-pin {
-  position: sticky;
-  top: 0;
-  height: 100svh;
-  width: 100%;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  perspective: 1200px;
-}
-
-/* Subtle Cinemascope 2.39:1 horizontal framing rules */
-:root[data-paradigm="aether"] .aether-frame-top,
-:root[data-paradigm="aether"] .aether-frame-bottom {
-  position: absolute;
-  left: clamp(20px, 5vw, 72px);
-  right: clamp(20px, 5vw, 72px);
-  height: 1px;
-  background: var(--aether-rule);
-  pointer-events: none;
-  z-index: 4;
-}
-
-:root[data-paradigm="aether"] .aether-frame-top {
-  top: clamp(78px, 11vh, 112px);
-}
-
-:root[data-paradigm="aether"] .aether-frame-bottom {
-  bottom: clamp(58px, 8vh, 84px);
-}
-
-/* Individual centered film title card — strictly one visible at a time */
-:root[data-paradigm="aether"] .aether-card {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  width: min(100% - 40px, 880px);
-  max-height: calc(100svh - 190px);
+:root[data-paradigm="aether"] .fui-hero {
+  position: relative;
+  padding: clamp(28px, 5vw, 56px) 0 clamp(36px, 6vw, 68px);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: clamp(16px, 3vh, 32px) clamp(12px, 3vw, 32px);
-  will-change: transform, opacity, filter;
-  z-index: 5;
+  gap: 20px;
 }
 
-:root[data-paradigm="aether"] .aether-kicker {
-  margin: 0 0 18px;
-  font:
-    500 0.75rem/1.3 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--aether-gold);
-}
-
-:root[data-paradigm="aether"] .aether-display {
-  margin: 0;
-  font-size: clamp(2.5rem, 1.25rem + 5.2vw, 5.75rem);
-  font-weight: 700;
-  line-height: 1.02;
-  letter-spacing: -0.035em;
-  color: var(--aether-ink);
-  text-wrap: balance;
-}
-
-:root[data-paradigm="aether"] .aether-headline {
-  margin: 0;
-  font-size: clamp(2.125rem, 1.15rem + 3.8vw, 4.25rem);
-  font-weight: 700;
-  line-height: 1.06;
-  letter-spacing: -0.03em;
-  color: var(--aether-ink);
-  text-wrap: balance;
-}
-
-:root[data-paradigm="aether"] .aether-feature-title {
-  margin: 0;
-  font-size: clamp(1.875rem, 1.1rem + 3vw, 3.5rem);
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.03em;
-  text-wrap: balance;
-}
-
-:root[data-paradigm="aether"] .aether-feature-title a {
-  color: var(--aether-ink);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-:root[data-paradigm="aether"] .aether-feature-title a:hover {
-  color: var(--aether-gold);
-}
-
-:root[data-paradigm="aether"] .aether-feature-role {
-  margin: 12px 0 0;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--aether-muted);
-}
-
-:root[data-paradigm="aether"] .aether-rule {
-  width: 64px;
+:root[data-paradigm="aether"] .fui-grid-line-x {
+  display: block;
+  width: 100%;
   height: 1px;
-  margin: 22px auto;
-  background: var(--aether-gold);
-  opacity: 0.65;
+  background: var(--border-hairline);
+  transform-origin: left center;
+  animation: fui-draw-x 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-:root[data-paradigm="aether"] .aether-subtitle {
-  margin: 0;
-  font-size: clamp(0.9375rem, 0.85rem + 0.35vw, 1.125rem);
-  color: var(--aether-muted);
-  letter-spacing: 0.02em;
-  text-wrap: balance;
+:root[data-paradigm="aether"] .fui-grid-line-y {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border-hairline);
+  transform-origin: top center;
+  pointer-events: none;
+  animation: fui-draw-y 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-:root[data-paradigm="aether"] .aether-synopsis {
-  margin: 16px auto 0;
-  max-width: 58ch;
-  font-size: clamp(0.9375rem, 0.875rem + 0.3vw, 1.125rem);
-  line-height: 1.65;
-  color: #cbd5e1;
-  text-wrap: pretty;
-}
-
-:root[data-paradigm="aether"] .aether-scroll-cue {
-  margin: 42px 0 0;
-  font:
-    500 0.6875rem/1 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--aether-muted);
-  opacity: 0.8;
-}
-
-/* Tech stack horizontal credits bar */
-:root[data-paradigm="aether"] .aether-tech-credits {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 18px;
-  list-style: none;
-  margin: 22px 0 0;
-  padding: 0;
-  font:
-    500 0.75rem/1.4 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--aether-muted);
-}
-
-:root[data-paradigm="aether"] .aether-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 16px 24px;
-  margin-top: 28px;
-}
-
-:root[data-paradigm="aether"] .aether-cta {
+:root[data-paradigm="aether"] .fui-kicker,
+:root[data-paradigm="aether"] .fui-telemetry-badge {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  min-height: 46px;
-  padding: 0 24px;
-  border-radius: 999px;
-  background: var(--aether-ink);
-  color: #060608;
-  font-size: 0.9375rem;
+  width: fit-content;
+  margin: 0;
+  padding: 6px 12px;
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-elevated);
+  font: 600 11px/1.2 var(--fui-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-hero-title {
+  margin: 0;
+  max-width: 16ch;
+  font-size: clamp(2.5rem, 1.4rem + 4.8vw, 5.25rem);
   font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  text-wrap: balance;
+  animation: fui-mask-reveal 0.68s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+}
+
+:root[data-paradigm="aether"] .fui-hero-sub {
+  margin: 0;
+  max-width: 62ch;
+  font-size: clamp(1rem, 0.92rem + 0.35vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--text-muted);
+  text-wrap: pretty;
+  animation: fui-mask-reveal 0.68s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both;
+}
+
+:root[data-paradigm="aether"] .fui-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-top: 8px;
+}
+
+:root[data-paradigm="aether"] .fui-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 22px;
+  border: 1px solid var(--accent-primary);
+  background: var(--accent-primary);
+  color: var(--fui-accent-ink);
+  font: 700 0.875rem/1 var(--fui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   text-decoration: none;
-  border: 1px solid var(--aether-ink);
+  cursor: pointer;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
   transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.25s ease;
+}
+
+:root[data-paradigm="aether"] .fui-btn-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+:root[data-paradigm="aether"] .fui-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font: 600 0.8125rem/1 var(--fui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-paradigm="aether"] .fui-btn-secondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--fui-accent-soft);
+}
+
+:root[data-paradigm="aether"] .fui-cmd-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font: 500 12px/1 var(--fui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-:root[data-paradigm="aether"] .aether-cta:hover {
-  background: var(--aether-gold);
-  border-color: var(--aether-gold);
-  transform: translateY(-2px);
-}
-
-:root[data-paradigm="aether"] .aether-ghost-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 8px;
-  color: var(--aether-ink);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  text-decoration: none;
-  border-bottom: 1px solid var(--aether-rule);
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-:root[data-paradigm="aether"] .aether-ghost-link:hover {
-  color: var(--aether-gold);
-  border-color: var(--aether-gold);
-}
-
-/* --------------------- Classic Two-Column Hollywood End-Credits Roll */
-:root[data-paradigm="aether"] .aether-credits-heading {
-  margin: 0 0 24px;
-  font-size: clamp(1.75rem, 1.1rem + 2.2vw, 2.75rem);
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--aether-ink);
-}
-
-:root[data-paradigm="aether"] .aether-credits-roll {
-  width: min(100%, 720px);
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 14px;
-}
-
-:root[data-paradigm="aether"] .aether-credits-roll li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 28px;
-  align-items: baseline;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-:root[data-paradigm="aether"] .aether-credit-left {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-  gap: 2px;
-}
-
-:root[data-paradigm="aether"] .aether-credit-role {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--aether-ink);
-}
-
-:root[data-paradigm="aether"] .aether-credit-year {
-  font:
-    400 0.75rem/1.3 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
-  font-variant-numeric: tabular-nums;
-  color: var(--aether-muted);
-}
-
-:root[data-paradigm="aether"] .aether-credit-right {
-  text-align: left;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--aether-gold);
-}
-
-/* --------------------- Bottom-Center Cinema Chapter Scrubber */
-:root[data-paradigm="aether"] .aether-scrubber {
-  position: absolute;
-  bottom: clamp(14px, 2.2vh, 26px);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(14, 15, 20, 0.84);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--aether-rule);
-  max-width: calc(100vw - 24px);
-}
-
-:root[data-paradigm="aether"] .aether-scrubber-label {
-  font:
-    500 11px/1 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--aether-ink);
-  white-space: nowrap;
-}
-
-:root[data-paradigm="aether"] .aether-scrubber-track {
-  width: 64px;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.16);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-:root[data-paradigm="aether"] .aether-scrubber-fill {
-  height: 100%;
-  width: 100%;
-  background: var(--aether-gold);
-  transform-origin: left center;
-  transform: scaleX(0);
-}
-
-:root[data-paradigm="aether"] .aether-scrubber-ticks {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-:root[data-paradigm="aether"] .aether-tick {
-  width: 22px;
-  height: 28px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
-:root[data-paradigm="aether"] .aether-tick-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.3);
-  transition:
-    transform 0.2s ease,
-    background-color 0.2s ease;
-}
-
-:root[data-paradigm="aether"] .aether-tick[data-active="true"] .aether-tick-dot,
-:root[data-paradigm="aether"] .aether-tick:hover .aether-tick-dot {
-  background: var(--aether-gold);
-  transform: scale(1.65);
-}
-
-/* --------------------- Bottom-Right Telemetry HUD Pill (Sound + Scroll %) */
-:root[data-paradigm="aether"] .aether-hud {
-  position: fixed;
-  right: 20px;
-  bottom: 18px;
-  z-index: 40;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 6px 4px 14px;
-  border-radius: 999px;
-  background: rgba(14, 15, 20, 0.86);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--aether-rule);
-  color: var(--aether-muted);
-  font:
-    500 11px/1 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Consolas,
-    monospace;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-:root[data-paradigm="aether"] .aether-hud-btn {
+:root[data-paradigm="aether"] .fui-cmd-pill kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 3px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--bg-primary);
+  color: var(--accent-primary);
+  font: 700 11px/1 var(--fui-mono);
+}
+
+:root[data-paradigm="aether"] .fui-cmd-pill:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  background: var(--fui-accent-soft);
+  transform: translateY(-2px);
+}
+
+/* ===================================== SECTION HEADERS & TELEMETRY ROW */
+:root[data-paradigm="aether"] .fui-section {
+  margin-top: clamp(48px, 7vw, 88px);
+}
+
+:root[data-paradigm="aether"] .fui-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .fui-section-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .fui-section-code {
+  font: 600 11px/1 var(--fui-mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+/* =================================== ASYMMETRIC CHAMFERED BENTO GRID */
+:root[data-paradigm="aether"] .fui-bento {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 18px;
+  overflow-x: clip;
+}
+
+:root[data-paradigm="aether"] .fui-module {
+  position: relative;
+  grid-column: span 6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 26px;
+  background: var(--border-strong);
+  color: var(--text-primary);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 16px) 0,
+    100% 16px,
+    100% 100%,
+    16px 100%,
+    0 calc(100% - 16px)
+  );
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Crisp 1px chamfered inner surface so the outer background forms an exact 1px laser border */
+:root[data-paradigm="aether"] .fui-module::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  background: var(--bg-elevated);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 15.5px) 0,
+    100% 15.5px,
+    100% 100%,
+    15.5px 100%,
+    0 calc(100% - 15.5px)
+  );
+  pointer-events: none;
+  transition: background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Subtle accent corner sheen on hover */
+:root[data-paradigm="aether"] .fui-module::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at 100% 0%,
+    var(--fui-accent-soft),
+    transparent 62%
+  );
+  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-paradigm="aether"] .fui-module > * {
+  position: relative;
+  z-index: 1;
+}
+
+:root[data-paradigm="aether"] .fui-module:hover,
+:root[data-paradigm="aether"] .fui-module:focus-within {
+  background: var(--accent-primary);
+  transform: translateY(-3px);
+}
+
+:root[data-paradigm="aether"] .fui-module:hover::after,
+:root[data-paradigm="aether"] .fui-module:focus-within::after {
+  opacity: 1;
+}
+
+:root[data-paradigm="aether"] .fui-module--wide {
+  grid-column: span 8;
+}
+
+:root[data-paradigm="aether"] .fui-module--tall {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+:root[data-paradigm="aether"] .fui-module--full {
+  grid-column: 1 / -1;
+}
+
+:root[data-paradigm="aether"] .fui-module-id {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font: 600 11px/1.2 var(--fui-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-module-title {
+  margin: 0;
+  font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .fui-module-summary {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .fui-tags {
+  display: flex;
+  flex-wrap: wrap;
   gap: 6px;
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+:root[data-paradigm="aether"] .fui-tags li {
+  padding: 4px 8px;
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font: 500 11px/1.2 var(--fui-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+:root[data-paradigm="aether"] .fui-module-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  width: 100%;
+  margin-top: auto;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid var(--border-hairline);
+  background: transparent;
+  color: var(--text-primary);
+  font: 600 12px/1 var(--fui-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-paradigm="aether"] .fui-module:hover .fui-module-cta,
+:root[data-paradigm="aether"] .fui-module-cta:hover {
+  color: var(--accent-primary);
+}
+
+/* ========================================== TECHNICAL DOSSIER MODAL */
+:root[data-paradigm="aether"] .fui-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: clamp(12px, 3vw, 32px);
+  background: var(--fui-backdrop);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: fui-backdrop-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+:root[data-paradigm="aether"] .fui-dossier {
+  position: relative;
+  width: min(100%, 840px);
+  max-height: min(88svh, 780px);
+  overflow-y: auto;
+  padding: clamp(20px, 3.5vw, 36px);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--accent-primary);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 18px) 0,
+    100% 18px,
+    100% 100%,
+    18px 100%,
+    0 calc(100% - 18px)
+  );
+  animation: fui-panel-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+:root[data-paradigm="aether"] .fui-dossier-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
   min-height: 44px;
   padding: 0 12px;
-  border-radius: 999px;
-  border: 1px solid var(--aether-rule);
-  background: transparent;
-  color: var(--aether-ink);
-  font: inherit;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font: 600 11px/1 var(--fui-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
-:root[data-paradigm="aether"] .aether-hud-btn[aria-pressed="true"] {
-  background: var(--aether-gold);
-  border-color: var(--aether-gold);
-  color: #060608;
-  font-weight: 700;
+:root[data-paradigm="aether"] .fui-dossier-close:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--fui-accent-soft);
 }
 
-/* --------------------------------- Interior Pages Stark Cinema Styling */
+:root[data-paradigm="aether"] .fui-arch-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 20px 0;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .fui-arch-node {
+  fill: var(--bg-elevated);
+  stroke: var(--border-strong);
+  stroke-width: 1.25;
+  transition:
+    stroke 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    fill 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-paradigm="aether"] .fui-arch-node:hover,
+:root[data-paradigm="aether"] .fui-arch-node:focus-visible {
+  stroke: var(--accent-primary);
+  fill: var(--fui-accent-soft);
+}
+
+/* =================================================== COMMAND PALETTE */
+:root[data-paradigm="aether"] .fui-palette-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: start center;
+  padding: clamp(56px, 12vh, 128px) 16px 24px;
+  background: var(--fui-backdrop);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: fui-backdrop-in 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+:root[data-paradigm="aether"] .fui-palette {
+  width: min(100%, 580px);
+  max-height: min(74svh, 520px);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--accent-primary);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 14px) 0,
+    100% 14px,
+    100% 100%,
+    14px 100%,
+    0 calc(100% - 14px)
+  );
+  animation: fui-panel-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+:root[data-paradigm="aether"] .fui-palette-input {
+  width: 100%;
+  min-height: 54px;
+  padding: 14px 18px;
+  border: 0;
+  border-bottom: 1px solid var(--border-hairline);
+  background: transparent;
+  color: var(--text-primary);
+  font: 500 0.9375rem/1.4 var(--fui-mono);
+  outline: none;
+}
+
+:root[data-paradigm="aether"] .fui-palette-input::placeholder {
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .fui-palette-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+:root[data-paradigm="aether"] .fui-palette-item {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid transparent;
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--text-primary);
+  font: 500 0.875rem/1.3 var(--fui-mono);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-paradigm="aether"] .fui-palette-item:hover,
+:root[data-paradigm="aether"] .fui-palette-item:focus-visible,
+:root[data-paradigm="aether"] .fui-palette-item[aria-selected="true"],
+:root[data-paradigm="aether"] .fui-palette-item[data-active="true"] {
+  background: var(--fui-accent-soft);
+  border-color: var(--border-hairline);
+  border-left-color: var(--accent-primary);
+  color: var(--accent-primary);
+  outline: none;
+}
+
+:root[data-paradigm="aether"] .fui-copied-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 84px;
+  transform: translateX(-50%);
+  z-index: 120;
+  padding: 10px 18px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+  font: 600 11px/1 var(--fui-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% 100%,
+    8px 100%,
+    0 calc(100% - 8px)
+  );
+  animation: fui-panel-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ===================================== CAREER TELEMETRY TIMELINE */
+:root[data-paradigm="aether"] .fui-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--border-hairline);
+  overflow-x: clip;
+}
+
+:root[data-paradigm="aether"] .fui-timeline-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 180px) minmax(0, 1fr) auto;
+  gap: 12px 28px;
+  align-items: baseline;
+  padding: 20px 12px;
+  border-bottom: 1px solid var(--border-hairline);
+  transition:
+    background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root[data-paradigm="aether"] .fui-timeline-row:hover {
+  background: var(--fui-hover-surface);
+  border-bottom-color: var(--accent-primary);
+}
+
+/* =================================================== CLOSING DOCK */
+:root[data-paradigm="aether"] .fui-closing {
+  margin-top: clamp(56px, 8vw, 96px);
+  padding: clamp(28px, 5vw, 52px);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 16px) 0,
+    100% 16px,
+    100% 100%,
+    16px 100%,
+    0 calc(100% - 16px)
+  );
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ====================================== INTERIOR PAGES & SHARED SKIN */
 :root[data-paradigm="aether"] .studio-page,
 :root[data-paradigm="aether"] .studio-approach,
 :root[data-paradigm="aether"] .studio-footer {
-  background: var(--aether-bg);
-  color: var(--aether-ink);
+  background: transparent;
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .studio-footer {
+  border-top: 1px solid var(--border-hairline);
 }
 
 :root[data-paradigm="aether"] .page-panel,
 :root[data-paradigm="aether"] .studio-contact form,
 :root[data-paradigm="aether"] .project-related a,
-:root[data-paradigm="aether"] .studio-case-flow {
-  background: var(--aether-surface);
-  border: 1px solid var(--aether-rule);
+:root[data-paradigm="aether"] .studio-case-flow,
+:root[data-paradigm="aether"] .studio-project,
+:root[data-paradigm="aether"] .studio-case,
+:root[data-paradigm="aether"] .system-studio {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
 }
 
 :root[data-paradigm="aether"] .studio-button {
-  background: var(--aether-ink);
-  color: #060608;
-  border-radius: 999px;
+  background: var(--accent-primary);
+  color: var(--fui-accent-ink);
+  border: 1px solid var(--accent-primary);
+  border-radius: 2px;
+  font-family: var(--fui-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 :root[data-paradigm="aether"] .studio-button:hover {
-  background: var(--aether-gold);
+  filter: brightness(1.08);
 }
 
-/* ------------------------------------------- Mobile <= 720px */
+/* =================================================== RESPONSIVE LAYOUT */
+@media (max-width: 900px) {
+  :root[data-paradigm="aether"] .fui-bento {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :root[data-paradigm="aether"] .fui-module,
+  :root[data-paradigm="aether"] .fui-module--wide,
+  :root[data-paradigm="aether"] .fui-module--tall,
+  :root[data-paradigm="aether"] .fui-module--full {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+}
+
 @media (max-width: 720px) {
-  :root[data-paradigm="aether"] .aether-credits-roll li {
-    grid-template-columns: 1fr;
-    gap: 2px;
-    text-align: center;
+  :root[data-paradigm="aether"] .fui-hud-frame {
+    inset: 6px;
   }
 
-  :root[data-paradigm="aether"] .aether-credit-left {
-    align-items: center;
-    text-align: center;
-  }
-
-  :root[data-paradigm="aether"] .aether-credit-right {
-    text-align: center;
-  }
-
-  :root[data-paradigm="aether"] .aether-scrubber-track,
-  :root[data-paradigm="aether"] .aether-scrubber-ticks {
+  :root[data-paradigm="aether"] .fui-crosshair {
     display: none;
   }
 
-  :root[data-paradigm="aether"] .aether-hud {
-    right: 10px;
-    bottom: 12px;
-    padding-left: 10px;
+  :root[data-paradigm="aether"] .fui-timeline-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+    padding: 16px 4px;
   }
 
-  :root[data-paradigm="aether"] .aether-hud-location {
+  :root[data-paradigm="aether"] .fui-dock {
+    right: 10px;
+    bottom: 10px;
+    padding: 4px 6px 4px 10px;
+    gap: 6px;
+  }
+
+  :root[data-paradigm="aether"] .fui-status-bar {
     display: none;
   }
 }
 
-/* ------------------------------------------- Reduced Motion Safety */
+/* ============================================ REDUCED MOTION SAFETY */
 @media (prefers-reduced-motion: reduce) {
-  :root[data-paradigm="aether"] .aether-film {
-    height: auto;
+  :root[data-paradigm="aether"],
+  :root[data-paradigm="aether"] *,
+  :root[data-paradigm="aether"] *::before,
+  :root[data-paradigm="aether"] *::after {
+    animation: none !important;
+    transition: none !important;
   }
 
-  :root[data-paradigm="aether"] .aether-stage-pin {
-    position: static;
-    height: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 64px;
-    padding: 48px 0 80px;
+  :root[data-paradigm="aether"] .fui-grid-line-x,
+  :root[data-paradigm="aether"] .fui-grid-line-y {
+    transform: none !important;
   }
 
-  :root[data-paradigm="aether"] .aether-card {
-    position: static;
-    max-height: none;
+  :root[data-paradigm="aether"] .fui-hero-title,
+  :root[data-paradigm="aether"] .fui-hero-sub {
     opacity: 1 !important;
     transform: none !important;
-    filter: none !important;
-    visibility: visible !important;
+    clip-path: none !important;
   }
 
-  :root[data-paradigm="aether"] .aether-frame-top,
-  :root[data-paradigm="aether"] .aether-frame-bottom,
-  :root[data-paradigm="aether"] .aether-scrubber {
-    display: none;
+  :root[data-paradigm="aether"] .fui-dossier,
+  :root[data-paradigm="aether"] .fui-palette,
+  :root[data-paradigm="aether"] .fui-copied-toast {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
