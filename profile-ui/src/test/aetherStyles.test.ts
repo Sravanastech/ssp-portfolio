@@ -34,7 +34,17 @@ describe("aether-cinematic.css (FUI Minimalism Dual-Theme)", () => {
   it("defines chamfered FUI bento modules, HUD frame, hardware switch, dossier, and command palette", () => {
     const css = aetherCss;
     expect(css).toContain("clip-path: polygon(");
-    expect(css).toContain("cubic-bezier(0.16, 1, 0.3, 1)");
+    expect(css).toContain("var(--ease-out)");
+    const tokens = readFileSync(resolve(stylesDir, "tokens.css"), "utf8");
+    expect(tokens).toContain("--ease-out: cubic-bezier(0.16, 1, 0.3, 1)");
+    for (const t of [
+      "--motion-fast",
+      "--motion-base",
+      "--motion-slow",
+      "--ease-in",
+    ]) {
+      expect(tokens).toContain(t + ":");
+    }
     expect(css).toContain(".fui-hud-frame");
     expect(css).toContain(".fui-hw-switch");
     expect(css).toContain(".fui-bento");

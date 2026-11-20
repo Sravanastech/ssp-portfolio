@@ -30,7 +30,7 @@
   --fui-accent-ink: #06070a;
   --fui-amber-soft: rgba(255, 184, 0, 0.14);
   --fui-hover-surface: rgba(255, 255, 255, 0.05);
-  --fui-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --fui-ease: var(--ease-out);
   --fui-mono:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
     monospace;

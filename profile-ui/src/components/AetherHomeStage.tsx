@@ -1,4 +1,10 @@
-import { useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -8,7 +14,7 @@ import {
 } from "lucide-react";
 import { useSiteContent } from "@/content/siteContentContext";
 import PrefetchLink from "@/components/PrefetchLink";
-import { useAsciiScramble } from "@/lib/motion";
+import { prefersReducedMotion, useAsciiScramble } from "@/lib/motion";
 import { FUI_OPEN_COMMAND_EVENT } from "@/components/AetherStage";
 import FuiDossierModal from "@/components/hud/FuiDossierModal";
 
@@ -20,29 +26,90 @@ const BENTO_SPANS = [
   "fui-module--full",
 ] as const;
 
+const BOOT_SEEN_KEY = "aether:boot-seen";
+/** Full boot sequence length; the Skip button is shown until then. */
+const BOOT_TOTAL_MS = 2600;
+
+type BootPhase = "full" | "quick" | "done";
+
+/** Reads and sets the per-session flag. Never throws; SSR-safe. */
+function consumeBootFlag(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const seen = window.sessionStorage.getItem(BOOT_SEEN_KEY) === "1";
+    if (!seen) window.sessionStorage.setItem(BOOT_SEEN_KEY, "1");
+    return seen;
+  } catch {
+    return false;
+  }
+}
+
+const useIsoLayoutEffect =
+  typeof window === "undefined" ? useEffect : useLayoutEffect;
+
 /**
- * FUI Minimalism Homepage ("Oblivion" / "The Martian" / "Tron: Legacy" + Swiss Precision):
- * 7-second staged cinematic boot sequence:
- *   0.0s–1.0s: Grid axes draw outward + scanline sweep
- *   0.6s–3.0s: Telemetry eyebrow + ASCII headline decryption
- *   2.7s–3.7s: Identity telemetry + bio + action dock
- *   3.8s–6.5s: 5 Chamfered Bento Mission Modules cascade in one-by-one
- *   6.3s–7.1s: Career Service Log + Closing Comms Dock lock into place
+ * FUI Minimalism Homepage ("Oblivion" / "The Martian" / "Tron: Legacy" + Swiss Precision).
+ * Staged boot (~2.4s) plays in full on the first Aether home visit per session;
+ * later visits fade in at once. "Skip intro" / Escape jump to the final state.
+ *   0–0.8s:   grid axes + scanline; eyebrow, replay button
+ *   0.15–1.05s: headline decryption (final text legible by ~1.05s)
+ *   0.7–1.3s: identity line, bio, action dock
+ *   1.0–2.4s: 5 mission modules cascade, then career log rows
  */
 export default function AetherHomeStage(): React.ReactElement {
   const { profile, caseStudies, experiences } = useSiteContent();
   const [dossierIndex, setDossierIndex] = useState<number | null>(null);
   const [bootKey, setBootKey] = useState(0);
+  // SSR and first client render both use "full"; the layout effect below
+  // downgrades before paint on repeat visits so hydration stays consistent.
+  const [phase, setPhase] = useState<BootPhase>("full");
+  const [skipped, setSkipped] = useState(false);
+  const decided = useRef(false);
+  const replayRef = useRef<HTMLButtonElement>(null);
+
+  useIsoLayoutEffect(() => {
+    if (decided.current) return;
+    decided.current = true;
+    if (consumeBootFlag() || prefersReducedMotion()) setPhase("quick");
+  }, []);
+
+  const skipIntro = useCallback(() => {
+    setSkipped(true);
+    setPhase("done");
+    replayRef.current?.focus();
+  }, []);
+
+  const replay = () => {
+    setSkipped(false);
+    setPhase("full");
+    setBootKey((k) => k + 1);
+  };
+
+  useEffect(() => {
+    if (phase !== "full") return;
+    const timer = window.setTimeout(() => setPhase("done"), BOOT_TOTAL_MS);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") skipIntro();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [phase, bootKey, skipIntro]);
+
+  const animate = phase === "full";
+  const bootMode = skipped ? "skipped" : phase === "quick" ? "quick" : "full";
 
   const bootEyebrowText = `SYS.BOOT // ${profile.name.toUpperCase()} // SINCE ${profile.careerStartYear}`;
-  const bootEyebrow = useAsciiScramble(bootEyebrowText, true, {
-    delayMs: 450,
-    durationMs: 1100,
+  const bootEyebrow = useAsciiScramble(bootEyebrowText, animate, {
+    delayMs: 100,
+    durationMs: 700,
     seedKey: bootKey,
   });
-  const decryptedHeadline = useAsciiScramble(profile.headline, true, {
-    delayMs: 950,
-    durationMs: 1850,
+  const decryptedHeadline = useAsciiScramble(profile.headline, animate, {
+    delayMs: 150,
+    durationMs: 900,
     seedKey: bootKey,
   });
 
@@ -56,8 +123,8 @@ export default function AetherHomeStage(): React.ReactElement {
     dossierIndex !== null ? (caseStudies[dossierIndex] ?? null) : null;
 
   return (
-    <div className="fui-page" key={bootKey}>
-      {/* 1. HERO: THE 7-SECOND BOOT SEQUENCE */}
+    <div className="fui-page" key={bootKey} data-boot={bootMode}>
+      {/* 1. HERO: STAGED BOOT SEQUENCE */}
       <section className="fui-hero" aria-labelledby="fui-hero-heading">
         <div className="fui-container fui-hero-frame">
           <div className="fui-grid-line-x" aria-hidden="true" />
@@ -65,6 +132,15 @@ export default function AetherHomeStage(): React.ReactElement {
           <div className="fui-boot-scan" aria-hidden="true" />
 
           <div className="fui-hero-inner">
+            {phase === "full" && (
+              <button
+                type="button"
+                className="fui-skip-intro"
+                onClick={skipIntro}
+              >
+                Skip intro
+              </button>
+            )}
             <div className="fui-boot-bar">
               <div className="fui-boot-eyebrow">
                 <Terminal size={14} aria-hidden="true" />
@@ -73,8 +149,9 @@ export default function AetherHomeStage(): React.ReactElement {
               </div>
               <button
                 type="button"
+                ref={replayRef}
                 className="fui-replay-btn"
-                onClick={() => setBootKey((k) => k + 1)}
+                onClick={replay}
               >
                 <RotateCcw size={12} aria-hidden="true" />
                 <span>Replay boot</span>

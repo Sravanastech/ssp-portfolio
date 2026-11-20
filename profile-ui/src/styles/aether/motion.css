@@ -101,3 +101,42 @@
     transform: translateX(0);
   }
 }
+
+/* ============================================ ENTER / EXIT PAIRS */
+/* Exit (un-hover) is shorter and eases in; enter (hover/focus) eases out. */
+:root[data-paradigm="aether"] .fui-btn-primary,
+:root[data-paradigm="aether"] .fui-btn-secondary,
+:root[data-paradigm="aether"] .fui-cmd-pill,
+:root[data-paradigm="aether"] .fui-replay-btn,
+:root[data-paradigm="aether"] .fui-module {
+  transition-duration: var(--motion-fast);
+  transition-timing-function: var(--ease-in);
+}
+
+:root[data-paradigm="aether"] .fui-btn-primary:hover,
+:root[data-paradigm="aether"] .fui-btn-secondary:hover,
+:root[data-paradigm="aether"] .fui-cmd-pill:hover,
+:root[data-paradigm="aether"] .fui-replay-btn:hover,
+:root[data-paradigm="aether"] .fui-module:hover,
+:root[data-paradigm="aether"] .fui-module:focus-within {
+  transition-duration: var(--motion-base);
+  transition-timing-function: var(--ease-out);
+}
+
+/* ============================================ BOOT MODES (home) */
+/* skipped: jump every staged element to its final state instantly. */
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-grid-line-x .fui-grid-line-y .fui-boot-eyebrow .fui-replay-btn .fui-hero-title .fui-hero-sub .fui-hero-desc .fui-hero-actions .fui-module .fui-timeline-row
+ {
+  animation: none;
+}
+
+/* quick (repeat visit in session): short fade, no stagger. */
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-grid-line-x .fui-grid-line-y .fui-boot-eyebrow .fui-replay-btn .fui-hero-title .fui-hero-sub .fui-hero-desc .fui-hero-actions .fui-module .fui-timeline-row
+ {
+  animation: fui-backdrop-in var(--motion-slow) var(--ease-out) both;
+}
+
+:root[data-paradigm="aether"] .fui-page[data-boot="skipped"] .fui-boot-scan,
+:root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-boot-scan {
+  display: none;
+}
