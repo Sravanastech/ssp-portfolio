@@ -123,11 +123,18 @@ export default function AetherHomeStage(): React.ReactElement {
     durationMs: 600,
     seedKey: bootKey,
   });
-  const decryptedHeadline = useAsciiScramble(profile.headline, animate, {
-    delayMs: 0,
-    durationMs: 800,
-    seedKey: bootKey,
-  });
+  // Headline deciphers on every home visit (full and quick), but never after
+  // a skip; useAsciiScramble itself bails out under reduced motion.
+  const animateHeadline = !skipped && (phase === "full" || phase === "quick");
+  const decryptedHeadline = useAsciiScramble(
+    profile.headline,
+    animateHeadline,
+    {
+      delayMs: 0,
+      durationMs: 900,
+      seedKey: bootKey,
+    },
+  );
 
   const openCommandPalette = () => {
     if (typeof window !== "undefined") {

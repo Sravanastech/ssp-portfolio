@@ -111,7 +111,7 @@ export function decipherHeadingElement(
     return () => {};
   }
 
-  const { delayMs = 40, durationMs = 480 } = options;
+  const { delayMs = 120, durationMs = 900 } = options;
   const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
   const entries: Array<{ node: Text; original: string; offset: number }> = [];
   let totalLength = 0;
@@ -224,8 +224,8 @@ export function useRouteHeadingDecipher(
         return false;
       }
       cancelScramble = decipherHeadingElement(heading, {
-        delayMs: 40,
-        durationMs: 480,
+        delayMs: 120,
+        durationMs: 900,
       });
       return true;
     };

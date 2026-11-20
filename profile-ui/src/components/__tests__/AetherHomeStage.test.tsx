@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import AetherHomeStage from "../AetherHomeStage";
@@ -195,6 +195,83 @@ describe("AetherHomeStage (FUI Minimalism Boot Sequence & Bento Grid)", () => {
       expect(
         screen.getByRole("button", { name: /skip intro/i }),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("headline decipher", () => {
+    let frames: FrameRequestCallback[];
+    let now: number;
+
+    const mockReduced = (matches: boolean) => {
+      window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+        matches: query === "(prefers-reduced-motion: reduce)" ? matches : false,
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })) as unknown as typeof window.matchMedia;
+    };
+
+    const scrambledText = (container: HTMLElement) =>
+      container.querySelector(".fui-hero-title [aria-hidden='true']")
+        ?.textContent;
+
+    beforeEach(() => {
+      frames = [];
+      now = 1000;
+      vi.spyOn(performance, "now").mockImplementation(() => now);
+      vi.spyOn(window, "requestAnimationFrame").mockImplementation((cb) => {
+        frames.push(cb);
+        return frames.length;
+      });
+      vi.spyOn(window, "cancelAnimationFrame").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      mockReduced(false);
+    });
+
+    it("scrambles the headline in quick mode (repeat visit) and resolves to the real text", () => {
+      mockReduced(false);
+      window.sessionStorage.setItem("aether:boot-seen", "1");
+      const { container } = renderStage();
+      expect(container.querySelector(".fui-page")).toHaveAttribute(
+        "data-boot",
+        "quick",
+      );
+      expect(frames.length).toBeGreaterThan(0);
+
+      now = 1300;
+      act(() => frames[frames.length - 1](now));
+      expect(scrambledText(container)).not.toBe(staticContent.profile.headline);
+
+      now = 2000;
+      act(() => frames[frames.length - 1](now));
+      expect(scrambledText(container)).toBe(staticContent.profile.headline);
+    });
+
+    it("does not scramble the headline under reduced motion", () => {
+      mockReduced(true);
+      const { container } = renderStage();
+      expect(window.requestAnimationFrame).not.toHaveBeenCalled();
+      expect(scrambledText(container)).toBe(staticContent.profile.headline);
+    });
+
+    it("does not scramble the headline once the intro is skipped", () => {
+      mockReduced(false);
+      window.sessionStorage.setItem("aether:boot-seen", "1");
+      const { container } = renderStage();
+      fireEvent.click(
+        screen.getAllByRole("button", { name: /open technical dossier/i })[0],
+      );
+      expect(container.querySelector(".fui-page")).toHaveAttribute(
+        "data-boot",
+        "skipped",
+      );
+      expect(scrambledText(container)).toBe(staticContent.profile.headline);
     });
   });
 });
