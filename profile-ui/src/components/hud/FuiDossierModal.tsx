@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { X } from "lucide-react";
 import type { SiteContent } from "@/content/siteContentContext";
 import PrefetchLink from "@/components/PrefetchLink";
 
@@ -163,7 +164,7 @@ export function FuiDossierModal({
             onClick={onClose}
             aria-label="Close technical dossier"
           >
-            ✕
+            <X size={18} aria-hidden="true" />
           </button>
         </header>
 

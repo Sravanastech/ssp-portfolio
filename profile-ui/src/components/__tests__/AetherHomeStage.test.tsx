@@ -31,6 +31,19 @@ describe("AetherHomeStage (FUI Minimalism Boot Sequence & Bento Grid)", () => {
     window.removeEventListener(FUI_OPEN_COMMAND_EVENT, listener);
   });
 
+  it("keeps the hero heading accessible name equal to the real headline and replay button named by visible text", () => {
+    renderStage();
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: staticContent.profile.headline,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /replay boot/i }),
+    ).toBeInTheDocument();
+  });
+
   it("renders all 5 Mission Modules in the chamfered Bento Grid and opens the Dossier Modal", () => {
     renderStage();
     for (let i = 0; i < staticContent.caseStudies.length; i++) {

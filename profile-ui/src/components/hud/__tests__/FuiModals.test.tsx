@@ -56,6 +56,17 @@ describe("FuiDossierModal", () => {
     expect(fullLink).toHaveAttribute("href", `/work/${study.slug}`);
   });
 
+  it("exposes a named close button that calls onClose", () => {
+    const onClose = vi.fn();
+    render(
+      <MemoryRouter>
+        <FuiDossierModal study={study} index={0} onClose={onClose} />
+      </MemoryRouter>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /close/i }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
   it("closes on Escape key and backdrop click", () => {
     const onClose = vi.fn();
     const { container } = render(
