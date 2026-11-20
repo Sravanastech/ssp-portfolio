@@ -12,17 +12,33 @@ import { ThemeContext } from "./theme-context";
 
 const STORAGE_KEY = "theme";
 const DARK_THEME: Theme = "midnight";
+/** Aether's former standalone Void/Cleanroom key; migrated once into STORAGE_KEY. */
+const LEGACY_FUI_KEY = "portfolio-fui-theme";
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
 function readStoredTheme(): Theme | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
+    if (!raw) return migrateLegacyFuiTheme();
     if (raw in themeConfig) return raw as Theme;
     return legacyThemeIds[raw] ?? null;
   } catch {
     return null; // Storage can be disabled.
   }
+}
+
+function migrateLegacyFuiTheme(): Theme | null {
+  const legacy = localStorage.getItem(LEGACY_FUI_KEY);
+  if (legacy === null) return null;
+  const theme: Theme | null =
+    legacy === "cleanroom"
+      ? defaultTheme
+      : legacy === "void"
+        ? DARK_THEME
+        : null;
+  localStorage.removeItem(LEGACY_FUI_KEY);
+  if (theme) localStorage.setItem(STORAGE_KEY, theme);
+  return theme;
 }
 
 function systemPrefersDark(): boolean {
