@@ -34,11 +34,12 @@ export default function AetherHomeStage(): React.ReactElement {
   const [dossierIndex, setDossierIndex] = useState<number | null>(null);
   const [bootKey, setBootKey] = useState(0);
 
-  const bootEyebrow = useAsciiScramble(
-    `SYS.BOOT // ${profile.name.toUpperCase()} // SINCE ${profile.careerStartYear}`,
-    true,
-    { delayMs: 450, durationMs: 1100, seedKey: bootKey },
-  );
+  const bootEyebrowText = `SYS.BOOT // ${profile.name.toUpperCase()} // SINCE ${profile.careerStartYear}`;
+  const bootEyebrow = useAsciiScramble(bootEyebrowText, true, {
+    delayMs: 450,
+    durationMs: 1100,
+    seedKey: bootKey,
+  });
   const decryptedHeadline = useAsciiScramble(profile.headline, true, {
     delayMs: 950,
     durationMs: 1850,
@@ -67,13 +68,13 @@ export default function AetherHomeStage(): React.ReactElement {
             <div className="fui-boot-bar">
               <div className="fui-boot-eyebrow">
                 <Terminal size={14} aria-hidden="true" />
-                <span>{bootEyebrow}</span>
+                <span className="sr-only">{bootEyebrowText}</span>
+                <span aria-hidden="true">{bootEyebrow}</span>
               </div>
               <button
                 type="button"
                 className="fui-replay-btn"
                 onClick={() => setBootKey((k) => k + 1)}
-                aria-label="Replay cinematic boot sequence"
               >
                 <RotateCcw size={12} aria-hidden="true" />
                 <span>Replay boot</span>
@@ -81,7 +82,8 @@ export default function AetherHomeStage(): React.ReactElement {
             </div>
 
             <h1 id="fui-hero-heading" className="fui-hero-title">
-              {decryptedHeadline}
+              <span className="sr-only">{profile.headline}</span>
+              <span aria-hidden="true">{decryptedHeadline}</span>
             </h1>
 
             <p className="fui-hero-sub">
