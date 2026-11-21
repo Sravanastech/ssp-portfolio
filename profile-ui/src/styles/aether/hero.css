@@ -132,7 +132,7 @@
   letter-spacing: -0.04em;
   color: var(--text-primary);
   text-wrap: balance;
-  animation: fui-mask-reveal 500ms var(--ease-out) 150ms both;
+  animation: fui-rise 500ms var(--ease-out) both;
 }
 
 :root[data-paradigm="aether"] .fui-hero-sub {
@@ -265,7 +265,12 @@
 
 /* Skip intro: first in hero tab order, never blocks the page. */
 :root[data-paradigm="aether"] .fui-skip-intro {
-  align-self: flex-start;
+  /* Out of flow: it disappears when the boot ends, and removing an in-flow button would
+     shove the whole hero up by its height (layout shift). Sits on the frame's top edge. */
+  position: absolute;
+  top: 0;
+  left: calc(clamp(20px, 5vw, 56px) + clamp(20px, 4vw, 44px));
+  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -277,7 +282,6 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   cursor: pointer;
-  position: relative;
   z-index: 4;
 }
 

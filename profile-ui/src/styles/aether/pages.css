@@ -244,6 +244,8 @@
   border-top: 1px solid var(--border-hairline);
   padding-top: 56px;
   padding-bottom: 84px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
 }
 
 :root[data-paradigm="aether"] .studio-footer-name {

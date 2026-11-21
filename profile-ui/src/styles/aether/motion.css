@@ -30,6 +30,17 @@
   }
 }
 
+/* Headline entrance: slides into place but is fully painted from the first frame (no
+   opacity or clip start state), so the page's largest text is on screen immediately. */
+@keyframes fui-rise {
+  from {
+    transform: translateY(14px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
 @keyframes fui-backdrop-in {
   from {
     opacity: 0;

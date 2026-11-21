@@ -171,7 +171,7 @@
   letter-spacing: -0.04em;
   color: var(--text-primary);
   margin: 0 0 20px;
-  animation: fui-mask-reveal 0.85s var(--ease-out) 0.25s both;
+  animation: fui-rise 0.7s var(--ease-out) both;
 }
 
 :root[data-paradigm="aether"] .studio-page-intro .studio-lede,

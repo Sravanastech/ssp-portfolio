@@ -11,6 +11,45 @@ export const FUI_DURATIONS = {
 
 const SCRAMBLE_GLYPHS = "01/_<>[]#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const DEFAULT_SCRAMBLE_MS = 1650;
+const SCRAMBLE_FRAME_MS = 33;
+
+const NARROW_GLYPHS = ".:;|!'-+*~";
+let measureCtx: CanvasRenderingContext2D | null | undefined;
+
+/**
+ * Returns a glyph picker for `el`'s font that never yields a glyph wider than the
+ * character it replaces. Scrambled text is then never wider than the real text, so it
+ * keeps (or shrinks) its line wrapping and painted area instead of growing past it,
+ * which would re-wrap the heading and register as a later, larger paint.
+ */
+function createGlyphPicker(el: Element): (ch: string) => string {
+  const fallback = () =>
+    SCRAMBLE_GLYPHS[Math.floor(Math.random() * SCRAMBLE_GLYPHS.length)];
+  try {
+    if (measureCtx === undefined)
+      measureCtx = document.createElement("canvas").getContext("2d");
+    const ctx = measureCtx;
+    if (!ctx) return fallback;
+    const cs = getComputedStyle(el);
+    ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const pool = Array.from(SCRAMBLE_GLYPHS + NARROW_GLYPHS);
+    const widths = pool.map((g) => ctx.measureText(g).width);
+    const narrowest = pool[widths.indexOf(Math.min(...widths))];
+    const cache = new Map<string, string[]>();
+    return (ch) => {
+      let fits = cache.get(ch);
+      if (!fits) {
+        const limit = ctx.measureText(ch).width + 0.05;
+        fits = pool.filter((_, i) => widths[i] <= limit);
+        if (fits.length === 0) fits = [narrowest];
+        cache.set(ch, fits);
+      }
+      return fits[Math.floor(Math.random() * fits.length)];
+    };
+  } catch {
+    return fallback;
+  }
+}
 
 export interface ScrambleOptions {
   delayMs?: number;
@@ -101,13 +140,25 @@ export function useAsciiScramble(
  */
 export function decipherHeadingElement(
   heading: HTMLElement,
-  options: { delayMs?: number; durationMs?: number } = {},
+  options: {
+    delayMs?: number;
+    durationMs?: number;
+    /** Pin the element's height while scrambling (block headings). Default true. */
+    lockHeight?: boolean;
+    /** Set a temporary aria-label so assistive tech never reads the glyphs. Default true. */
+    announce?: boolean;
+  } = {},
 ): () => void {
   if (typeof window === "undefined" || prefersReducedMotion()) {
     return () => {};
   }
 
-  const { delayMs = 120, durationMs = 900 } = options;
+  const {
+    delayMs = 120,
+    durationMs = 900,
+    lockHeight = true,
+    announce = true,
+  } = options;
   const walker = document.createTreeWalker(heading, NodeFilter.SHOW_TEXT);
   const entries: Array<{ node: Text; original: string; offset: number }> = [];
   let totalLength = 0;
@@ -127,13 +178,24 @@ export function decipherHeadingElement(
     return () => {};
   }
 
+  // Scrambled glyphs are wider or narrower than the real text, which would re-wrap the
+  // heading every frame and shove everything below it around (layout shift). Pin the
+  // heading to its final height while it scrambles so only its own glyphs change.
+  const finalHeight = heading.getBoundingClientRect().height;
+  const previousHeight = heading.style.height;
+  const previousOverflow = heading.style.overflow;
+  if (lockHeight && finalHeight > 0) {
+    heading.style.height = `${finalHeight}px`;
+    heading.style.overflow = "hidden";
+  }
+
   const hadAriaLabel = heading.hasAttribute("aria-label");
   const fullText = entries
     .map((e) => e.original)
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();
-  if (!hadAriaLabel && fullText) {
+  if (announce && !hadAriaLabel && fullText) {
     heading.setAttribute("aria-label", fullText);
   }
 
@@ -153,11 +215,15 @@ export function decipherHeadingElement(
         entry.node.nodeValue = entry.original;
       }
     }
-    if (!hadAriaLabel) {
+    heading.style.height = previousHeight;
+    heading.style.overflow = previousOverflow;
+    if (announce && !hadAriaLabel) {
       heading.removeAttribute("aria-label");
     }
   };
 
+  const pickGlyph = createGlyphPicker(heading);
+  let lastWrite = -Infinity;
   const step = (now: number) => {
     const elapsed = now - startTime;
     const progress = Math.min(1, Math.max(0, elapsed / durationMs));
@@ -165,6 +231,12 @@ export function decipherHeadingElement(
       restore();
       return;
     }
+    // ~30fps is plenty for a glyph shuffle and halves the style/layout work.
+    if (now - lastWrite < SCRAMBLE_FRAME_MS) {
+      frameId = window.requestAnimationFrame(step);
+      return;
+    }
+    lastWrite = now;
 
     const resolvedCount = Math.floor(progress * totalLength);
     for (const entry of entries) {
@@ -175,8 +247,7 @@ export function decipherHeadingElement(
         if (globalIdx < resolvedCount || /\s/.test(ch)) {
           next += ch;
         } else {
-          const glyphIndex = Math.floor(Math.random() * SCRAMBLE_GLYPHS.length);
-          next += SCRAMBLE_GLYPHS[glyphIndex];
+          next += pickGlyph(ch);
         }
       }
       entry.node.nodeValue = next;

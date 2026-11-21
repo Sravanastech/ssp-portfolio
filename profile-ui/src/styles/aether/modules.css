@@ -1,6 +1,10 @@
 /* ===================================== SECTION HEADERS & TELEMETRY ROW */
 :root[data-paradigm="aether"] .fui-section {
   margin-top: clamp(48px, 7vw, 88px);
+  /* Below-the-fold sections skip style/layout/paint until they near the viewport,
+     which keeps the first render (and the React mount over it) cheap. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
 }
 
 :root[data-paradigm="aether"] .fui-section-head {

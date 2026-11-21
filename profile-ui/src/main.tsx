@@ -1,5 +1,5 @@
 import { SiteContentProvider } from "./content/SiteContent";
-import { StrictMode } from "react";
+import { StrictMode, startTransition } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -100,27 +100,34 @@ const queryClient = new QueryClient({
 // Warm the current route's lazy chunk first so the prerendered page is replaced in one
 // step (no skeleton flash or footer jump while the chunk loads). The prerendered DOM
 // stays visible meanwhile; a failed fetch falls through to the normal Suspense path.
-const mountApp = () =>
-  createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-      <ThemeProvider>
-        <HelmetProvider>
-          <Router>
-            <QueryClientProvider client={queryClient}>
-              <AuthProvider>
-                <ErrorBoundary>
-                  <SiteContentProvider>
-                    <AppRoutes />
-                    <AppReady />
-                  </SiteContentProvider>
-                </ErrorBoundary>
-              </AuthProvider>
-            </QueryClientProvider>
-          </Router>
-        </HelmetProvider>
-      </ThemeProvider>
-    </StrictMode>,
-  );
+// The render runs as a transition so React time-slices it (yielding every few ms) instead
+// of blocking the main thread in one long task; the prerendered DOM stays on screen
+// until the whole tree is ready to commit.
+const mountApp = () => {
+  const root = createRoot(document.getElementById("root")!);
+  startTransition(() => {
+    root.render(
+      <StrictMode>
+        <ThemeProvider>
+          <HelmetProvider>
+            <Router>
+              <QueryClientProvider client={queryClient}>
+                <AuthProvider>
+                  <ErrorBoundary>
+                    <SiteContentProvider>
+                      <AppRoutes />
+                      <AppReady />
+                    </SiteContentProvider>
+                  </ErrorBoundary>
+                </AuthProvider>
+              </QueryClientProvider>
+            </Router>
+          </HelmetProvider>
+        </ThemeProvider>
+      </StrictMode>,
+    );
+  });
+};
 
 // Aether's lazy stage chunks too: otherwise their Suspense fallbacks would blank the
 // prerendered HUD and hero for a tick when the DOM is replaced.
