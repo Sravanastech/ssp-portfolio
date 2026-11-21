@@ -17,6 +17,7 @@ import {
 import { startMonitoring } from "./lib/monitoring";
 import { applyPerfTier } from "./lib/perfTier";
 import { prefetchRoute } from "./lib/routePrefetch";
+import { captureBootElapsed } from "./lib/bootContinuation";
 import { parseStoredTheme, resolveTheme } from "./theme/themeConfig";
 import {
   applyMotionAttribute,
@@ -60,6 +61,7 @@ try {
 // Apply the stored paradigm (default Aether) before first paint of React and warm its
 // CSS chunk. Prerendered pages already run an equivalent external head script; this
 // covers dev and client navigations. Module code only: the CSP forbids inline scripts.
+let warmAetherChunks = false;
 try {
   const savedParadigm = localStorage.getItem("portfolio-paradigm");
   const root = document.documentElement;
@@ -74,6 +76,7 @@ try {
     root.dataset.paradigm = "aether";
     root.dataset.fuiTheme = prePaintFuiTheme();
     void prefetchAetherStyles();
+    warmAetherChunks = true;
   }
 } catch {
   /* Storage can be disabled; Aether stays the default. */
@@ -112,4 +115,21 @@ const mountApp = () =>
     </StrictMode>,
   );
 
-void prefetchRoute(window.location.pathname).then(mountApp, mountApp);
+// Aether's lazy stage chunks too: otherwise their Suspense fallbacks would blank the
+// prerendered HUD and hero for a tick when the DOM is replaced.
+const warmAether = () =>
+  warmAetherChunks
+    ? Promise.all([
+        import("./components/AetherStage"),
+        import("./components/AetherHomeStage"),
+      ]).catch(() => undefined)
+    : Promise.resolve();
+
+void Promise.all([prefetchRoute(window.location.pathname), warmAether()]).then(
+  () => {
+    // Measure the prerendered boot's progress at the last moment before React replaces it.
+    captureBootElapsed(document.getElementById("root"));
+    mountApp();
+  },
+  mountApp,
+);

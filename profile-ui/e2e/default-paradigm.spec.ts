@@ -132,25 +132,63 @@ test.describe("Aether boot plays exactly once", () => {
     );
   });
 
-  test("the prerendered page holds the boot's first frame until the app mounts", async ({
+  test("content never waits for JS and the mounted boot continues, not restarts", async ({
     page,
   }) => {
     await page.route(/\/assets\/index-[^/]+\.js$/, async (route) => {
       await new Promise((r) => setTimeout(r, 2500));
       await route.continue();
     });
+    // Sample the hero title's opacity every frame; a restart on mount would drop it to 0.
+    await page.addInitScript(() => {
+      const w = window as unknown as {
+        __samples: { t: number; o: number; ready: boolean }[];
+      };
+      w.__samples = [];
+      const tick = () => {
+        const el = document.querySelector(".fui-hero-title");
+        if (el)
+          w.__samples.push({
+            t: performance.now(),
+            o: Number(getComputedStyle(el).opacity),
+            ready: document.documentElement.hasAttribute("data-app-ready"),
+          });
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+    // "commit" opts out of the fixture's wait for the app mount signal.
     await page.goto("/", { waitUntil: "commit" });
+    await page.waitForLoadState("domcontentloaded");
+    // (a) Long before the bundle lands, the hero is already readable.
+    await page.waitForTimeout(1500);
     const title = page.locator(".fui-hero-title").first();
-    await expect(title).toBeAttached();
-    await page.waitForTimeout(1200);
+    expect(
+      await title.evaluate((el) => Number(getComputedStyle(el).opacity)),
+    ).toBeGreaterThan(0.9);
+    await expect(title).not.toHaveText("");
     expect(
       await page.evaluate(() => document.documentElement.dataset.appReady),
     ).toBeUndefined();
-    expect(
-      await title.evaluate((el) => getComputedStyle(el).clipPath),
-    ).not.toBe("none");
-    await expect(page.locator(".fui-hud-clock")).toHaveText("--:--:-- UTC");
+    // (b) After mount the opacity never drops back.
     await page.waitForSelector("html[data-app-ready]", { state: "attached" });
+    await page.waitForTimeout(800);
+    const samples = await page.evaluate(
+      () =>
+        (
+          window as unknown as {
+            __samples: { t: number; o: number; ready: boolean }[];
+          }
+        ).__samples,
+    );
+    expect(samples.some((s) => s.ready)).toBe(true);
+    const afterReveal = samples.filter((s) => s.o >= 0.99);
+    expect(afterReveal.length).toBeGreaterThan(0);
+    const firstFull = samples.findIndex((s) => s.o >= 0.99);
+    for (const s of samples.slice(firstFull))
+      expect(s.o, "hero title opacity after reveal").toBeGreaterThanOrEqual(
+        0.99,
+      );
   });
 });
 

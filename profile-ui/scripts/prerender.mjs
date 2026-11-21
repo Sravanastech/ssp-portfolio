@@ -45,7 +45,7 @@ const aetherCss = findAsset(/^aether-cinematic-[\w-]+\.css$/, "Aether");
 // swaps the default Aether paradigm for a returning visitor's stored Studio/Kinetic
 // choice before first paint, and picks Aether's void/cleanroom theme like main.tsx does.
 const paradigmSource =
-  `(function(){var R=document.documentElement;R.dataset.js="1";try{var p=localStorage.getItem("portfolio-paradigm");` +
+  `(function(){var R=document.documentElement;try{var p=localStorage.getItem("portfolio-paradigm");` +
   `if(p==="studio"){R.dataset.paradigm="studio";return}` +
   `if(p==="kinetic"){R.dataset.paradigm="studio";var k=document.createElement("link");` +
   `k.rel="stylesheet";k.href="/assets/${kineticCss}";k.onload=function(){try{if(localStorage.getItem("portfolio-paradigm")==="kinetic")R.dataset.paradigm="kinetic"}catch(e){}};` +
@@ -64,8 +64,7 @@ const bootSource =
   `l.rel="modulepreload";l.href=h;document.head.appendChild(l)})}` +
   `try{new PerformanceObserver(function(l,o){if(l.getEntriesByName("first-contentful-paint").length){o.disconnect();setTimeout(r,0)}})` +
   `.observe({type:"paint",buffered:true})}catch(e){}` +
-  `addEventListener("load",function(){setTimeout(r,100)});setTimeout(r,4000);` +
-  `setTimeout(function(){document.documentElement.removeAttribute("data-js")},10000)})();`;
+  `addEventListener("load",function(){setTimeout(r,100)});setTimeout(r,4000)})();`;
 const bootName = `boot-${createHash("sha256").update(bootSource).digest("hex").slice(0, 8)}.js`;
 await writeFile(resolve(output, "assets", bootName), bootSource);
 // Workbox generated sw.js before this file existed: add it to the precache so an
