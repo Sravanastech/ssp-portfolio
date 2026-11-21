@@ -37,7 +37,7 @@ public class ClientIp {
             ? s
             : String.join(",", Collections.list(request.getHeaders("X-Forwarded-For")));
     List<String> parts =
-        Arrays.stream(raw.split(",")).map(String::trim).filter(p -> !p.isEmpty()).toList();
+        Arrays.stream(raw.split(",")).map(s -> s.trim()).filter(p -> !p.isEmpty()).toList();
     if (hops >= 1 && parts.size() >= hops) {
       String literal = literal(parts.get(parts.size() - hops));
       if (literal != null) return literal;

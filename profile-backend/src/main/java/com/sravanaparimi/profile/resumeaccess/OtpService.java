@@ -149,7 +149,7 @@ public class OtpService {
     // Spend the attempt before comparing so parallel guesses still cost one attempt each.
     byte[] stored = otp.spendAttempt(challengeId).orElseThrow(() -> OtpException.invalidCode(0));
     if (!crypto.matches(code, challengeId, stored)) {
-      int used = otp.find(challengeId).map(OtpRepository.Info::attempts).orElse(OtpRepository.MAX_ATTEMPTS);
+      int used = otp.find(challengeId).map(i -> i.attempts()).orElse(OtpRepository.MAX_ATTEMPTS);
       throw OtpException.invalidCode(Math.max(0, OtpRepository.MAX_ATTEMPTS - used));
     }
     if (!otp.consume(challengeId)) throw OtpException.invalidCode(0);

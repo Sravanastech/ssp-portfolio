@@ -88,7 +88,7 @@ public class OtpRepository {
             "SELECT max(created_at) FROM resume_otp_challenge WHERE email=? AND NOT send_failed",
             Timestamp.class,
             email);
-    return Optional.ofNullable(ts).map(Timestamp::toInstant);
+    return Optional.ofNullable(ts).map(t -> t.toInstant());
   }
 
   public boolean consume(UUID id) {
