@@ -106,27 +106,55 @@ test.describe("Aether is the default design", () => {
 });
 
 test.describe("Aether boot plays exactly once", () => {
-  test("hero title animation starts once and the HUD clock is live", async ({
+  test("hero title animation is continued across the mount and the HUD clock is live", async ({
     page,
   }) => {
+    // The title entrance has no delay, so the prerendered animation has already started
+    // when React replaces the DOM and the new element fires its own animationstart. What
+    // must hold is that progress never goes backwards (a restart would reset it to 0).
     await page.addInitScript(() => {
-      const w = window as unknown as { __starts: string[] };
-      w.__starts = [];
-      document.addEventListener(
-        "animationstart",
-        (e) => {
-          if ((e.target as Element).closest?.(".fui-hero-title"))
-            w.__starts.push((e as AnimationEvent).animationName);
-        },
-        true,
-      );
+      const w = window as unknown as {
+        __progress: number[];
+        __names: string[];
+      };
+      w.__progress = [];
+      w.__names = [];
+      const sample = () => {
+        const title = document.querySelector(".fui-hero-title");
+        if (title) {
+          const anims = document
+            .getAnimations()
+            .filter((a) =>
+              title.contains(
+                (a.effect as KeyframeEffect | null)?.target ?? null,
+              ),
+            );
+          if (anims.length > 0) {
+            w.__progress.push(
+              Math.max(...anims.map((a) => Number(a.currentTime ?? 0))),
+            );
+            for (const a of anims)
+              w.__names.push((a as CSSAnimation).animationName);
+          }
+        }
+        requestAnimationFrame(sample);
+      };
+      requestAnimationFrame(sample);
     });
     await page.goto("/");
     await page.waitForTimeout(2800);
-    const starts = await page.evaluate(
-      () => (window as unknown as { __starts: string[] }).__starts,
-    );
-    expect(starts).toEqual(["fui-mask-reveal"]);
+    const { progress, names } = await page.evaluate(() => {
+      const w = window as unknown as {
+        __progress: number[];
+        __names: string[];
+      };
+      return { progress: w.__progress, names: w.__names };
+    });
+    expect(progress.length).toBeGreaterThan(3);
+    expect(new Set(names)).toEqual(new Set(["fui-rise"]));
+    // Allow a couple of ms of jitter between the two documents' timelines.
+    for (let i = 1; i < progress.length; i += 1)
+      expect(progress[i]).toBeGreaterThanOrEqual(progress[i - 1] - 5);
     await expect(page.locator(".fui-hud-clock")).toHaveText(
       /^\d\d:\d\d:\d\d UTC$/,
     );

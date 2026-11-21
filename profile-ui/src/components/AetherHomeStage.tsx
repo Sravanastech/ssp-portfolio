@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import { useSiteContent } from "@/content/siteContentContext";
 import PrefetchLink from "@/components/PrefetchLink";
-import { prefersReducedMotion, useAsciiScramble } from "@/lib/motion";
+import { prefersReducedMotion } from "@/lib/motion";
+import AsciiScramble from "@/components/AsciiScramble";
 import { continueBootAnimations, getBootElapsed } from "@/lib/bootContinuation";
 import { FUI_OPEN_COMMAND_EVENT } from "@/components/AetherStage";
 import FuiDossierModal from "@/components/hud/FuiDossierModal";
@@ -135,28 +136,10 @@ export default function AetherHomeStage(): React.ReactElement {
   const bootMode = skipped ? "skipped" : phase === "quick" ? "quick" : "full";
 
   const bootEyebrowText = `SYS.BOOT // ${profile.name.toUpperCase()} // SINCE ${profile.careerStartYear}`;
-  const bootEyebrow = useAsciiScramble(
-    bootEyebrowText,
-    animate && bootOffset < 600,
-    {
-      delayMs: -bootOffset,
-      durationMs: 600,
-      seedKey: bootKey,
-    },
-  );
   // Headline deciphers on every home visit (full and quick), but never after
   // a skip; useAsciiScramble itself bails out under reduced motion.
   const animateHeadline =
     !skipped && (phase === "full" || phase === "quick") && bootOffset < 900;
-  const decryptedHeadline = useAsciiScramble(
-    profile.headline,
-    animateHeadline,
-    {
-      delayMs: -bootOffset,
-      durationMs: 900,
-      seedKey: bootKey,
-    },
-  );
 
   const openCommandPalette = () => {
     if (typeof window !== "undefined") {
@@ -175,22 +158,30 @@ export default function AetherHomeStage(): React.ReactElement {
           <div className="fui-grid-line-x" aria-hidden="true" />
           <div className="fui-grid-line-y" aria-hidden="true" />
           <div className="fui-boot-scan" aria-hidden="true" />
+          {phase === "full" && (
+            <button
+              type="button"
+              className="fui-skip-intro"
+              onClick={skipIntro}
+            >
+              Skip intro
+            </button>
+          )}
 
           <div className="fui-hero-inner">
-            {phase === "full" && (
-              <button
-                type="button"
-                className="fui-skip-intro"
-                onClick={skipIntro}
-              >
-                Skip intro
-              </button>
-            )}
             <div className="fui-boot-bar">
               <div className="fui-boot-eyebrow">
                 <Terminal size={14} aria-hidden="true" />
                 <span className="sr-only">{bootEyebrowText}</span>
-                <span aria-hidden="true">{bootEyebrow}</span>
+                <span aria-hidden="true">
+                  <AsciiScramble
+                    text={bootEyebrowText}
+                    active={animate && bootOffset < 600}
+                    delayMs={-bootOffset}
+                    durationMs={600}
+                    seedKey={bootKey}
+                  />
+                </span>
               </div>
               <button
                 type="button"
@@ -205,7 +196,15 @@ export default function AetherHomeStage(): React.ReactElement {
 
             <h1 id="fui-hero-heading" className="fui-hero-title">
               <span className="sr-only">{profile.headline}</span>
-              <span aria-hidden="true">{decryptedHeadline}</span>
+              <span aria-hidden="true">
+                <AsciiScramble
+                  text={profile.headline}
+                  active={animateHeadline}
+                  delayMs={-bootOffset}
+                  durationMs={900}
+                  seedKey={bootKey}
+                />
+              </span>
             </h1>
 
             <p className="fui-hero-sub">
