@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -29,7 +29,14 @@ const renderWithProviders = (component: React.ReactElement) => {
   );
 };
 
+// Studio markup under test: Aether is the default design, so pin the stored choice.
+const pinStudio = () => {
+  beforeEach(() => localStorage.setItem("portfolio-paradigm", "studio"));
+  afterEach(() => localStorage.clear());
+};
+
 describe("HomePage Integration Tests", () => {
+  pinStudio();
   it("should render the hero section with headline", () => {
     renderWithProviders(<HomePage />);
 
@@ -108,6 +115,7 @@ describe("HomePage paradigm toggle", () => {
 });
 
 describe("HomePage section headings", () => {
+  pinStudio();
   it("mirrors each heading text in data-ghost", () => {
     const { container } = renderWithProviders(<HomePage />);
     const wrappers = container.querySelectorAll(".studio-section-heading");

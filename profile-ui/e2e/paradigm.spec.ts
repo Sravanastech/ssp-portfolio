@@ -2,14 +2,13 @@ import { test, expect, type Page, type ConsoleMessage } from "./fixtures";
 import { mkdir, writeFile } from "node:fs/promises";
 import {
   appearanceDialog,
+  closeAppearance,
   openAppearance,
   pickStyle,
 } from "./appearance-helpers";
 
-/**
- * Dual-paradigm (Studio / Kinetic) end-to-end gate.
- * Run against the production build: PLAYWRIGHT_TEST_BUILD=1 npx playwright test e2e/paradigm.spec.ts
- */
+/** Studio/Kinetic gate (starts pinned to Studio; Aether is the default design). */
+test.use({ paradigm: "studio" });
 
 const ROUTES = [
   "/",
@@ -489,6 +488,7 @@ for (const rate of [1, 4]) {
           "data-paradigm",
           "kinetic",
         );
+        await closeAppearance(page); // the popover would cover the nav
       }),
     );
     results.push(
@@ -499,6 +499,7 @@ for (const rate of [1, 4]) {
           "data-paradigm",
           "studio",
         );
+        await closeAppearance(page); // the popover would cover the nav
       }),
     );
     results.push(
@@ -527,6 +528,7 @@ for (const rate of [1, 4]) {
           "data-paradigm",
           "kinetic",
         );
+        await closeAppearance(page); // the popover would cover the nav
       }),
     );
     results.push(

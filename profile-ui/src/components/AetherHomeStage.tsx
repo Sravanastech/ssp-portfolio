@@ -15,6 +15,7 @@ import {
 import { useSiteContent } from "@/content/siteContentContext";
 import PrefetchLink from "@/components/PrefetchLink";
 import { prefersReducedMotion, useAsciiScramble } from "@/lib/motion";
+import { continueBootAnimations, getBootElapsed } from "@/lib/bootContinuation";
 import { FUI_OPEN_COMMAND_EVENT } from "@/components/AetherStage";
 import FuiDossierModal from "@/components/hud/FuiDossierModal";
 
@@ -64,6 +65,11 @@ export default function AetherHomeStage(): React.ReactElement {
   // downgrades before paint on repeat visits so hydration stays consistent.
   const [phase, setPhase] = useState<BootPhase>("full");
   const [skipped, setSkipped] = useState(false);
+  // Boot time already played by the prerendered HTML (0 unless this is the first mount
+  // over it): the boot continues from there instead of restarting.
+  const [bootOffset, setBootOffset] = useState(() =>
+    typeof window === "undefined" ? 0 : getBootElapsed(),
+  );
   const decided = useRef(false);
   const replayRef = useRef<HTMLButtonElement>(null);
 
@@ -71,7 +77,14 @@ export default function AetherHomeStage(): React.ReactElement {
     if (decided.current) return;
     decided.current = true;
     if (consumeBootFlag() || prefersReducedMotion()) setPhase("quick");
-  }, []);
+    else if (bootOffset >= BOOT_TOTAL_MS) setPhase("done"); // boot already finished
+  }, [bootOffset]);
+
+  // Fast-forward this DOM's CSS animations to where the prerendered ones had got to.
+  useIsoLayoutEffect(() => {
+    if (typeof document !== "undefined")
+      continueBootAnimations(document.querySelector(".fui-page"));
+  }, [phase, bootKey, skipped]);
 
   const skipIntro = useCallback(() => {
     setSkipped(true);
@@ -90,12 +103,16 @@ export default function AetherHomeStage(): React.ReactElement {
   const replay = () => {
     setSkipped(false);
     setPhase("full");
+    setBootOffset(0);
     setBootKey((k) => k + 1);
   };
 
   useEffect(() => {
     if (phase !== "full") return;
-    const timer = window.setTimeout(() => setPhase("done"), BOOT_TOTAL_MS);
+    const timer = window.setTimeout(
+      () => setPhase("done"),
+      Math.max(0, BOOT_TOTAL_MS - bootOffset),
+    );
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape" || e.defaultPrevented) return;
       if (document.querySelector('[role="dialog"]')) return;
@@ -108,7 +125,7 @@ export default function AetherHomeStage(): React.ReactElement {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener(FUI_OPEN_COMMAND_EVENT, endBootQuietly);
     };
-  }, [phase, bootKey, skipIntro, endBootQuietly]);
+  }, [phase, bootKey, bootOffset, skipIntro, endBootQuietly]);
 
   useEffect(() => {
     if (dossierIndex !== null) endBootQuietly();
@@ -118,19 +135,24 @@ export default function AetherHomeStage(): React.ReactElement {
   const bootMode = skipped ? "skipped" : phase === "quick" ? "quick" : "full";
 
   const bootEyebrowText = `SYS.BOOT // ${profile.name.toUpperCase()} // SINCE ${profile.careerStartYear}`;
-  const bootEyebrow = useAsciiScramble(bootEyebrowText, animate, {
-    delayMs: 0,
-    durationMs: 600,
-    seedKey: bootKey,
-  });
+  const bootEyebrow = useAsciiScramble(
+    bootEyebrowText,
+    animate && bootOffset < 600,
+    {
+      delayMs: -bootOffset,
+      durationMs: 600,
+      seedKey: bootKey,
+    },
+  );
   // Headline deciphers on every home visit (full and quick), but never after
   // a skip; useAsciiScramble itself bails out under reduced motion.
-  const animateHeadline = !skipped && (phase === "full" || phase === "quick");
+  const animateHeadline =
+    !skipped && (phase === "full" || phase === "quick") && bootOffset < 900;
   const decryptedHeadline = useAsciiScramble(
     profile.headline,
     animateHeadline,
     {
-      delayMs: 0,
+      delayMs: -bootOffset,
       durationMs: 900,
       seedKey: bootKey,
     },

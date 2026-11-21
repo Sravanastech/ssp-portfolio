@@ -96,3 +96,50 @@
 
   color-scheme: light;
 }
+
+/* Before any script has set data-fui-theme (prerendered first paint, no-JS readers),
+   follow the OS colour scheme: VOID is the base above, CLEANROOM when the OS is light.
+   Keep in sync with the cleanroom block. */
+@media (prefers-color-scheme: light) {
+  :root[data-paradigm="aether"]:not([data-fui-theme]) {
+    /* FUI Core Palette — CLEANROOM (Clinical Sci-Fi Light) */
+    --bg-primary: #f4f6f9;
+    --bg-elevated: #ffffff;
+    --border-hairline: rgba(15, 23, 42, 0.12);
+    --border-strong: rgba(15, 23, 42, 0.24);
+    --text-primary: #0b0f19;
+    --text-muted: #475569;
+    --accent-primary: #c2410c;
+    --accent-amber: #b45309;
+    --dot-color: rgba(15, 23, 42, 0.09);
+
+    /* Derived FUI Surface & Motion Tokens */
+    --fui-glass: rgba(255, 255, 255, 0.88);
+    --fui-chrome-bg: rgba(244, 246, 249, 0.88);
+    --fui-backdrop: rgba(11, 15, 25, 0.42);
+    --fui-accent-soft: rgba(194, 65, 12, 0.08);
+    --fui-accent-glow: rgba(194, 65, 12, 0.2);
+    --fui-accent-ink: #ffffff;
+    --fui-amber-soft: rgba(180, 83, 9, 0.12);
+    --fui-hover-surface: rgba(15, 23, 42, 0.05);
+
+    /* Sync shared shell/interior design tokens.
+       !important is required: ThemeContext writes --color-* as inline styles on <html>,
+       which outrank any selector; these must win to keep Aether's palette. */
+    --color-background: var(--bg-primary) !important;
+    --color-surface: var(--bg-elevated) !important;
+    --color-text: var(--text-primary) !important;
+    --color-textSecondary: var(--text-muted) !important;
+    --color-primary: var(--accent-primary) !important;
+    --color-secondary: var(--text-muted) !important;
+    --color-accent: var(--fui-accent-ink) !important;
+    --color-border: rgba(15, 23, 42, 0.16) !important;
+    --color-borderLight: rgba(15, 23, 42, 0.09) !important;
+    --color-focus-ring: var(--accent-primary) !important;
+    --color-cta-bg: var(--accent-primary) !important;
+    --color-cta-text: var(--fui-accent-ink) !important;
+    --color-cta-hover: #9a3412 !important;
+
+    color-scheme: light;
+  }
+}

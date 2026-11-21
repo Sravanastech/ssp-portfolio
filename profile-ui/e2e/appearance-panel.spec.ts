@@ -7,6 +7,8 @@ import {
   pickTheme,
 } from "./appearance-helpers";
 
+test.use({ paradigm: "studio" });
+
 async function settle(page: import("@playwright/test").Page) {
   await page.waitForFunction(
     () => !document.documentElement.hasAttribute("data-paradigm-transition"),
@@ -99,7 +101,7 @@ test.describe("Appearance panel (desktop)", () => {
     await expect(appearanceDialog(page)).toHaveCount(0);
   });
 
-  test("reset to defaults restores studio, system theme and motion", async ({
+  test("reset to defaults restores aether, system theme and motion", async ({
     page,
   }) => {
     await page.goto("/");
@@ -110,7 +112,7 @@ test.describe("Appearance panel (desktop)", () => {
     await dialog.getByRole("button", { name: "Reset to defaults" }).click();
     await expect(page.locator("html")).toHaveAttribute(
       "data-paradigm",
-      "studio",
+      "aether",
     );
     await expect(dialog.getByRole("radio", { name: "System" })).toBeChecked();
     await expect(page.locator("html")).not.toHaveAttribute(

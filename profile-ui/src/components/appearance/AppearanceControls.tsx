@@ -51,8 +51,8 @@ export default function AppearanceControls() {
   const reset = (event: React.MouseEvent<HTMLButtonElement>) => {
     resetTheme();
     motion.set(false);
-    if (paradigm !== "studio")
-      setParadigm("studio", centerOf(event.currentTarget));
+    if (paradigm !== "aether")
+      setParadigm("aether", centerOf(event.currentTarget));
   };
 
   return (

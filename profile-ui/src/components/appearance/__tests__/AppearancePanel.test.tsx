@@ -109,11 +109,11 @@ describe("AppearancePanel", () => {
     openPanel();
     const group = screen.getByRole("radiogroup", { name: "Style" });
     expect(group).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "Studio" })).toBeChecked();
-    fireEvent.click(screen.getByRole("radio", { name: "Aether" }));
-    expect(localStorage.getItem("portfolio-paradigm")).toBe("aether");
-    expect(document.documentElement.dataset.paradigm).toBe("aether");
     expect(screen.getByRole("radio", { name: "Aether" })).toBeChecked();
+    fireEvent.click(screen.getByRole("radio", { name: "Studio" }));
+    expect(localStorage.getItem("portfolio-paradigm")).toBe("studio");
+    expect(document.documentElement.dataset.paradigm).toBe("studio");
+    expect(screen.getByRole("radio", { name: "Studio" })).toBeChecked();
   });
 
   it("selecting a theme radio stores light, dark and system", () => {
@@ -166,17 +166,18 @@ describe("AppearancePanel", () => {
     expect(screen.getByText("Set by your device")).toBeInTheDocument();
   });
 
-  it("Reset to defaults restores Studio, system theme and motion", () => {
+  it("Reset to defaults restores Aether, system theme and motion", () => {
     localStorage.setItem("theme", "midnight");
     localStorage.setItem("portfolio-motion", "reduced");
     localStorage.setItem("portfolio-paradigm", "kinetic");
     renderPanel();
     openPanel();
     fireEvent.click(screen.getByRole("button", { name: "Reset to defaults" }));
-    expect(localStorage.getItem("portfolio-paradigm")).toBe("studio");
+    expect(localStorage.getItem("portfolio-paradigm")).toBe("aether");
+    expect(document.documentElement.dataset.paradigm).toBe("aether");
     expect(localStorage.getItem("theme")).toBeNull();
     expect(localStorage.getItem("portfolio-motion")).toBeNull();
-    expect(screen.getByRole("radio", { name: "Studio" })).toBeChecked();
+    expect(screen.getByRole("radio", { name: "Aether" })).toBeChecked();
     expect(screen.getByRole("radio", { name: "System" })).toBeChecked();
     expect(
       screen.getByRole("switch", { name: "Reduce motion" }),

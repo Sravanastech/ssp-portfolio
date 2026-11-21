@@ -83,7 +83,48 @@ describe("ParadigmContext", () => {
     window.matchMedia = originalMatchMedia;
   });
 
-  it("defaults to studio and sets data-paradigm on documentElement", () => {
+  it("defaults to aether and sets data-paradigm on documentElement", () => {
+    render(
+      <ParadigmProvider>
+        <Harness />
+      </ParadigmProvider>,
+    );
+    expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
+      "aether:false:true",
+    );
+    expect(document.documentElement.dataset.paradigm).toBe("aether");
+  });
+
+  it.each(["", "Studio", "bogus", "null"])(
+    "falls back to aether for an invalid stored value (%j)",
+    (value) => {
+      localStorage.setItem("portfolio-paradigm", value);
+      render(
+        <ParadigmProvider>
+          <Harness />
+        </ParadigmProvider>,
+      );
+      expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
+        "aether:false:true",
+      );
+      expect(document.documentElement.dataset.paradigm).toBe("aether");
+    },
+  );
+
+  it("falls back to aether when storage throws", () => {
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("blocked");
+    });
+    render(
+      <ParadigmProvider>
+        <Harness />
+      </ParadigmProvider>,
+    );
+    expect(document.documentElement.dataset.paradigm).toBe("aether");
+  });
+
+  it("respects a stored studio choice", () => {
+    localStorage.setItem("portfolio-paradigm", "studio");
     render(
       <ParadigmProvider>
         <Harness />
@@ -95,7 +136,21 @@ describe("ParadigmContext", () => {
     expect(document.documentElement.dataset.paradigm).toBe("studio");
   });
 
+  it("respects a stored kinetic choice", () => {
+    localStorage.setItem("portfolio-paradigm", "kinetic");
+    render(
+      <ParadigmProvider>
+        <Harness />
+      </ParadigmProvider>,
+    );
+    expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
+      "kinetic:true:false",
+    );
+    expect(document.documentElement.dataset.paradigm).toBe("kinetic");
+  });
+
   it("toggles between studio and kinetic, persisting to localStorage", () => {
+    localStorage.setItem("portfolio-paradigm", "studio");
     render(
       <ParadigmProvider>
         <Harness />
@@ -175,7 +230,7 @@ describe("ParadigmContext", () => {
   it("provides safe defaults outside ParadigmProvider and prefetches aether without throwing", async () => {
     render(<Harness />);
     expect(screen.getByTestId("paradigm-btn")).toHaveTextContent(
-      "studio:false:false",
+      "aether:false:true",
     );
     expect(() =>
       fireEvent.click(screen.getByTestId("prefetch-aether")),
@@ -237,6 +292,7 @@ describe("ParadigmContext", () => {
       writable: true,
     });
 
+    localStorage.setItem("portfolio-paradigm", "studio");
     render(
       <ParadigmProvider>
         <Harness />
@@ -267,6 +323,7 @@ describe("ParadigmContext", () => {
       writable: true,
     });
 
+    localStorage.setItem("portfolio-paradigm", "studio");
     render(
       <ParadigmProvider>
         <Harness />
@@ -292,6 +349,7 @@ describe("ParadigmContext", () => {
       writable: true,
     });
 
+    localStorage.setItem("portfolio-paradigm", "studio");
     render(
       <ParadigmProvider>
         <Harness />

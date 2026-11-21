@@ -7,8 +7,27 @@ import { test as base, expect } from "@playwright/test";
  */
 const lowEnd = !!process.env.E2E_LOW_END || !!process.env.CI;
 
-export const test = base.extend({
-  page: async ({ page }, provide) => {
+/**
+ * Aether is the default design. A spec about another design opts in with
+ * `test.use({ paradigm: "studio" })`: its stored choice is seeded once per tab, so
+ * reloads and in-test style changes still behave like a real visitor's.
+ */
+type ParadigmOption = { paradigm: "studio" | "kinetic" | "aether" | undefined };
+
+export const test = base.extend<ParadigmOption>({
+  paradigm: [undefined, { option: true }],
+  page: async ({ page, paradigm }, provide) => {
+    if (paradigm) {
+      await page.addInitScript((value) => {
+        try {
+          if (sessionStorage.getItem("e2e-paradigm-seeded")) return;
+          sessionStorage.setItem("e2e-paradigm-seeded", "1");
+          localStorage.setItem("portfolio-paradigm", value);
+        } catch {
+          /* storage unavailable */
+        }
+      }, paradigm);
+    }
     if (lowEnd) {
       await page.addInitScript(() => {
         Object.defineProperty(navigator, "hardwareConcurrency", {

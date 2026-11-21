@@ -29,17 +29,35 @@ if (!entryMatch) throw new Error("Entry module script not found in index.html");
 const preloadTags =
   builtTemplate.match(/<link rel="modulepreload"[^>]*>/g) ?? [];
 const preloadHrefs = preloadTags.map((tag) => tag.match(/href="([^"]+)"/)[1]);
-// Saved Kinetic choice: fetch its lazy stylesheet now (not after the deferred bundle)
-// and flip the paradigm once it has loaded, so returning Kinetic users see a short
-// Studio frame at most instead of Studio until the whole app has booted.
-const kineticCss = (await readdir(resolve(output, "assets"))).find((file) =>
-  /^kinetic-maximalist-[\w-]+\.css$/.test(file),
-);
-if (!kineticCss) throw new Error("Kinetic stylesheet not found in dist/assets");
+// Paradigm lazy stylesheets. Aether is the default design: prerendered pages carry
+// data-paradigm="aether" and a normal render-blocking <link> to its stylesheet, so first
+// paint is already Aether (every rule is scoped by :root[data-paradigm="aether"], so it
+// stays inert for Studio/Kinetic). Kinetic stays lazy and is fetched only for its users.
+const assetFiles = await readdir(resolve(output, "assets"));
+const findAsset = (pattern, label) => {
+  const file = assetFiles.find((name) => pattern.test(name));
+  if (!file) throw new Error(`${label} stylesheet not found in dist/assets`);
+  return file;
+};
+const kineticCss = findAsset(/^kinetic-maximalist-[\w-]+\.css$/, "Kinetic");
+const aetherCss = findAsset(/^aether-cinematic-[\w-]+\.css$/, "Aether");
+// Tiny render-blocking script (same-origin file: the CSP forbids inline scripts) that
+// swaps the default Aether paradigm for a returning visitor's stored Studio/Kinetic
+// choice before first paint, and picks Aether's void/cleanroom theme like main.tsx does.
+const paradigmSource =
+  `(function(){var R=document.documentElement;try{var p=localStorage.getItem("portfolio-paradigm");` +
+  `if(p==="studio"){R.dataset.paradigm="studio";return}` +
+  `if(p==="kinetic"){R.dataset.paradigm="studio";var k=document.createElement("link");` +
+  `k.rel="stylesheet";k.href="/assets/${kineticCss}";k.onload=function(){try{if(localStorage.getItem("portfolio-paradigm")==="kinetic")R.dataset.paradigm="kinetic"}catch(e){}};` +
+  `document.head.appendChild(k);return}` +
+  `var t=localStorage.getItem("theme"),l=localStorage.getItem("portfolio-fui-theme"),d;` +
+  `if(t==="midnight"||t==="ocean")d=1;else if(t==="sunrise"||t==="woodland")d=0;` +
+  `else if(!t&&l==="void")d=1;else if(!t&&l==="cleanroom")d=0;` +
+  `else d=matchMedia("(prefers-color-scheme: dark)").matches;` +
+  `R.dataset.fuiTheme=d?"void":"cleanroom"}catch(e){}})();`;
+const paradigmName = `paradigm-${createHash("sha256").update(paradigmSource).digest("hex").slice(0, 8)}.js`;
+await writeFile(resolve(output, "assets", paradigmName), paradigmSource);
 const bootSource =
-  `(function(){try{if(localStorage.getItem("portfolio-paradigm")==="kinetic"){var k=document.createElement("link");` +
-  `k.rel="stylesheet";k.href="/assets/${kineticCss}";k.onload=function(){try{if(localStorage.getItem("portfolio-paradigm")==="kinetic")document.documentElement.dataset.paradigm="kinetic"}catch(e){}};` +
-  `document.head.appendChild(k)}}catch(e){}})();` +
   `(function(){var d=0;function r(){if(d)return;d=1;var s=document.createElement("script");` +
   `s.type="module";s.src=${JSON.stringify(entryMatch[1])};document.head.appendChild(s);` +
   `${JSON.stringify(preloadHrefs)}.forEach(function(h){var l=document.createElement("link");` +
@@ -62,7 +80,7 @@ if (sw !== null) {
     swPath,
     sw.replace(
       entryRecord,
-      `${entryRecord},{url:"assets/${bootName}",revision:null}`,
+      `${entryRecord},{url:"assets/${bootName}",revision:null},{url:"assets/${paradigmName}",revision:null}`,
     ),
   );
 }
@@ -75,8 +93,14 @@ const template = [entryMatch[0], ...preloadTags]
   )
   .replace(
     /(<link rel="stylesheet")/,
-    `<script async src="/assets/${bootName}"></script>$1`,
-  );
+    `<script src="/assets/${paradigmName}"></script><script async src="/assets/${bootName}"></script>$1`,
+  )
+  // After the main stylesheet, like the lazily appended chunk: same cascade order.
+  .replace(
+    /(<link rel="stylesheet"[^>]*>)(?![\s\S]*<link rel="stylesheet")/,
+    `$1<link rel="stylesheet" crossorigin href="/assets/${aetherCss}">`,
+  )
+  .replace(/<html lang="en"/, '<html lang="en" data-paradigm="aether"');
 // The social asset is code-native artwork; rasterization makes previews compatible
 // with crawlers that do not support SVG Open Graph images.
 await sharp(resolve("public/social-preview.svg"))
@@ -115,7 +139,7 @@ try {
     )
     .join("\n");
   for (const route of [...routes, NOT_FOUND_ROUTE]) {
-    const rendered = render(route);
+    const rendered = await render(route);
     const { html } = rendered;
     const head = [rendered.head, verification].filter(Boolean).join("\n");
     // Motion's initial state must not hide content from no-JS readers/crawlers.

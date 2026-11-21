@@ -1,5 +1,7 @@
 import { test, expect } from "./fixtures";
 
+test.use({ paradigm: "studio" });
+
 test.describe("Portfolio brand and navigation", () => {
   test("brand exposes its identity and a real home link", async ({ page }) => {
     await page.goto("/work");
