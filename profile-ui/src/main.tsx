@@ -17,6 +17,11 @@ import {
 import { startMonitoring } from "./lib/monitoring";
 import { applyPerfTier } from "./lib/perfTier";
 import { prefetchRoute } from "./lib/routePrefetch";
+import {
+  LazyAetherHomeStage,
+  LazyAetherStage,
+  LazyKineticStage,
+} from "./lib/stageChunks";
 import { captureBootElapsed } from "./lib/bootContinuation";
 import { parseStoredTheme, resolveTheme } from "./theme/themeConfig";
 import {
@@ -62,6 +67,7 @@ try {
 // CSS chunk. Prerendered pages already run an equivalent external head script; this
 // covers dev and client navigations. Module code only: the CSP forbids inline scripts.
 let warmAetherChunks = false;
+let warmKineticChunks = false;
 try {
   const savedParadigm = localStorage.getItem("portfolio-paradigm");
   const root = document.documentElement;
@@ -69,6 +75,7 @@ try {
     root.dataset.paradigm = "kinetic";
     delete root.dataset.fuiTheme;
     void prefetchKineticStyles();
+    warmKineticChunks = true;
   } else if (savedParadigm === "studio") {
     root.dataset.paradigm = "studio";
     delete root.dataset.fuiTheme;
@@ -118,12 +125,14 @@ const mountApp = () =>
 // Aether's lazy stage chunks too: otherwise their Suspense fallbacks would blank the
 // prerendered HUD and hero for a tick when the DOM is replaced.
 const warmAether = () =>
-  warmAetherChunks
-    ? Promise.all([
-        import("./components/AetherStage"),
-        import("./components/AetherHomeStage"),
-      ]).catch(() => undefined)
-    : Promise.resolve();
+  warmKineticChunks
+    ? LazyKineticStage.preload().catch(() => undefined)
+    : warmAetherChunks
+      ? Promise.all([
+          LazyAetherStage.preload(),
+          LazyAetherHomeStage.preload(),
+        ]).catch(() => undefined)
+      : Promise.resolve();
 
 void Promise.all([prefetchRoute(window.location.pathname), warmAether()]).then(
   () => {

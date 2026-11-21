@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -14,10 +14,9 @@ import {
 } from "@/theme/CompositionContext";
 
 import { ParadigmProvider, useParadigm } from "@/theme/ParadigmContext";
+import { LazyAetherStage, LazyKineticStage } from "@/lib/stageChunks";
 
 // Kinetic-only and Aether-only code: Studio visitors never download these chunks.
-const LazyKineticStage = lazy(() => import("@/components/KineticStage"));
-const LazyAetherStage = lazy(() => import("@/components/AetherStage"));
 
 function KineticStageSlot() {
   const { isKinetic } = useParadigm();
