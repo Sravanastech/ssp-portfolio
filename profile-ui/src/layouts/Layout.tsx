@@ -2,7 +2,8 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import ModeStrip from "@/components/ModeStrip";
+import KineticTickerBar from "@/components/KineticTickerBar";
+import AppearancePanel from "@/components/appearance/AppearancePanel";
 import PageMetadata from "@/components/PageMetadata";
 import OfflineBanner from "@/components/OfflineBanner";
 import ConsentBanner from "@/components/ConsentBanner";
@@ -81,10 +82,11 @@ export default function Layout({ children }: Props) {
           <a className="skip-link" href="#main-content">
             Skip to content
           </a>
-          <ModeStrip />
+          <KineticTickerBar />
           <KineticStageSlot />
           <AetherStageSlot />
           <Header />
+          <AppearancePanel />
           <PageMetadata />
           <main id="main-content" tabIndex={-1} className="flex-1 w-full">
             {children}

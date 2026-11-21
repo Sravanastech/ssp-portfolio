@@ -5,6 +5,7 @@ import { useTheme } from "@/theme/theme-context";
 import { isDarkTheme } from "@/theme/themeConfig";
 import { useSiteContent } from "@/content/siteContentContext";
 import { useRouteHeadingDecipher } from "@/lib/motion";
+import { APPEARANCE_OPEN_EVENT } from "@/components/appearance/appearanceStore";
 import HudFrame from "@/components/hud/HudFrame";
 import FuiCommandPalette from "@/components/hud/FuiCommandPalette";
 import FuiDossierModal from "@/components/hud/FuiDossierModal";
@@ -23,7 +24,7 @@ export default function AetherStage(): React.ReactElement | null {
   const { isAether } = useParadigm();
   const { pathname } = useLocation();
   const { profile, caseStudies } = useSiteContent();
-  const { currentTheme, setTheme } = useTheme();
+  const { currentTheme } = useTheme();
   const dark = isDarkTheme(currentTheme);
   const fuiTheme: FuiTheme = dark ? "void" : "cleanroom";
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -44,9 +45,9 @@ export default function AetherStage(): React.ReactElement | null {
     };
   }, [isAether, fuiTheme]);
 
-  const toggleFuiTheme = useCallback(
-    () => setTheme(dark ? "sunrise" : "midnight"),
-    [dark, setTheme],
+  const openAppearancePanel = useCallback(
+    () => window.dispatchEvent(new Event(APPEARANCE_OPEN_EVENT)),
+    [],
   );
 
   useEffect(() => {
@@ -78,7 +79,7 @@ export default function AetherStage(): React.ReactElement | null {
     <>
       <HudFrame
         fuiTheme={fuiTheme}
-        onToggleFuiTheme={toggleFuiTheme}
+        onOpenAppearance={openAppearancePanel}
         onOpenCommand={() => setPaletteOpen(true)}
         locationLabel={profile.location}
       />
@@ -86,7 +87,7 @@ export default function AetherStage(): React.ReactElement | null {
         open={paletteOpen}
         onClose={() => setPaletteOpen(false)}
         fuiTheme={fuiTheme}
-        onToggleFuiTheme={toggleFuiTheme}
+        onOpenAppearance={openAppearancePanel}
         onSelectStudy={(slug) => setActiveSlug(slug)}
       />
       <FuiDossierModal

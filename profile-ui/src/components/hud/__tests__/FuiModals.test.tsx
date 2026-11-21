@@ -4,6 +4,8 @@ import { MemoryRouter } from "react-router-dom";
 import { staticContent } from "@/content/siteContentContext";
 import { FuiDossierModal } from "../FuiDossierModal";
 import { FuiCommandPalette } from "../FuiCommandPalette";
+import { ThemeContext } from "@/theme/theme-context";
+import { defaultValue } from "@/theme/theme-constants";
 
 describe("FuiDossierModal", () => {
   beforeEach(() => {
@@ -97,7 +99,7 @@ describe("FuiCommandPalette", () => {
           open={false}
           onClose={vi.fn()}
           fuiTheme="void"
-          onToggleFuiTheme={vi.fn()}
+          onOpenAppearance={vi.fn()}
           onSelectStudy={vi.fn()}
         />
       </MemoryRouter>,
@@ -115,7 +117,7 @@ describe("FuiCommandPalette", () => {
           open
           onClose={onClose}
           fuiTheme="void"
-          onToggleFuiTheme={vi.fn()}
+          onOpenAppearance={vi.fn()}
           onSelectStudy={onSelectStudy}
         />
       </MemoryRouter>,
@@ -143,49 +145,48 @@ describe("FuiCommandPalette", () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it("toggles VOID/CLEANROOM theme and copies contact email with COPIED_TO_CLIPBOARD badge", () => {
-    const onToggleFuiTheme = vi.fn();
+  it("toggles VOID/CLEANROOM theme, opens appearance, and copies contact email with COPIED_TO_CLIPBOARD badge", () => {
+    vi.useFakeTimers();
+    const onOpenAppearance = vi.fn();
+    const onClose = vi.fn();
+    const setTheme = vi.fn();
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, "clipboard", {
       value: { writeText },
       configurable: true,
     });
 
-    const { rerender } = render(
-      <MemoryRouter>
-        <FuiCommandPalette
-          open
-          onClose={vi.fn()}
-          fuiTheme="void"
-          onToggleFuiTheme={onToggleFuiTheme}
-          onSelectStudy={vi.fn()}
-        />
-      </MemoryRouter>,
+    const ui = (fuiTheme: "void" | "cleanroom") => (
+      <ThemeContext.Provider value={{ ...defaultValue, setTheme }}>
+        <MemoryRouter>
+          <FuiCommandPalette
+            open
+            onClose={onClose}
+            fuiTheme={fuiTheme}
+            onOpenAppearance={onOpenAppearance}
+            onSelectStudy={vi.fn()}
+          />
+        </MemoryRouter>
+      </ThemeContext.Provider>
     );
+    const { rerender } = render(ui("void"));
 
-    const toCleanroom = screen.getByRole("button", {
-      name: /Switch FUI Theme \(CLEANROOM\)/i,
-    });
-    fireEvent.click(toCleanroom);
-    expect(onToggleFuiTheme).toHaveBeenCalledTimes(1);
-
-    rerender(
-      <MemoryRouter>
-        <FuiCommandPalette
-          open
-          onClose={vi.fn()}
-          fuiTheme="cleanroom"
-          onToggleFuiTheme={onToggleFuiTheme}
-          onSelectStudy={vi.fn()}
-        />
-      </MemoryRouter>,
+    fireEvent.click(
+      screen.getByRole("button", { name: /Switch FUI Theme \(CLEANROOM\)/i }),
     );
+    expect(setTheme).toHaveBeenLastCalledWith("sunrise");
 
-    const toVoid = screen.getByRole("button", {
-      name: /Switch FUI Theme \(VOID\)/i,
-    });
-    fireEvent.click(toVoid);
-    expect(onToggleFuiTheme).toHaveBeenCalledTimes(2);
+    rerender(ui("cleanroom"));
+    fireEvent.click(
+      screen.getByRole("button", { name: /Switch FUI Theme \(VOID\)/i }),
+    );
+    expect(setTheme).toHaveBeenLastCalledWith("midnight");
+
+    fireEvent.click(screen.getByRole("button", { name: /Appearance…/ }));
+    expect(onClose).toHaveBeenCalled();
+    vi.runAllTimers();
+    expect(onOpenAppearance).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
 
     const copyBtn = screen.getByRole("button", {
       name: new RegExp(
@@ -209,7 +210,7 @@ describe("FuiCommandPalette", () => {
           open
           onClose={onClose}
           fuiTheme="void"
-          onToggleFuiTheme={vi.fn()}
+          onOpenAppearance={vi.fn()}
           onSelectStudy={onSelectStudy}
         />
       </MemoryRouter>,
@@ -234,7 +235,7 @@ describe("FuiCommandPalette", () => {
           open
           onClose={onClose}
           fuiTheme="void"
-          onToggleFuiTheme={vi.fn()}
+          onOpenAppearance={vi.fn()}
           onSelectStudy={vi.fn()}
         />
       </MemoryRouter>,

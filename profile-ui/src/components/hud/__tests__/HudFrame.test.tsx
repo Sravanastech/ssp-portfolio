@@ -47,7 +47,7 @@ describe("HudFrame", () => {
     const { container } = render(
       <HudFrame
         fuiTheme="void"
-        onToggleFuiTheme={vi.fn()}
+        onOpenAppearance={vi.fn()}
         onOpenCommand={vi.fn()}
         locationLabel="SAN FRANCISCO // 37.7749N"
       />,
@@ -83,36 +83,27 @@ describe("HudFrame", () => {
     expect(screen.getByText("SCROLL // 000%")).toBeInTheDocument();
   });
 
-  it("toggles the hardware VOID / CLEANROOM switch and fires onToggleFuiTheme", () => {
-    const onToggleFuiTheme = vi.fn();
-    const { rerender } = render(
+  it("shows the VOID / CLEANROOM state and opens the appearance panel on click", () => {
+    const onOpenAppearance = vi.fn();
+    render(
       <HudFrame
         fuiTheme="void"
-        onToggleFuiTheme={onToggleFuiTheme}
+        onOpenAppearance={onOpenAppearance}
         onOpenCommand={vi.fn()}
         locationLabel="NYC"
       />,
     );
 
-    const toggle = screen.getByRole("switch", {
-      name: "Toggle FUI theme between Void and Cleanroom",
+    const trigger = screen.getByRole("button", {
+      name: "Open appearance settings",
     });
-    expect(toggle).toHaveAttribute("aria-checked", "false");
-    expect(toggle).toHaveTextContent("VOID");
-    expect(toggle).toHaveTextContent("CLEANROOM");
+    expect(trigger).toHaveAttribute("aria-haspopup", "dialog");
+    expect(trigger).toHaveAttribute("data-state", "void");
+    expect(trigger).toHaveTextContent("VOID");
+    expect(trigger).toHaveTextContent("CLEANROOM");
 
-    fireEvent.click(toggle);
-    expect(onToggleFuiTheme).toHaveBeenCalledTimes(1);
-
-    rerender(
-      <HudFrame
-        fuiTheme="cleanroom"
-        onToggleFuiTheme={onToggleFuiTheme}
-        onOpenCommand={vi.fn()}
-        locationLabel="NYC"
-      />,
-    );
-    expect(toggle).toHaveAttribute("aria-checked", "true");
+    fireEvent.click(trigger);
+    expect(onOpenAppearance).toHaveBeenCalledTimes(1);
   });
 
   it("fires onOpenCommand when the ⌘K button is clicked inside the interactive dock", () => {
@@ -120,7 +111,7 @@ describe("HudFrame", () => {
     const { container } = render(
       <HudFrame
         fuiTheme="void"
-        onToggleFuiTheme={vi.fn()}
+        onOpenAppearance={vi.fn()}
         onOpenCommand={onOpenCommand}
         locationLabel="NYC"
       />,
@@ -164,7 +155,7 @@ describe("HudFrame", () => {
     render(
       <HudFrame
         fuiTheme="void"
-        onToggleFuiTheme={vi.fn()}
+        onOpenAppearance={vi.fn()}
         onOpenCommand={vi.fn()}
         locationLabel="NYC"
       />,

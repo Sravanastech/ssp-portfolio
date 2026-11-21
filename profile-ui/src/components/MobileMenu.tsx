@@ -30,7 +30,6 @@ import {
   SheetTitle,
   SheetDescription,
 } from "./ui/sheet";
-import { MobileMenuAppearance } from "./MobileMenuAppearance";
 
 function getNavIcon(path: string) {
   switch (path) {
@@ -363,9 +362,6 @@ function MobileMenuClient() {
           className="pt-2.5 border-t mt-2 space-y-2 shrink-0 pb-[env(safe-area-inset-bottom)]"
           style={{ borderTopColor: cv.border }}
         >
-          {/* Appearance */}
-          <MobileMenuAppearance />
-
           {/* Dynamic Sign in / Sign out button */}
           {isAuthenticated ? (
             <button

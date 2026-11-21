@@ -86,7 +86,8 @@ describe("HomePage paradigm toggle", () => {
   it("switches to kinetic, mounts ticker, returns to studio, keeps focus", async () => {
     localStorage.clear();
     renderWithProviders(<HomePage />);
-    const toggle = screen.getByRole("button", { name: "Kinetic" });
+    fireEvent.click(screen.getAllByRole("button", { name: "Appearance" })[0]);
+    const toggle = screen.getByRole("radio", { name: "Kinetic" });
     toggle.focus();
     fireEvent.click(toggle);
     expect(document.documentElement.dataset.paradigm).toBe("kinetic");
@@ -94,7 +95,7 @@ describe("HomePage paradigm toggle", () => {
       await screen.findByRole("region", { name: /kinetic telemetry ticker/i }),
     ).toBeInTheDocument();
     expect(toggle).toHaveFocus();
-    const back = screen.getByRole("button", { name: "Studio" });
+    const back = screen.getByRole("radio", { name: "Studio" });
     back.focus();
     fireEvent.click(back);
     expect(document.documentElement.dataset.paradigm).toBe("studio");

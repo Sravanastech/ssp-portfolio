@@ -2,7 +2,7 @@ import { SiteText } from "@/content/SiteContent";
 import PrefetchLink from "@/components/PrefetchLink";
 import MainMenu from "./MainMenu";
 import MobileMenu from "./MobileMenu";
-import ModeToggle from "./ModeToggle";
+import AppearanceTrigger from "./appearance/AppearanceTrigger";
 import AuthDropdown from "./AuthDropdown";
 
 export default function Header() {
@@ -25,11 +25,11 @@ export default function Header() {
         </PrefetchLink>
         <div className="studio-desktop-nav">
           <MainMenu />
-          <ModeToggle />
+          <AppearanceTrigger />
           <AuthDropdown />
         </div>
         <div className="studio-mobile-nav">
-          <ModeToggle />
+          <AppearanceTrigger />
           <MobileMenu />
         </div>
       </div>

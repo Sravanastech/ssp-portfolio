@@ -2,12 +2,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSiteContent } from "@/content/siteContentContext";
 import { useParadigm } from "@/theme/ParadigmContext";
+import { useTheme } from "@/theme/theme-context";
 
 export interface FuiCommandPaletteProps {
   open: boolean;
   onClose: () => void;
   fuiTheme: "void" | "cleanroom";
-  onToggleFuiTheme: () => void;
+  onOpenAppearance: () => void;
   onSelectStudy: (slug: string) => void;
 }
 
@@ -23,11 +24,12 @@ interface PaletteCommand {
 function FuiCommandPaletteDialog({
   onClose,
   fuiTheme,
-  onToggleFuiTheme,
+  onOpenAppearance,
   onSelectStudy,
 }: Omit<FuiCommandPaletteProps, "open">) {
   const { profile, caseStudies } = useSiteContent();
   const { setParadigm } = useParadigm();
+  const { setTheme } = useTheme();
   const navigate = useNavigate();
 
   const [query, setQuery] = useState("");
@@ -87,7 +89,18 @@ function FuiCommandPaletteDialog({
         category: "THEME",
         keywords: `theme void cleanroom light dark ${nextThemeLabel}`,
         run: () => {
-          onToggleFuiTheme();
+          setTheme(fuiTheme === "void" ? "sunrise" : "midnight");
+        },
+      },
+      {
+        id: "open-appearance",
+        label: "Appearance…",
+        category: "THEME",
+        keywords: "appearance style theme motion settings customize",
+        run: () => {
+          onClose();
+          // Let the palette dialog unmount first so focus lands in the panel.
+          window.setTimeout(onOpenAppearance, 0);
         },
       },
       {
@@ -182,10 +195,11 @@ function FuiCommandPaletteDialog({
     fuiTheme,
     navigate,
     onClose,
-    onToggleFuiTheme,
+    onOpenAppearance,
     profile.email,
     selectedTech,
     setParadigm,
+    setTheme,
     tokens,
   ]);
 
@@ -437,7 +451,7 @@ export function FuiCommandPalette({
   open,
   onClose,
   fuiTheme,
-  onToggleFuiTheme,
+  onOpenAppearance,
   onSelectStudy,
 }: FuiCommandPaletteProps) {
   if (!open) return null;
@@ -446,7 +460,7 @@ export function FuiCommandPalette({
     <FuiCommandPaletteDialog
       onClose={onClose}
       fuiTheme={fuiTheme}
-      onToggleFuiTheme={onToggleFuiTheme}
+      onOpenAppearance={onOpenAppearance}
       onSelectStudy={onSelectStudy}
     />
   );

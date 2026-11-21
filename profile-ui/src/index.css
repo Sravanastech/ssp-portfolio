@@ -3,7 +3,7 @@
 @import "@fontsource/space-grotesk/700.css";
 @import "tailwindcss";
 @import "./styles/studio-motion.css";
-@import "./styles/mode-strip.css";
+@import "./styles/appearance.css";
 @import "./styles/tokens.css";
 @import "./styles/shell.css";
 @import "./styles/hero-workflow.css";
