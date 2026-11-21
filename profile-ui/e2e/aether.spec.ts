@@ -1,6 +1,8 @@
 import { test, expect, type Page, type ConsoleMessage } from "./fixtures";
 import { appearanceDialog, pickStyle, type Style } from "./appearance-helpers";
 
+test.use({ paradigm: "studio" });
+
 const ROUTES = [
   "/",
   "/work",

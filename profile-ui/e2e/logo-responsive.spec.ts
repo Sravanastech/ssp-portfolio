@@ -1,6 +1,8 @@
 import { test, expect } from "./fixtures";
 import { pickTheme } from "./appearance-helpers";
 
+test.use({ paradigm: "studio" });
+
 test.describe("Responsive portfolio header", () => {
   for (const width of [375, 768, 1440]) {
     test(`brand and appearance trigger fit at ${width}px`, async ({ page }) => {

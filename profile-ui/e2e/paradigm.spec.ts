@@ -6,10 +6,8 @@ import {
   pickStyle,
 } from "./appearance-helpers";
 
-/**
- * Dual-paradigm (Studio / Kinetic) end-to-end gate.
- * Run against the production build: PLAYWRIGHT_TEST_BUILD=1 npx playwright test e2e/paradigm.spec.ts
- */
+/** Studio/Kinetic gate (starts pinned to Studio; Aether is the default design). */
+test.use({ paradigm: "studio" });
 
 const ROUTES = [
   "/",

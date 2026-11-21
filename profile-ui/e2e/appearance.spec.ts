@@ -1,6 +1,8 @@
 import { test, expect } from "./fixtures";
 import { appearanceTrigger, pickTheme } from "./appearance-helpers";
 
+test.use({ paradigm: "studio" });
+
 for (const width of [1440, 390]) {
   test(`light/dark appearance is switchable, compact and persistent at ${width}px`, async ({
     page,

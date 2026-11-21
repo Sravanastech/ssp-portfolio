@@ -2,6 +2,8 @@ import { test, expect } from "./fixtures";
 import AxeBuilder from "@axe-core/playwright";
 import { mkdir } from "node:fs/promises";
 
+test.use({ paradigm: "studio" });
+
 for (const width of [1440, 390]) {
   test(`home workflow is keyboard operable and accessible at ${width}px`, async ({
     page,

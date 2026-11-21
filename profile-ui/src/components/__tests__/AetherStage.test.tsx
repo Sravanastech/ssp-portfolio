@@ -28,6 +28,7 @@ describe("AetherStage (FUI HUD Frame + ⌘K Command Palette)", () => {
   });
 
   it("renders nothing when paradigm is studio", () => {
+    localStorage.setItem("portfolio-paradigm", "studio");
     const { container } = render(
       <MemoryRouter>
         <ThemeProvider>
