@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { motionIsReduced } from "./motionPreference";
 
 export const FUI_EASE = "cubic-bezier(0.16, 1, 0.3, 1)";
 
@@ -8,7 +9,6 @@ export const FUI_DURATIONS = {
   modal: 320,
 } as const;
 
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const SCRAMBLE_GLYPHS = "01/_<>[]#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const DEFAULT_SCRAMBLE_MS = 1650;
 
@@ -18,14 +18,10 @@ export interface ScrambleOptions {
   seedKey?: number;
 }
 
-/** SSR-safe check for the user's reduced-motion preference. */
+/** SSR-safe check: the OS preference or the site's "Reduce motion" switch. */
 export function prefersReducedMotion(): boolean {
   if (typeof window === "undefined") return false;
-  try {
-    return window.matchMedia?.(REDUCED_MOTION_QUERY)?.matches ?? false;
-  } catch {
-    return false;
-  }
+  return motionIsReduced();
 }
 
 /**

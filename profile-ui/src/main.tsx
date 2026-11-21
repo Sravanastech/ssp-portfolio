@@ -17,6 +17,11 @@ import {
 import { startMonitoring } from "./lib/monitoring";
 import { applyPerfTier } from "./lib/perfTier";
 import { prefetchRoute } from "./lib/routePrefetch";
+import { parseStoredTheme, resolveTheme } from "./theme/themeConfig";
+import {
+  applyMotionAttribute,
+  readStoredMotionReduced,
+} from "./lib/motionPreference";
 
 // Low-end tier flag read by the lazy Kinetic stylesheet (no eager CSS depends on it).
 applyPerfTier();
@@ -26,30 +31,30 @@ if (typeof window.requestIdleCallback === "function")
   window.requestIdleCallback(startMonitoring, { timeout: 3000 });
 else window.setTimeout(startMonitoring, 1500);
 
-// Stored theme ids (current and legacy) mapped to the Aether chrome theme they imply.
-const FUI_BY_THEME = new Map<string, "void" | "cleanroom">([
-  ["midnight", "void"],
-  ["ocean", "void"],
-  ["sunrise", "cleanroom"],
-  ["woodland", "cleanroom"],
-]);
-
 /**
- * Mirrors ThemeContext's initial theme (same keys, legacy ids and OS fallback) so the
- * pre-paint Aether attribute never disagrees with React's choice.
+ * Mirrors ThemeContext's initial theme (same keys, legacy ids, "system" and OS fallback)
+ * so the pre-paint Aether attribute never disagrees with React's choice.
  */
 function prePaintFuiTheme(): "void" | "cleanroom" {
   const stored = localStorage.getItem("theme");
-  if (stored) {
-    const mapped = FUI_BY_THEME.get(stored);
-    if (mapped) return mapped;
-  } else {
+  let preference = parseStoredTheme(stored);
+  if (!stored) {
     const legacy = localStorage.getItem("portfolio-fui-theme");
-    if (legacy === "void" || legacy === "cleanroom") return legacy;
+    if (legacy === "void") preference = "dark";
+    else if (legacy === "cleanroom") preference = "light";
   }
   const prefersDark =
     window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false;
-  return prefersDark ? "void" : "cleanroom";
+  return resolveTheme(preference ?? "system", prefersDark) === "midnight"
+    ? "void"
+    : "cleanroom";
+}
+
+// Reflect a stored "Reduce motion" choice before first paint (OS setting is handled in CSS).
+try {
+  applyMotionAttribute(readStoredMotionReduced());
+} catch {
+  /* Storage can be disabled; motion follows the OS. */
 }
 
 // Apply a saved non-Studio paradigm before first paint of React and warm its CSS chunk.

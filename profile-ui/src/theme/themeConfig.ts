@@ -16,6 +16,34 @@ export const legacyThemeIds: Record<string, Theme> = {
   woodland: "sunrise",
 };
 
+/** What the visitor picked; "system" follows the OS and resolves to a Theme. */
+export type ThemePreference = "light" | "dark" | "system";
+
+/** Value persisted under the `theme` key for each preference (existing ids are kept). */
+export const storedThemeValue: Record<ThemePreference, string> = {
+  light: "sunrise",
+  dark: "midnight",
+  system: "system",
+};
+
+/** Parses a persisted `theme` value (current, "system" or legacy id); null when unusable. */
+export function parseStoredTheme(raw: string | null): ThemePreference | null {
+  if (!raw) return null;
+  if (raw === "system") return "system";
+  const id = raw in themeConfig ? (raw as Theme) : legacyThemeIds[raw];
+  if (!id) return null;
+  return isDarkTheme(id) ? "dark" : "light";
+}
+
+/** Resolves a preference to a concrete theme given the OS colour scheme. */
+export function resolveTheme(
+  preference: ThemePreference,
+  systemDark: boolean,
+): Theme {
+  if (preference === "system") return systemDark ? "midnight" : "sunrise";
+  return preference === "dark" ? "midnight" : "sunrise";
+}
+
 export interface ThemeColors {
   primary: string;
   secondary: string;

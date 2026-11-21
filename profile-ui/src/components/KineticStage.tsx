@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParadigm } from "@/theme/ParadigmContext";
 import { useSiteContent } from "@/content/siteContentContext";
+import {
+  motionIsReduced,
+  osPrefersReducedMotion,
+} from "@/lib/motionPreference";
 
-const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 const FINE_POINTER = "(pointer: fine)";
 
 function matches(query: string): boolean {
@@ -21,7 +24,9 @@ const INTERACTIVE =
 export function KineticTicker() {
   const { isKinetic } = useParadigm();
   const { profile, caseStudies } = useSiteContent();
-  const [paused, setPaused] = useState(() => matches(REDUCED_MOTION));
+  const [paused, setPaused] = useState(() => motionIsReduced());
+  // With OS reduced motion the viewport is a static, scrollable strip (see CSS): make it keyboard reachable.
+  const [scrollable] = useState(() => osPrefersReducedMotion());
 
   // Real profile data only.
   const items = useMemo(
@@ -59,7 +64,10 @@ export function KineticTicker() {
       aria-label="Kinetic telemetry ticker"
     >
       <div className="kinetic-ticker" data-paused={paused ? "true" : "false"}>
-        <div className="kinetic-ticker-viewport">
+        <div
+          className="kinetic-ticker-viewport"
+          tabIndex={scrollable ? 0 : undefined}
+        >
           <div className="kinetic-ticker-track">
             {track(false)}
             {track(true)}
