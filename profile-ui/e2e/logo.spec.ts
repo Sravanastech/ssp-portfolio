@@ -25,13 +25,7 @@ test.describe("Portfolio brand and navigation", () => {
     await expect(
       page.getByRole("link", { name: "Skip to content" }),
     ).toBeFocused();
-    // Next stops are the Studio/Kinetic/Aether mode strip, then the brand.
-    await page.keyboard.press("Tab");
-    await expect(page.getByRole("button", { name: "Studio" })).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(page.getByRole("button", { name: "Kinetic" })).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(page.getByRole("button", { name: "Aether" })).toBeFocused();
+    // The brand is the first stop after the skip link.
     await page.keyboard.press("Tab");
     const brand = page.getByTestId("logo-link");
     await expect(brand).toBeFocused();

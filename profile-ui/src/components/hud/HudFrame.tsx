@@ -6,7 +6,7 @@ import Scanline from "./Scanline";
 
 export interface HudFrameProps {
   fuiTheme: "void" | "cleanroom";
-  onToggleFuiTheme: () => void;
+  onOpenAppearance: () => void;
   onOpenCommand: () => void;
   locationLabel: string;
 }
@@ -40,7 +40,7 @@ function formatScrollTelemetry(): string {
  */
 export default function HudFrame({
   fuiTheme,
-  onToggleFuiTheme,
+  onOpenAppearance,
   onOpenCommand,
   locationLabel,
 }: HudFrameProps): React.ReactElement {
@@ -141,12 +141,11 @@ export default function HudFrame({
       >
         <button
           type="button"
-          role="switch"
-          aria-checked={fuiTheme === "cleanroom"}
-          aria-label="Toggle FUI theme between Void and Cleanroom"
+          aria-haspopup="dialog"
+          aria-label="Open appearance settings"
           data-state={fuiTheme}
           className="fui-hud-switch inline-flex items-center gap-2 px-2.5 py-1.5"
-          onClick={onToggleFuiTheme}
+          onClick={onOpenAppearance}
         >
           <span
             className="fui-hud-switch-option"

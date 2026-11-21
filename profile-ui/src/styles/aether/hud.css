@@ -44,53 +44,7 @@
   outline-offset: 3px;
 }
 
-/* ========================================== MODE STRIP & HEADER CHROME */
-:root[data-paradigm="aether"] .mode-strip {
-  position: relative;
-  z-index: var(--z-mode-strip);
-  background: var(--fui-chrome-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-block-end: 1px solid var(--border-hairline);
-  color: var(--text-muted);
-  font: 500 13px/1 var(--fui-mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-:root[data-paradigm="aether"] .mode-switch button {
-  padding: 0 11px;
-  block-size: 24px;
-  border-radius: 2px;
-  border: 1px solid transparent;
-  color: var(--text-muted);
-  transition:
-    color var(--motion-base) var(--ease-out),
-    background-color var(--motion-base) var(--ease-out),
-    border-color var(--motion-base) var(--ease-out);
-}
-
-:root[data-paradigm="aether"] .mode-switch button:hover {
-  color: var(--text-primary);
-  background: var(--fui-hover-surface);
-  border-color: var(--border-hairline);
-}
-
-:root[data-paradigm="aether"]
-  .mode-switch
-  button[data-mode="aether"][aria-pressed="true"] {
-  color: var(--fui-accent-ink);
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  font-weight: 700;
-}
-
-@media (pointer: coarse) {
-  :root[data-paradigm="aether"] .mode-switch button {
-    block-size: 36px;
-  }
-}
-
+/* ========================================== HEADER CHROME */
 :root[data-paradigm="aether"] .studio-header {
   background: var(--fui-chrome-bg);
   backdrop-filter: blur(16px);

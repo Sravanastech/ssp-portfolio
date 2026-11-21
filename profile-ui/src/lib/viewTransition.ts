@@ -1,3 +1,4 @@
+import { motionIsReduced } from "./motionPreference";
 /** Content-only route transitions via the View Transitions API (instant fallback). */
 type ViewTransitionLike = {
   skipTransition(): void;
@@ -25,11 +26,7 @@ export function supportsRouteTransition(): boolean {
 }
 
 function reducedMotion(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  );
+  return motionIsReduced();
 }
 
 /**

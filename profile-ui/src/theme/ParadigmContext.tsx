@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { flushSync } from "react-dom";
+import { prefersReducedMotion } from "@/lib/motion";
 import { prefetchAetherStyles, prefetchKineticStyles } from "./paradigmStyles";
 
 export type Paradigm = "studio" | "kinetic" | "aether";
@@ -38,7 +39,6 @@ interface ViewTransitionLike {
 type StartViewTransition = (cb: () => void) => ViewTransitionLike;
 
 const STORAGE_KEY = "portfolio-paradigm";
-const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 const SHOCKWAVE_MS = 680;
 const SHOCKWAVE_EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
 
@@ -69,14 +69,6 @@ function writeStoredParadigm(next: Paradigm) {
     localStorage.setItem(STORAGE_KEY, next);
   } catch {
     // Storage can be disabled; the in-memory paradigm still applies.
-  }
-}
-
-function prefersReducedMotion(): boolean {
-  try {
-    return window.matchMedia?.(REDUCED_MOTION_QUERY)?.matches ?? false;
-  } catch {
-    return false;
   }
 }
 

@@ -1,6 +1,10 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { decipherHeadingElement, useRouteHeadingDecipher } from "../motion";
+import {
+  decipherHeadingElement,
+  prefersReducedMotion,
+  useRouteHeadingDecipher,
+} from "../motion";
 
 function mockReducedMotion(matches: boolean) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
@@ -73,5 +77,23 @@ describe("heading decipher timing (120ms delay, 900ms duration)", () => {
     mockReducedMotion(true);
     renderHook(() => useRouteHeadingDecipher(true, "/about"));
     expect(window.requestAnimationFrame).not.toHaveBeenCalled();
+  });
+});
+
+describe("prefersReducedMotion with the site override", () => {
+  afterEach(() => {
+    delete document.documentElement.dataset.motion;
+  });
+
+  it("is true when html[data-motion=reduced] is set, even if the OS allows motion", () => {
+    mockReducedMotion(false);
+    expect(prefersReducedMotion()).toBe(false);
+    document.documentElement.dataset.motion = "reduced";
+    expect(prefersReducedMotion()).toBe(true);
+  });
+
+  it("is true when the OS asks for reduced motion without the override", () => {
+    mockReducedMotion(true);
+    expect(prefersReducedMotion()).toBe(true);
   });
 });

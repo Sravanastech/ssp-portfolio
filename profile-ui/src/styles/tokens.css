@@ -46,7 +46,6 @@
    *   hud    35   Aether HUD perimeter frame
    *   header 40   studio header, consent banner
    *   dock   45   Aether floating command dock
-   *   mode-strip 50   Aether mode strip
    *   dialog 80/81   ops dialog overlay / panel
    *   overlay 100  Aether dossier backdrop
    *   skip   100  skip link (ties with overlay, as before)
@@ -60,7 +59,6 @@
   --z-hud: 35;
   --z-header: 40;
   --z-dock: 45;
-  --z-mode-strip: 50;
   --z-dialog: 80;
   --z-overlay: 100;
   --z-skip: 100;

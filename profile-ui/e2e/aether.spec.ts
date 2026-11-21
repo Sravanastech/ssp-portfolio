@@ -1,4 +1,5 @@
 import { test, expect, type Page, type ConsoleMessage } from "./fixtures";
+import { appearanceDialog, pickStyle, type Style } from "./appearance-helpers";
 
 const ROUTES = [
   "/",
@@ -19,8 +20,7 @@ function trackConsole(page: Page): string[] {
   return errors;
 }
 
-const seg = (page: Page, mode: "studio" | "kinetic" | "aether") =>
-  page.locator(`.mode-switch button[data-mode="${mode}"]`);
+const choose = (page: Page, mode: Style) => pickStyle(page, mode);
 
 async function settle(page: Page) {
   await page.waitForFunction(
@@ -42,7 +42,7 @@ test.describe("Aether FUI Minimalism (desktop)", () => {
     await page.goto("/");
 
     // Switch to Aether
-    await seg(page, "aether").click();
+    await choose(page, "aether");
     await settle(page);
     expect(
       await page.evaluate(() => document.documentElement.dataset.paradigm),
@@ -54,17 +54,26 @@ test.describe("Aether FUI Minimalism (desktop)", () => {
 
     // HUD frame visible & hardware CLEANROOM -> VOID switch works (shared theme -> midnight)
     await expect(page.getByText(/SYS\.NOMINAL \/\/ 60FPS/i)).toBeVisible();
-    const hwSwitch = page.getByRole("switch", { name: /toggle fui theme/i });
-    await hwSwitch.click();
+    // The HUD theme control opens the shared Appearance panel; Dark there drives the theme.
+    await page
+      .getByRole("button", { name: /open appearance settings/i })
+      .click();
+    const panel = appearanceDialog(page);
+    await expect(panel).toBeVisible();
+    await panel.getByRole("radio", { name: "Dark", exact: true }).click();
     expect(
       await page.evaluate(() => document.documentElement.dataset.fuiTheme),
     ).toBe("void");
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "midnight");
-    // Header toggle and HUD switch stay in sync
-    await expect(page.locator(".mode-toggle:visible")).toHaveAttribute(
-      "aria-checked",
-      "true",
+    await expect(page.locator("html")).toHaveAttribute(
+      "data-theme",
+      "midnight",
     );
+    await expect(
+      panel.getByRole("radio", { name: "Dark", exact: true }),
+    ).toBeChecked();
+    // Escape closes the panel (and does not skip the intro or close anything else).
+    await page.keyboard.press("Escape");
+    await expect(panel).toHaveCount(0);
 
     // Open Technical Dossier modal from first Mission Module
     await page
@@ -94,13 +103,13 @@ test.describe("Aether FUI Minimalism (desktop)", () => {
     ).toBe("void");
 
     // Switch Aether -> Kinetic -> Studio
-    await seg(page, "kinetic").click();
+    await choose(page, "kinetic");
     await settle(page);
     expect(
       await page.evaluate(() => document.documentElement.dataset.paradigm),
     ).toBe("kinetic");
 
-    await seg(page, "studio").click();
+    await choose(page, "studio");
     await settle(page);
     expect(
       await page.evaluate(() => document.documentElement.dataset.paradigm),
@@ -114,7 +123,7 @@ test.describe("Aether FUI Minimalism (desktop)", () => {
   }) => {
     const errors = trackConsole(page);
     await page.goto("/");
-    await seg(page, "aether").click();
+    await choose(page, "aether");
     await settle(page);
 
     for (const route of ROUTES) {
@@ -153,12 +162,12 @@ test.describe("Aether FUI Minimalism (desktop)", () => {
 test.describe("Aether FUI mobile 390x844", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("3-way mode strip, Bento grid, and HUD fit with zero horizontal overflow", async ({
+  test("appearance panel, Bento grid, and HUD fit with zero horizontal overflow", async ({
     page,
   }) => {
     const errors = trackConsole(page);
     await page.goto("/");
-    await seg(page, "aether").click();
+    await choose(page, "aether");
     await settle(page);
 
     const overflow = await page.evaluate(

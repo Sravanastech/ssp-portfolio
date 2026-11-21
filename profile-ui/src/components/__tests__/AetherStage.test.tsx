@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { ThemeProvider } from "@/theme/ThemeContext";
 import { ParadigmProvider, useParadigm } from "@/theme/ParadigmContext";
 import AetherStage from "../AetherStage";
+import { APPEARANCE_OPEN_EVENT } from "../appearance/appearanceStore";
 
 function ActivateAether() {
   const { setParadigm } = useParadigm();
@@ -55,15 +56,14 @@ describe("AetherStage (FUI HUD Frame + ⌘K Command Palette)", () => {
     expect(screen.getByText(/SYS\.NOMINAL \/\/ 60FPS/i)).toBeInTheDocument();
     expect(document.documentElement.dataset.fuiTheme).toBe("void");
 
-    // Toggle VOID -> CLEANROOM
-    const themeSwitch = screen.getByRole("switch", {
-      name: /toggle fui theme/i,
-    });
-    expect(themeSwitch).toHaveAttribute("aria-checked", "false");
-    fireEvent.click(themeSwitch);
-    expect(themeSwitch).toHaveAttribute("aria-checked", "true");
-    expect(document.documentElement.dataset.fuiTheme).toBe("cleanroom");
-    expect(localStorage.getItem("theme")).toBe("sunrise");
+    // The HUD theme control now opens the shared Appearance panel.
+    const onOpen = vi.fn();
+    window.addEventListener(APPEARANCE_OPEN_EVENT, onOpen);
+    fireEvent.click(
+      screen.getByRole("button", { name: /open appearance settings/i }),
+    );
+    window.removeEventListener(APPEARANCE_OPEN_EVENT, onOpen);
+    expect(onOpen).toHaveBeenCalledTimes(1);
 
     // Open ⌘K Command Palette via keyboard shortcut
     fireEvent.keyDown(window, { key: "k", metaKey: true });
