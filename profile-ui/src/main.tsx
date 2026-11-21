@@ -57,20 +57,26 @@ try {
   /* Storage can be disabled; motion follows the OS. */
 }
 
-// Apply a saved non-Studio paradigm before first paint of React and warm its CSS chunk.
-// Module code only: the CSP forbids inline scripts.
+// Apply the stored paradigm (default Aether) before first paint of React and warm its
+// CSS chunk. Prerendered pages already run an equivalent external head script; this
+// covers dev and client navigations. Module code only: the CSP forbids inline scripts.
 try {
   const savedParadigm = localStorage.getItem("portfolio-paradigm");
+  const root = document.documentElement;
   if (savedParadigm === "kinetic") {
-    document.documentElement.dataset.paradigm = "kinetic";
+    root.dataset.paradigm = "kinetic";
+    delete root.dataset.fuiTheme;
     void prefetchKineticStyles();
-  } else if (savedParadigm === "aether") {
-    document.documentElement.dataset.paradigm = "aether";
-    document.documentElement.dataset.fuiTheme = prePaintFuiTheme();
+  } else if (savedParadigm === "studio") {
+    root.dataset.paradigm = "studio";
+    delete root.dataset.fuiTheme;
+  } else {
+    root.dataset.paradigm = "aether";
+    root.dataset.fuiTheme = prePaintFuiTheme();
     void prefetchAetherStyles();
   }
 } catch {
-  /* Storage can be disabled; Studio stays the default. */
+  /* Storage can be disabled; Aether stays the default. */
 }
 
 const queryClient = new QueryClient({

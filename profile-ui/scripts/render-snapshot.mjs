@@ -12,7 +12,7 @@ const template = await readFile(templatePath, "utf8");
 if (!Number.isSafeInteger(snapshot.revision) || !snapshot.content?.profile) throw new Error("Invalid content snapshot");
 
 for (const route of routes) {
-  const { html, head } = render(route, snapshot.content);
+  const { html, head } = await render(route, snapshot.content);
   const document = template.replace(/<title\b[^>]*>[\s\S]*?<\/title>/gi, "")
     .replace("<!--page-head-->", head)
     .replace('<div id="root"></div>', `<div id="root">${html}</div>`);

@@ -42,12 +42,15 @@ const STORAGE_KEY = "portfolio-paradigm";
 const SHOCKWAVE_MS = 680;
 const SHOCKWAVE_EASING = "cubic-bezier(0.16, 1, 0.3, 1)";
 
-// Default value keeps components usable outside a provider (no-op controls, Studio).
+/** Paradigm for visitors with no (or an invalid) stored choice, and for SSR/prerender. */
+const DEFAULT_PARADIGM: Paradigm = "aether";
+
+// Default value keeps components usable outside a provider (no-op controls, default design).
 const noop = () => undefined;
 const ParadigmContext = createContext<ParadigmContextValue>({
-  paradigm: "studio",
+  paradigm: DEFAULT_PARADIGM,
   isKinetic: false,
-  isAether: false,
+  isAether: true,
   setParadigm: noop,
   toggleParadigm: noop,
   prefetchKinetic: noop,
@@ -57,10 +60,11 @@ const ParadigmContext = createContext<ParadigmContextValue>({
 function readStoredParadigm(): Paradigm {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "kinetic" || stored === "aether") return stored;
-    return "studio";
+    if (stored === "studio" || stored === "kinetic" || stored === "aether")
+      return stored;
+    return DEFAULT_PARADIGM;
   } catch {
-    return "studio"; // Storage can be disabled.
+    return DEFAULT_PARADIGM; // Storage can be disabled.
   }
 }
 
@@ -113,7 +117,7 @@ function maxRadius(x: number, y: number): number {
 
 export function ParadigmProvider({ children }: { children: ReactNode }) {
   const [paradigm, setParadigmState] = useState<Paradigm>(() =>
-    typeof window === "undefined" ? "studio" : readStoredParadigm(),
+    typeof window === "undefined" ? DEFAULT_PARADIGM : readStoredParadigm(),
   );
   const [announcement, setAnnouncement] = useState("");
 
