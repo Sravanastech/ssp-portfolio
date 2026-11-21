@@ -1,18 +1,22 @@
 import { test, expect } from "./fixtures";
+import { pickTheme } from "./appearance-helpers";
 
 test.describe("Responsive portfolio header", () => {
   for (const width of [375, 768, 1440]) {
-    test(`brand and mode toggle fit at ${width}px`, async ({ page }) => {
+    test(`brand and appearance trigger fit at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/");
       const header = page.locator("header.studio-header");
       const brand = page.getByTestId("logo-link");
-      const controls = header.locator(".mode-toggle:visible");
+      const controls = header.locator("[data-appearance-trigger]:visible");
       await expect(controls).toHaveCount(1);
-      await expect(controls).toHaveAccessibleName("Dark mode");
+      await expect(controls).toHaveAccessibleName("Appearance");
       await expect(header.locator(".composition-switcher")).toHaveCount(0);
-      for (const value of ["midnight", "sunrise"]) {
-        await controls.click();
+      for (const [choice, value] of [
+        ["Dark", "midnight"],
+        ["Light", "sunrise"],
+      ] as const) {
+        await pickTheme(page, choice);
         await expect(page.locator("html")).toHaveAttribute("data-theme", value);
         await expect(brand).toBeVisible();
         const brandBox = await brand.boundingBox();

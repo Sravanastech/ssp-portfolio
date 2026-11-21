@@ -1,10 +1,12 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect, type Page } from "./fixtures";
+import { appearanceTrigger, appearanceDialog } from "./appearance-helpers";
 
-type Paradigm = "studio" | "aether";
+type Paradigm = "studio" | "kinetic" | "aether";
 type Theme = "sunrise" | "midnight";
 
 const PARADIGMS: Paradigm[] = ["studio", "aether"];
+const PANEL_PARADIGMS: Paradigm[] = ["studio", "kinetic", "aether"];
 const THEMES: Theme[] = ["sunrise", "midnight"];
 const VIEWPORTS = [
   { name: "mobile", width: 375, height: 812 },
@@ -71,6 +73,37 @@ test.describe("axe accessibility matrix", () => {
               expect(summary, summary.join("\n")).toEqual([]);
             });
           }
+        });
+      }
+    }
+  }
+});
+
+test.describe("axe with the Appearance panel open", () => {
+  test.use({ reducedMotion: "reduce" });
+
+  for (const paradigm of PANEL_PARADIGMS) {
+    for (const theme of THEMES) {
+      for (const vp of VIEWPORTS) {
+        test(`${paradigm} / ${theme} / ${vp.name}`, async ({ page }) => {
+          await page.setViewportSize({ width: vp.width, height: vp.height });
+          await seed(page, paradigm, theme);
+          await page.goto("/");
+          await page.waitForFunction(
+            (p) => document.documentElement.dataset.paradigm === p,
+            paradigm,
+          );
+          await appearanceTrigger(page).click();
+          await expect(appearanceDialog(page)).toBeVisible();
+          await page.waitForTimeout(300);
+          const { violations } = await new AxeBuilder({ page })
+            .withTags(TAGS)
+            .analyze();
+          const summary = violations.map(
+            (v) =>
+              `${v.id} (${v.nodes.length} nodes) first: ${v.nodes[0]?.target.join(" ")}`,
+          );
+          expect(summary, summary.join("\n")).toEqual([]);
         });
       }
     }
