@@ -1,10 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import {
-  ParadigmProvider,
-  prefetchAetherStyles,
-  useParadigm,
-} from "../ParadigmContext";
+import { ParadigmProvider, useParadigm } from "../ParadigmContext";
+import { prefetchAetherStyles } from "../paradigmStyles";
 
 function Harness() {
   const {

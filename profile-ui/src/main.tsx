@@ -13,7 +13,7 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import {
   prefetchAetherStyles,
   prefetchKineticStyles,
-} from "./theme/ParadigmContext";
+} from "./theme/paradigmStyles";
 import { startMonitoring } from "./lib/monitoring";
 import { applyPerfTier } from "./lib/perfTier";
 import { prefetchRoute } from "./lib/routePrefetch";
