@@ -125,7 +125,7 @@ export default function HudFrame({
           className="fui-hud-clock"
           aria-label="Live UTC clock"
         >
-          00:00:00 UTC
+          --:--:-- UTC
         </span>
       </div>
 

@@ -156,3 +156,16 @@
 :root[data-paradigm="aether"] .fui-page[data-boot="quick"] .fui-boot-scan {
   display: none;
 }
+
+/* ============================================ PRERENDER FIRST FRAME HOLD */
+/* The prerendered page is replaced by React's DOM once the deferred bundle mounts.
+   Until html[data-app-ready], hold every entrance animation at its first frame so the
+   boot starts exactly once, on the mounted DOM. data-js is set by the prerender head
+   script only; without JS (or if the bundle never lands, see boot loader) the page
+   simply runs its CSS animations and ends fully visible. */
+:root[data-paradigm="aether"][data-js]:not([data-app-ready]) main,
+:root[data-paradigm="aether"][data-js]:not([data-app-ready]) main *,
+:root[data-paradigm="aether"][data-js]:not([data-app-ready]) main *::before,
+:root[data-paradigm="aether"][data-js]:not([data-app-ready]) main *::after {
+  animation-play-state: paused;
+}

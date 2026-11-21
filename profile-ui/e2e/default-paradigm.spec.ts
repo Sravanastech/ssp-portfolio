@@ -105,6 +105,55 @@ test.describe("Aether is the default design", () => {
   });
 });
 
+test.describe("Aether boot plays exactly once", () => {
+  test("hero title animation starts once and the HUD clock is live", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const w = window as unknown as { __starts: string[] };
+      w.__starts = [];
+      document.addEventListener(
+        "animationstart",
+        (e) => {
+          if ((e.target as Element).closest?.(".fui-hero-title"))
+            w.__starts.push((e as AnimationEvent).animationName);
+        },
+        true,
+      );
+    });
+    await page.goto("/");
+    await page.waitForTimeout(2800);
+    const starts = await page.evaluate(
+      () => (window as unknown as { __starts: string[] }).__starts,
+    );
+    expect(starts).toEqual(["fui-mask-reveal"]);
+    await expect(page.locator(".fui-hud-clock")).toHaveText(
+      /^\d\d:\d\d:\d\d UTC$/,
+    );
+  });
+
+  test("the prerendered page holds the boot's first frame until the app mounts", async ({
+    page,
+  }) => {
+    await page.route(/\/assets\/index-[^/]+\.js$/, async (route) => {
+      await new Promise((r) => setTimeout(r, 2500));
+      await route.continue();
+    });
+    await page.goto("/", { waitUntil: "commit" });
+    const title = page.locator(".fui-hero-title").first();
+    await expect(title).toBeAttached();
+    await page.waitForTimeout(1200);
+    expect(
+      await page.evaluate(() => document.documentElement.dataset.appReady),
+    ).toBeUndefined();
+    expect(
+      await title.evaluate((el) => getComputedStyle(el).clipPath),
+    ).not.toBe("none");
+    await expect(page.locator(".fui-hud-clock")).toHaveText("--:--:-- UTC");
+    await page.waitForSelector("html[data-app-ready]", { state: "attached" });
+  });
+});
+
 test.describe("prerendered HTML", () => {
   const dist = (file: string) => resolve("dist", file);
 
@@ -133,6 +182,15 @@ test.describe("prerendered HTML", () => {
       () => getComputedStyle(document.documentElement).colorScheme,
     );
     expect(["light", "dark"]).toContain(bg);
+    // Without JS the boot runs from CSS alone and the page ends fully visible.
+    await page.waitForTimeout(3200);
+    await expect(page.locator(".fui-hero-title").first()).toBeVisible();
+    expect(
+      await page
+        .locator(".fui-module")
+        .first()
+        .evaluate((el) => getComputedStyle(el).opacity),
+    ).toBe("1");
     await context.close();
   });
 });

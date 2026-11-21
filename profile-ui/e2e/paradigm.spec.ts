@@ -2,6 +2,7 @@ import { test, expect, type Page, type ConsoleMessage } from "./fixtures";
 import { mkdir, writeFile } from "node:fs/promises";
 import {
   appearanceDialog,
+  closeAppearance,
   openAppearance,
   pickStyle,
 } from "./appearance-helpers";
@@ -487,6 +488,7 @@ for (const rate of [1, 4]) {
           "data-paradigm",
           "kinetic",
         );
+        await closeAppearance(page); // the popover would cover the nav
       }),
     );
     results.push(
@@ -497,6 +499,7 @@ for (const rate of [1, 4]) {
           "data-paradigm",
           "studio",
         );
+        await closeAppearance(page); // the popover would cover the nav
       }),
     );
     results.push(
@@ -525,6 +528,7 @@ for (const rate of [1, 4]) {
           "data-paradigm",
           "kinetic",
         );
+        await closeAppearance(page); // the popover would cover the nav
       }),
     );
     results.push(
