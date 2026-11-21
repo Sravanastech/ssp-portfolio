@@ -64,7 +64,7 @@ public class HttpTurnstileVerifier implements TurnstileVerifier {
 
   private static List<String> splitHostnames(String csv) {
     return Arrays.stream(csv.split(","))
-        .map(String::trim)
+        .map(s -> s.trim())
         .filter(s -> !s.isEmpty())
         .map(s -> s.toLowerCase(Locale.ROOT))
         .toList();

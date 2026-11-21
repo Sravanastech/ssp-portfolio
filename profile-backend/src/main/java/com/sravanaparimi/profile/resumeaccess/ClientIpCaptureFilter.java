@@ -2,7 +2,6 @@ package com.sravanaparimi.profile.resumeaccess;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.Collections;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
