@@ -15,6 +15,24 @@ const publicRoutes = [
 for (const route of publicRoutes) {
   test(`${route} has no serious accessibility violations`, async ({ page }) => {
     await page.goto(`http://127.0.0.1:5173${route}`);
+    // Audit the settled page: mid-fade entrance animations blend colors and read as
+    // false contrast failures on slow runners. Infinite (ambient) loops are skipped, and
+    // the wait is capped for animations that only run once scrolled into view.
+    await page.evaluate(() =>
+      Promise.race([
+        Promise.all(
+          document
+            .getAnimations()
+            .filter(
+              (a) =>
+                a.playState === "running" &&
+                a.effect?.getComputedTiming().iterations !== Infinity,
+            )
+            .map((a) => a.finished.catch(() => undefined)),
+        ),
+        new Promise((resolve) => setTimeout(resolve, 4000)),
+      ]),
+    );
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();

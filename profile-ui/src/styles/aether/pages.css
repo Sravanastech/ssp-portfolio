@@ -237,6 +237,13 @@
   color: var(--text-muted);
 }
 
+/* Work case studies: off-screen articles skip style/layout/paint until they near the
+   viewport, so the React mount over the prerendered /work page stays cheap. */
+:root[data-paradigm="aether"] .studio-case {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1100px;
+}
+
 /* Footer — FUI Elevated Telemetry Band (clears floating HUD dock) */
 :root[data-paradigm="aether"] .studio-footer {
   background: var(--bg-elevated);
