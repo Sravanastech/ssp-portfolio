@@ -4,7 +4,6 @@ import { HelmetProvider } from "react-helmet-async";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AuthCallback from "../AuthCallback";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { LazyMotion, domAnimation } from "framer-motion";
 
 const auth = vi.hoisted(() => ({
   isLoading: false,
@@ -17,18 +16,16 @@ vi.mock("@/auth/auth", () => ({ useAuth: () => auth }));
 
 function callback() {
   return render(
-    <LazyMotion features={domAnimation}>
-      <HelmetProvider>
-        <QueryClientProvider client={new QueryClient()}>
-          <MemoryRouter initialEntries={["/auth-callback"]}>
-            <Routes>
-              <Route path="/auth-callback" element={<AuthCallback />} />
-              <Route path="/resume" element={<h1>Secure resume</h1>} />
-            </Routes>
-          </MemoryRouter>
-        </QueryClientProvider>
-      </HelmetProvider>
-    </LazyMotion>,
+    <HelmetProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        <MemoryRouter initialEntries={["/auth-callback"]}>
+          <Routes>
+            <Route path="/auth-callback" element={<AuthCallback />} />
+            <Route path="/resume" element={<h1>Secure resume</h1>} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
+    </HelmetProvider>,
   );
 }
 

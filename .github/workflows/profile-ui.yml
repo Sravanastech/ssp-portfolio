@@ -21,12 +21,15 @@ jobs:
       VITE_AUTH0_CALLBACK_URL: http://127.0.0.1:5173/auth-callback
       VITE_AUTH0_AUDIENCE: https://portfolio-tests.example/api
       VITE_WEB3FORMS_ACCESS_KEY: test-only-not-a-delivery-key
+      # Cloudflare's public always-pass test key: Vite inlines it at build time, so the
+      # resume email gate renders its widget in the production-build e2e run.
+      VITE_TURNSTILE_SITE_KEY: 1x00000000000000000000AA
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: "npm"

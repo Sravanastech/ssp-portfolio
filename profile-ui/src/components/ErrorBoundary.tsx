@@ -1,4 +1,5 @@
 import React from "react";
+import { TriangleAlert } from "lucide-react";
 import { reportEvent } from "@/lib/monitoring";
 
 interface ErrorBoundaryState {
@@ -60,7 +61,7 @@ class ErrorBoundary extends React.Component<
               }}
               aria-hidden="true"
             >
-              ⚠
+              <TriangleAlert size={28} aria-hidden="true" />
             </div>
 
             <h1

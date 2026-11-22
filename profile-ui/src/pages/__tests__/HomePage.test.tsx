@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { beforeEach, afterEach, describe, it, expect } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -29,7 +29,14 @@ const renderWithProviders = (component: React.ReactElement) => {
   );
 };
 
+// Studio markup under test: Aether is the default design, so pin the stored choice.
+const pinStudio = () => {
+  beforeEach(() => localStorage.setItem("portfolio-paradigm", "studio"));
+  afterEach(() => localStorage.clear());
+};
+
 describe("HomePage Integration Tests", () => {
+  pinStudio();
   it("should render the hero section with headline", () => {
     renderWithProviders(<HomePage />);
 
@@ -86,7 +93,8 @@ describe("HomePage paradigm toggle", () => {
   it("switches to kinetic, mounts ticker, returns to studio, keeps focus", async () => {
     localStorage.clear();
     renderWithProviders(<HomePage />);
-    const toggle = screen.getByRole("button", { name: "Kinetic" });
+    fireEvent.click(screen.getAllByRole("button", { name: "Appearance" })[0]);
+    const toggle = screen.getByRole("radio", { name: "Kinetic" });
     toggle.focus();
     fireEvent.click(toggle);
     expect(document.documentElement.dataset.paradigm).toBe("kinetic");
@@ -94,7 +102,7 @@ describe("HomePage paradigm toggle", () => {
       await screen.findByRole("region", { name: /kinetic telemetry ticker/i }),
     ).toBeInTheDocument();
     expect(toggle).toHaveFocus();
-    const back = screen.getByRole("button", { name: "Studio" });
+    const back = screen.getByRole("radio", { name: "Studio" });
     back.focus();
     fireEvent.click(back);
     expect(document.documentElement.dataset.paradigm).toBe("studio");
@@ -107,6 +115,7 @@ describe("HomePage paradigm toggle", () => {
 });
 
 describe("HomePage section headings", () => {
+  pinStudio();
   it("mirrors each heading text in data-ghost", () => {
     const { container } = renderWithProviders(<HomePage />);
     const wrappers = container.querySelectorAll(".studio-section-heading");

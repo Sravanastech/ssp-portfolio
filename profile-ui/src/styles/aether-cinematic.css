@@ -1,0 +1,18 @@
+/*
+ * Aether — FUI Minimalism dual-theme stylesheet (entry point).
+ * Lazy-loaded via import.meta.glob in ParadigmContext; never imported by index.css,
+ * so Studio visitors never download it. Partials live in ./aether/ and are
+ * imported in original cascade order. Scoped to :root[data-paradigm="aether"].
+ */
+@import "./aether/tokens.css";
+@import "./aether/hud.css";
+@import "./aether/hero.css";
+@import "./aether/modules.css";
+@import "./aether/dossier.css";
+@import "./aether/palette.css";
+@import "./aether/appearance.css";
+@import "./aether/interior.css";
+@import "./aether/work.css";
+@import "./aether/pages.css";
+@import "./aether/motion.css";
+@import "./aether/responsive.css";

@@ -1,16 +1,48 @@
-export type Theme = "woodland" | "sunrise" | "midnight";
+export type Theme = "sunrise" | "midnight";
 
 /** Color scheme each theme declares on the root (drives native controls and scrollbars). */
 export const themeScheme: Record<Theme, "light" | "dark"> = {
-  woodland: "light",
   sunrise: "light",
   midnight: "dark",
 };
 
+/** Every theme other than the dark one is light. */
+export const isDarkTheme = (theme: Theme): boolean =>
+  themeScheme[theme] === "dark";
+
 /** Theme ids that were persisted by earlier versions, mapped to their replacement. */
 export const legacyThemeIds: Record<string, Theme> = {
   ocean: "midnight",
+  woodland: "sunrise",
 };
+
+/** What the visitor picked; "system" follows the OS and resolves to a Theme. */
+export type ThemePreference = "light" | "dark" | "system";
+
+/** Value persisted under the `theme` key for each preference (existing ids are kept). */
+export const storedThemeValue: Record<ThemePreference, string> = {
+  light: "sunrise",
+  dark: "midnight",
+  system: "system",
+};
+
+/** Parses a persisted `theme` value (current, "system" or legacy id); null when unusable. */
+export function parseStoredTheme(raw: string | null): ThemePreference | null {
+  if (!raw) return null;
+  if (raw === "system") return "system";
+  const id = raw in themeConfig ? (raw as Theme) : legacyThemeIds[raw];
+  if (!id) return null;
+  return isDarkTheme(id) ? "dark" : "light";
+}
+
+/** Resolves a preference to a concrete theme given the OS colour scheme. */
+export function resolveTheme(
+  preference: ThemePreference,
+  systemDark: boolean,
+): Theme {
+  if (preference === "system") return systemDark ? "midnight" : "sunrise";
+  return preference === "dark" ? "midnight" : "sunrise";
+}
 
 export interface ThemeColors {
   primary: string;
@@ -30,23 +62,6 @@ export interface ThemeColors {
 }
 
 export const themeConfig: Record<Theme, ThemeColors> = {
-  woodland: {
-    // Sulu (light sage) & Deep Fir (dark forest green)
-    primary: "#0D3F35",
-    secondary: "#4A7C72",
-    accent: "#F5F9F7",
-    background: "#F9FCFB",
-    surface: "#FFFFFF",
-    text: "#0D3F35",
-    textSecondary: "#2D5A50",
-    border: "#D4E0DC",
-    borderLight: "#E8EFED",
-    success: "#059669",
-    warning: "#D97706",
-    error: "#DC2626",
-    info: "#0284C7",
-    shadow: "rgba(13, 63, 53, 0.15)",
-  },
   sunrise: {
     // Studio daylight: cobalt ink on cool paper.
     primary: "#244CE4",

@@ -1,5 +1,7 @@
 import { test, expect } from "./fixtures";
 
+test.use({ paradigm: "studio" });
+
 test.describe("Portfolio brand and navigation", () => {
   test("brand exposes its identity and a real home link", async ({ page }) => {
     await page.goto("/work");
@@ -25,11 +27,7 @@ test.describe("Portfolio brand and navigation", () => {
     await expect(
       page.getByRole("link", { name: "Skip to content" }),
     ).toBeFocused();
-    // Next stops are the Studio/Kinetic mode strip, then the brand.
-    await page.keyboard.press("Tab");
-    await expect(page.getByRole("button", { name: "Studio" })).toBeFocused();
-    await page.keyboard.press("Tab");
-    await expect(page.getByRole("button", { name: "Kinetic" })).toBeFocused();
+    // The brand is the first stop after the skip link.
     await page.keyboard.press("Tab");
     const brand = page.getByTestId("logo-link");
     await expect(brand).toBeFocused();

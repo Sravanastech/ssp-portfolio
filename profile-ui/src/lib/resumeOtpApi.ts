@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/lib/zod";
 
 /** Typed client for the resume email-code endpoints (frozen API contract). */
 export type OtpErrorCode =

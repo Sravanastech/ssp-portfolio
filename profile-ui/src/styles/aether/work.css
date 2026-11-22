@@ -1,0 +1,328 @@
+/* Work Page: Sticky Case Nav + Chamfered Case Study Modules */
+:root[data-paradigm="aether"] .studio-case-nav {
+  background: var(--fui-chrome-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border-hairline);
+  border-bottom: 1px solid var(--border-hairline);
+  padding: 12px 0;
+  margin-bottom: 32px;
+  gap: 10px;
+}
+
+:root[data-paradigm="aether"] .studio-case-nav a {
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font-family: var(--fui-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 14px;
+  transition:
+    border-color var(--motion-base),
+    color var(--motion-base),
+    background-color var(--motion-base);
+}
+
+:root[data-paradigm="aether"] .studio-case-nav a:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  background: var(--fui-accent-soft);
+}
+
+:root[data-paradigm="aether"] .studio-case-nav a[aria-current] {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--fui-accent-ink);
+  font-weight: 700;
+}
+
+:root[data-paradigm="aether"] .studio-case {
+  position: relative;
+  padding: clamp(24px, 3.5vw, 40px);
+  margin-bottom: 28px;
+  border: 0;
+  background: var(--border-strong);
+  color: var(--text-primary);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 16px) 0,
+    100% 16px,
+    100% 100%,
+    16px 100%,
+    0 calc(100% - 16px)
+  );
+  animation: fui-module-boot 0.85s var(--ease-out) 0.95s both;
+  transition: background-color var(--motion-slow) var(--ease-out);
+}
+
+:root[data-paradigm="aether"] .studio-case:nth-of-type(2) {
+  animation-delay: 1.3s;
+}
+
+:root[data-paradigm="aether"] .studio-case:nth-of-type(3) {
+  animation-delay: 1.65s;
+}
+
+:root[data-paradigm="aether"] .studio-case:nth-of-type(4) {
+  animation-delay: 2s;
+}
+
+:root[data-paradigm="aether"] .studio-case:nth-of-type(5) {
+  animation-delay: 2.35s;
+}
+
+:root[data-paradigm="aether"] .studio-case::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  background: var(--bg-elevated);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 15.5px) 0,
+    100% 15.5px,
+    100% 100%,
+    15.5px 100%,
+    0 calc(100% - 15.5px)
+  );
+  pointer-events: none;
+}
+
+:root[data-paradigm="aether"] .studio-case > * {
+  position: relative;
+  z-index: 1;
+}
+
+:root[data-paradigm="aether"] .studio-case:hover {
+  background: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .studio-case-head {
+  gap: clamp(24px, 4vw, 48px);
+  margin-bottom: 32px;
+}
+
+:root[data-paradigm="aether"] .studio-case-head h2 {
+  font-size: clamp(1.65rem, 1.1rem + 2vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .studio-case-head .work-stack {
+  font-family: var(--fui-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .studio-case-body {
+  padding-top: 24px;
+  border-top: 1px solid var(--border-hairline);
+  gap: 28px;
+}
+
+:root[data-paradigm="aether"] .studio-case-body h3 {
+  font-family: var(--fui-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  margin-bottom: 10px;
+}
+
+:root[data-paradigm="aether"] .studio-case-body p {
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .studio-case-flow {
+  margin-top: 28px;
+  padding: 20px 24px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-hairline);
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .studio-case-flow li {
+  font-family: var(--fui-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+}
+
+:root[data-paradigm="aether"] .studio-case-flow li svg {
+  color: var(--accent-primary);
+}
+
+/* Re-skin ProjectArtwork SVG diagrams into FUI VOID / CLEANROOM technical schematics */
+:root[data-paradigm="aether"] .pa-art,
+:root[data-paradigm="aether"] .project-art {
+  --pa-bg: var(--bg-primary);
+  --pa-card: var(--bg-elevated);
+  --pa-text: var(--text-primary);
+  --pa-muted: var(--text-muted);
+  --pa-line: var(--border-strong);
+  --pa-blue: var(--accent-primary);
+  --pa-flow: var(--accent-primary);
+  --pa-lime: var(--accent-amber);
+  --pa-on-lime: var(--fui-accent-ink);
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-primary);
+}
+
+:root[data-paradigm="aether"] .pa .pa-on-blue {
+  fill: var(--fui-accent-ink);
+}
+
+:root[data-paradigm="aether"] .pa text {
+  font-family: var(--fui-mono);
+}
+
+/* Project Detail Page (/work/:slug) */
+:root[data-paradigm="aether"] .project-meta {
+  padding-top: 20px;
+  border-top: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .project-meta dt {
+  font-family: var(--fui-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .project-meta dd {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+:root[data-paradigm="aether"] .project-stack li {
+  padding: 4px 10px;
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-family: var(--fui-mono);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:root[data-paradigm="aether"] .project-figure {
+  margin: 0 0 36px;
+  animation: fui-mask-reveal 0.8s var(--ease-out) 0.9s both;
+}
+
+:root[data-paradigm="aether"] .project-figure figcaption {
+  font-family: var(--fui-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .project-body {
+  padding-block: 0 48px;
+  gap: 18px;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .project-body > section {
+  padding: 24px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-hairline);
+  animation: fui-mask-reveal 0.75s var(--ease-out) 1.05s both;
+}
+
+:root[data-paradigm="aether"] .project-body > section:nth-child(2) {
+  animation-delay: 1.25s;
+}
+
+:root[data-paradigm="aether"] .project-body > section:nth-child(3) {
+  animation-delay: 1.45s;
+}
+
+:root[data-paradigm="aether"] .project-body h2 {
+  font-family: var(--fui-mono);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .project-body p {
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .project-related h2 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .project-related a {
+  position: relative;
+  background: var(--border-strong);
+  border: 0;
+  color: var(--text-primary);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 14px) 0,
+    100% 14px,
+    100% 100%,
+    14px 100%,
+    0 calc(100% - 14px)
+  );
+  transition:
+    transform var(--motion-slow) var(--ease-out),
+    background-color var(--motion-base);
+}
+
+:root[data-paradigm="aether"] .project-related a::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  background: var(--bg-elevated);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 13.5px) 0,
+    100% 13.5px,
+    100% 100%,
+    13.5px 100%,
+    0 calc(100% - 13.5px)
+  );
+  pointer-events: none;
+}
+
+:root[data-paradigm="aether"] .project-related a > * {
+  position: relative;
+  z-index: 1;
+}
+
+:root[data-paradigm="aether"] .project-related a:hover {
+  background: var(--accent-primary);
+  transform: translateY(-3px);
+}
+
+:root[data-paradigm="aether"] .project-related-org {
+  font-family: var(--fui-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .project-related-name {
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .project-related-summary {
+  color: var(--text-muted);
+}

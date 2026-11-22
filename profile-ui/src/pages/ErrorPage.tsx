@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { m } from "framer-motion";
 import { AlertCircle, Home } from "lucide-react";
 import "@/styles/pages.css";
 
@@ -68,17 +67,14 @@ const ErrorPage = ({
   return (
     <div className="studio-page error-page">
       <div className="studio-container">
-        <m.header
-          className="studio-page-intro"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
+        <header className="studio-page-intro">
           <p className="error-code">
             <AlertCircle size={24} aria-hidden="true" />
             {code}
           </p>
-          <h1 className="studio-page-heading">{getErrorTitle()}</h1>
+          <h1 className="studio-page-heading" data-no-decipher>
+            {getErrorTitle()}
+          </h1>
           <p className="studio-lede">{getErrorDescription()}</p>
           {autoRedirect && (
             <div className="error-countdown">
@@ -87,11 +83,11 @@ const ErrorPage = ({
                 <span data-testid="countdown-number">{countdown}</span>s...
               </p>
               <div className="error-track" aria-hidden="true">
-                <m.span
-                  animate={{
+                <span
+                  style={{
                     width: `${(countdown / COUNTDOWN_SECONDS) * 100}%`,
+                    transition: "width 1s linear",
                   }}
-                  transition={{ duration: 1, ease: "linear" }}
                 />
               </div>
             </div>
@@ -106,7 +102,7 @@ const ErrorPage = ({
               Go Home
             </button>
           </div>
-        </m.header>
+        </header>
       </div>
     </div>
   );

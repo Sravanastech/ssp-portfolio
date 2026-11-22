@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useInRouterContext } from "react-router-dom";
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormErrorSummary from "./FormErrorSummary";
 import {
@@ -377,7 +377,9 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
               </a>
             )}
           </p>
-          <p className="text-[0.8125rem]">Press ⌘+Enter to send</p>
+          <p className="fui-touch-hide text-[0.8125rem] whitespace-nowrap">
+            ⌘↵ to send
+          </p>
         </div>
 
         <div className="pt-2">

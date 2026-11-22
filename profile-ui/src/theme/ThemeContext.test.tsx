@@ -18,8 +18,15 @@ function mockMedia(dark: boolean) {
 }
 
 function Probe() {
-  const { currentTheme, setTheme } = useTheme();
-  return <button onClick={() => setTheme("sunrise")}>{currentTheme}</button>;
+  const { currentTheme, setTheme, themePreference, setThemePreference } =
+    useTheme();
+  return (
+    <>
+      <button onClick={() => setTheme("sunrise")}>{currentTheme}</button>
+      <output data-testid="pref">{themePreference}</output>
+      <button onClick={() => setThemePreference("system")}>use-system</button>
+    </>
+  );
 }
 
 const renderProbe = () =>
@@ -39,7 +46,7 @@ describe("ThemeProvider", () => {
   it("seeds dark theme from prefers-color-scheme when nothing is stored", () => {
     mockMedia(true);
     renderProbe();
-    expect(screen.getByRole("button")).toHaveTextContent("midnight");
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("midnight");
     expect(document.documentElement.style.colorScheme).toBe("dark");
     expect(document.documentElement.dataset.theme).toBe("midnight");
   });
@@ -47,7 +54,7 @@ describe("ThemeProvider", () => {
   it("uses the light default when the OS prefers light", () => {
     mockMedia(false);
     renderProbe();
-    expect(screen.getByRole("button")).toHaveTextContent("sunrise");
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("sunrise");
     expect(document.documentElement.style.colorScheme).toBe("light");
   });
 
@@ -55,18 +62,34 @@ describe("ThemeProvider", () => {
     mockMedia(false);
     localStorage.setItem("theme", "ocean");
     renderProbe();
-    expect(screen.getByRole("button")).toHaveTextContent("midnight");
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("midnight");
+  });
+
+  it("maps the removed woodland id to sunrise", () => {
+    mockMedia(true);
+    localStorage.setItem("theme", "woodland");
+    renderProbe();
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("sunrise");
+  });
+
+  it("migrates the legacy Aether key once", () => {
+    mockMedia(false);
+    localStorage.setItem("portfolio-fui-theme", "void");
+    renderProbe();
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("midnight");
+    expect(localStorage.getItem("theme")).toBe("midnight");
+    expect(localStorage.getItem("portfolio-fui-theme")).toBeNull();
   });
 
   it("follows OS changes until the visitor chooses", () => {
     mockMedia(false);
     renderProbe();
     act(() => listeners.forEach((l) => l({ matches: true })));
-    expect(screen.getByRole("button")).toHaveTextContent("midnight");
-    act(() => screen.getByRole("button").click());
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("midnight");
+    act(() => screen.getAllByRole("button")[0].click());
     expect(localStorage.getItem("theme")).toBe("sunrise");
     act(() => listeners.forEach((l) => l({ matches: true })));
-    expect(screen.getByRole("button")).toHaveTextContent("sunrise");
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("sunrise");
   });
 
   it("survives blocked localStorage", () => {
@@ -78,8 +101,30 @@ describe("ThemeProvider", () => {
       throw new Error("blocked");
     });
     renderProbe();
-    expect(screen.getByRole("button")).toHaveTextContent("midnight");
-    act(() => screen.getByRole("button").click());
-    expect(screen.getByRole("button")).toHaveTextContent("sunrise");
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("midnight");
+    act(() => screen.getAllByRole("button")[0].click());
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("sunrise");
+  });
+
+  it("stores and follows 'system' live", () => {
+    mockMedia(false);
+    localStorage.setItem("theme", "midnight");
+    renderProbe();
+    expect(screen.getByTestId("pref")).toHaveTextContent("dark");
+    act(() => screen.getByText("use-system").click());
+    expect(localStorage.getItem("theme")).toBe("system");
+    expect(screen.getByTestId("pref")).toHaveTextContent("system");
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("sunrise");
+    act(() => listeners.forEach((l) => l({ matches: true })));
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("midnight");
+    expect(document.documentElement.dataset.theme).toBe("midnight");
+  });
+
+  it("reads a stored 'system' value", () => {
+    mockMedia(true);
+    localStorage.setItem("theme", "system");
+    renderProbe();
+    expect(screen.getByTestId("pref")).toHaveTextContent("system");
+    expect(screen.getAllByRole("button")[0]).toHaveTextContent("midnight");
   });
 });

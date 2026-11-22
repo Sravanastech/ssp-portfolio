@@ -1,0 +1,305 @@
+/* ============================================== HERO "BOOT SEQUENCE" */
+
+:root[data-paradigm="aether"] .fui-page,
+:root[data-paradigm="aether"] .fui-stage {
+  position: relative;
+  width: 100%;
+  padding: clamp(24px, 4vw, 48px) 0 132px;
+  overflow-x: clip;
+}
+
+:root[data-paradigm="aether"] .fui-container {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 56px);
+}
+
+:root[data-paradigm="aether"] .fui-hero {
+  position: relative;
+  padding: clamp(16px, 3vw, 32px) 0 clamp(24px, 4vw, 48px);
+}
+
+:root[data-paradigm="aether"] .fui-hero-frame {
+  position: relative;
+}
+
+:root[data-paradigm="aether"] .fui-hero-inner {
+  position: relative;
+  padding: clamp(28px, 4.5vw, 52px) clamp(20px, 4vw, 44px);
+  border: 1px solid var(--border-hairline);
+  background: color-mix(in srgb, var(--bg-elevated) 84%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: hidden;
+}
+
+:root[data-paradigm="aether"] .fui-boot-scan {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--fui-accent-soft) 48%,
+    var(--accent-primary) 50%,
+    transparent 52%
+  );
+  animation: fui-boot-scan 800ms var(--ease-out) 50ms both;
+}
+
+:root[data-paradigm="aether"] .fui-grid-line-x {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--accent-primary);
+  opacity: 0.45;
+  transform-origin: left center;
+  animation: fui-draw-x 500ms var(--ease-out) 30ms both;
+}
+
+:root[data-paradigm="aether"] .fui-grid-line-y {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: clamp(20px, 5vw, 56px);
+  width: 1px;
+  background: var(--accent-primary);
+  opacity: 0.45;
+  transform-origin: top center;
+  pointer-events: none;
+  animation: fui-draw-y 500ms var(--ease-out) 100ms both;
+}
+
+:root[data-paradigm="aether"] .fui-boot-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+:root[data-paradigm="aether"] .fui-boot-eyebrow,
+:root[data-paradigm="aether"] .fui-kicker,
+:root[data-paradigm="aether"] .fui-telemetry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+  margin: 0;
+  padding: 6px 12px;
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-primary);
+  font: 600 13px/1.2 var(--fui-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-replay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border-hairline);
+  background: transparent;
+  color: var(--text-muted);
+  font: 600 13px/1 var(--fui-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base),
+    color var(--motion-base);
+}
+
+:root[data-paradigm="aether"] .fui-replay-btn:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-hero-title {
+  margin: 4px 0 0;
+  max-width: 18ch;
+  font-size: clamp(2.35rem, 1.35rem + 4.2vw, 4.75rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+  text-wrap: balance;
+  animation: fui-rise 500ms var(--ease-out) both;
+}
+
+:root[data-paradigm="aether"] .fui-hero-sub {
+  margin: 0;
+  font: 600 0.875rem/1.5 var(--fui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  animation: fui-mask-reveal 400ms var(--ease-out) 700ms both;
+}
+
+:root[data-paradigm="aether"] .fui-hero-desc {
+  margin: 0;
+  max-width: 64ch;
+  font-size: clamp(0.95rem, 0.9rem + 0.25vw, 1.125rem);
+  line-height: 1.68;
+  color: var(--text-muted);
+  text-wrap: pretty;
+  animation: fui-mask-reveal 400ms var(--ease-out) 800ms both;
+}
+
+:root[data-paradigm="aether"] .fui-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-top: 8px;
+  animation: fui-mask-reveal 400ms var(--ease-out) 900ms both;
+}
+
+:root[data-paradigm="aether"] .fui-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 22px;
+  border: 1px solid var(--accent-primary);
+  background: var(--accent-primary);
+  color: var(--fui-accent-ink);
+  font: 700 0.875rem/1 var(--fui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
+  transition:
+    transform var(--motion-base) var(--ease-out),
+    filter var(--motion-base);
+}
+
+:root[data-paradigm="aether"] .fui-btn-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+
+:root[data-paradigm="aether"] .fui-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font: 600 0.8125rem/1 var(--fui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base) var(--ease-out),
+    color var(--motion-base) var(--ease-out),
+    background-color var(--motion-base) var(--ease-out);
+}
+
+:root[data-paradigm="aether"] .fui-btn-secondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--fui-accent-soft);
+}
+
+:root[data-paradigm="aether"] .fui-cmd-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  font: 500 13px/1 var(--fui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base) var(--ease-out),
+    color var(--motion-base) var(--ease-out),
+    background-color var(--motion-base) var(--ease-out),
+    transform var(--motion-base) var(--ease-out);
+}
+
+:root[data-paradigm="aether"] .fui-cmd-pill kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--bg-primary);
+  color: var(--accent-primary);
+  font: 700 13px/1 var(--fui-mono);
+}
+
+:root[data-paradigm="aether"] .fui-cmd-pill:hover {
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+  background: var(--fui-accent-soft);
+  transform: translateY(-2px);
+}
+
+/* Skip intro: first in hero tab order, never blocks the page. */
+:root[data-paradigm="aether"] .fui-skip-intro {
+  /* Out of flow: it disappears when the boot ends, and removing an in-flow button would
+     shove the whole hero up by its height (layout shift). Sits on the frame's top edge. */
+  position: absolute;
+  top: 0;
+  left: calc(clamp(20px, 5vw, 56px) + clamp(20px, 4vw, 44px));
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font: 700 13px/1 var(--fui-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  z-index: 4;
+}
+
+:root[data-paradigm="aether"] .fui-skip-intro:hover {
+  background: var(--fui-accent-soft);
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .fui-skip-intro:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* Touch-only devices have no keyboard: hide shortcut hints. */
+@media (pointer: coarse), (hover: none) {
+  :root[data-paradigm="aether"] .fui-touch-hide {
+    display: none !important;
+  }
+}

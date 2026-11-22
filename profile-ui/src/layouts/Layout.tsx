@@ -1,8 +1,9 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import ModeStrip from "@/components/ModeStrip";
+import KineticTickerBar from "@/components/KineticTickerBar";
+import AppearancePanel from "@/components/appearance/AppearancePanel";
 import PageMetadata from "@/components/PageMetadata";
 import OfflineBanner from "@/components/OfflineBanner";
 import ConsentBanner from "@/components/ConsentBanner";
@@ -13,9 +14,9 @@ import {
 } from "@/theme/CompositionContext";
 
 import { ParadigmProvider, useParadigm } from "@/theme/ParadigmContext";
+import { LazyAetherStage, LazyKineticStage } from "@/lib/stageChunks";
 
-// Kinetic-only code: Studio visitors never download this chunk.
-const LazyKineticStage = lazy(() => import("@/components/KineticStage"));
+// Kinetic-only and Aether-only code: Studio visitors never download these chunks.
 
 function KineticStageSlot() {
   const { isKinetic } = useParadigm();
@@ -23,6 +24,16 @@ function KineticStageSlot() {
   return (
     <Suspense fallback={null}>
       <LazyKineticStage />
+    </Suspense>
+  );
+}
+
+function AetherStageSlot() {
+  const { isAether } = useParadigm();
+  if (!isAether) return null;
+  return (
+    <Suspense fallback={null}>
+      <LazyAetherStage />
     </Suspense>
   );
 }
@@ -70,9 +81,11 @@ export default function Layout({ children }: Props) {
           <a className="skip-link" href="#main-content">
             Skip to content
           </a>
-          <ModeStrip />
+          <KineticTickerBar />
           <KineticStageSlot />
+          <AetherStageSlot />
           <Header />
+          <AppearancePanel />
           <PageMetadata />
           <main id="main-content" tabIndex={-1} className="flex-1 w-full">
             {children}

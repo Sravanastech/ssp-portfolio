@@ -1,0 +1,397 @@
+/* ============================================ BASE CANVAS & DOT MATRIX */
+:root[data-paradigm="aether"] body {
+  background-color: var(--bg-primary) !important;
+  background-image: radial-gradient(
+    var(--dot-color) 1px,
+    transparent 1px
+  ) !important;
+  background-size: 24px 24px !important;
+  background-position: 0 0 !important;
+  color: var(--text-primary);
+  overflow-x: clip;
+  transition:
+    background-color var(--motion-slow) var(--ease-out),
+    color var(--motion-slow) var(--ease-out);
+}
+
+:root[data-paradigm="aether"] *,
+:root[data-paradigm="aether"] *::before,
+:root[data-paradigm="aether"] *::after {
+  border-radius: 0 !important;
+}
+
+:root[data-paradigm="aether"] .studio-container {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 56px);
+}
+
+:root[data-paradigm="aether"] .studio-shell {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  overflow-x: clip;
+}
+
+:root[data-paradigm="aether"] ::selection {
+  background: var(--accent-primary);
+  color: var(--fui-accent-ink);
+}
+
+:root[data-paradigm="aether"] :focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
+/* ========================================== HEADER CHROME */
+:root[data-paradigm="aether"] .studio-header {
+  background: var(--fui-chrome-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .studio-header a,
+:root[data-paradigm="aether"] .studio-header button {
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .studio-monogram {
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .studio-monogram span {
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .studio-brand-caption {
+  font-family: var(--fui-mono);
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .studio-navigation {
+  font-family: var(--fui-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+:root[data-paradigm="aether"] .studio-navigation a::after {
+  background: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .auth-ghost-button {
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  font-family: var(--fui-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+:root[data-paradigm="aether"] .auth-ghost-button:hover,
+:root[data-paradigm="aether"] .auth-ghost-button[aria-expanded="true"] {
+  background: var(--fui-accent-soft);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .studio-mobile-sheet {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border-hairline);
+}
+
+/* =================================================== HUD PERIMETER FRAME */
+:root[data-paradigm="aether"] .fui-hud-frame {
+  position: fixed;
+  inset: 10px;
+  z-index: var(--z-hud);
+  pointer-events: none;
+}
+
+:root[data-paradigm="aether"] .fui-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+}
+
+:root[data-paradigm="aether"] .fui-corner--tl {
+  top: 0;
+  left: 0;
+  border-top: 1.5px solid var(--accent-primary);
+  border-left: 1.5px solid var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-corner--tr {
+  top: 0;
+  right: 0;
+  border-top: 1.5px solid var(--accent-primary);
+  border-right: 1.5px solid var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-corner--bl {
+  bottom: 0;
+  left: 0;
+  border-bottom: 1.5px solid var(--accent-primary);
+  border-left: 1.5px solid var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-corner--br {
+  bottom: 0;
+  right: 0;
+  border-bottom: 1.5px solid var(--accent-primary);
+  border-right: 1.5px solid var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-crosshair {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  pointer-events: none;
+  color: var(--border-strong);
+  font: 400 11px/1 var(--fui-mono);
+  display: grid;
+  place-items: center;
+  user-select: none;
+}
+
+:root[data-paradigm="aether"] .fui-crosshair::before,
+:root[data-paradigm="aether"] .fui-crosshair::after {
+  content: "";
+  position: absolute;
+  background: var(--border-strong);
+}
+
+:root[data-paradigm="aether"] .fui-crosshair::before {
+  width: 9px;
+  height: 1px;
+}
+
+:root[data-paradigm="aether"] .fui-crosshair::after {
+  width: 1px;
+  height: 9px;
+}
+
+:root[data-paradigm="aether"] .fui-crosshair--l,
+:root[data-paradigm="aether"] .fui-crosshair--left {
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:root[data-paradigm="aether"] .fui-crosshair--r,
+:root[data-paradigm="aether"] .fui-crosshair--right {
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:root[data-paradigm="aether"] .fui-crosshair--t,
+:root[data-paradigm="aether"] .fui-crosshair--top {
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:root[data-paradigm="aether"] .fui-crosshair--b,
+:root[data-paradigm="aether"] .fui-crosshair--bottom {
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Telemetry Status Bar & Scroll Readout */
+:root[data-paradigm="aether"] .fui-status-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 500 11px/1 var(--fui-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .fui-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent-primary);
+  box-shadow: 0 0 8px var(--fui-accent-glow);
+  flex-shrink: 0;
+}
+
+:root[data-paradigm="aether"] .fui-scroll-readout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 600 11px/1 var(--fui-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+:root[data-paradigm="aether"] .fui-scroll-readout strong,
+:root[data-paradigm="aether"] .fui-scroll-readout span {
+  color: var(--accent-primary);
+}
+
+/* Floating Interactive Command Dock */
+:root[data-paradigm="aether"] .fui-dock {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: var(--z-dock);
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px 5px 14px;
+  background: var(--fui-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-strong);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 10px) 0,
+    100% 10px,
+    100% 100%,
+    10px 100%,
+    0 calc(100% - 10px)
+  );
+  color: var(--text-muted);
+  font: 500 13px/1 var(--fui-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  max-width: calc(100vw - 24px);
+}
+
+/* Mechanical Hardware Toggle Switch (VOID / CLEANROOM) */
+:root[data-paradigm="aether"] .fui-hw-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--border-hairline);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--text-primary);
+  font: 600 13px/1 var(--fui-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base) var(--ease-out),
+    background-color var(--motion-base) var(--ease-out),
+    color var(--motion-base) var(--ease-out);
+}
+
+:root[data-paradigm="aether"] .fui-hw-switch:hover {
+  border-color: var(--accent-primary);
+  background: var(--fui-accent-soft);
+}
+
+:root[data-paradigm="aether"] .fui-hw-switch-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 34px;
+  height: 18px;
+  padding: 2px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--bg-primary);
+  flex-shrink: 0;
+}
+
+:root[data-paradigm="aether"] .fui-hw-switch-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 1px;
+  background: var(--accent-primary);
+  transform: translateX(0);
+  transition:
+    transform var(--motion-slow) var(--ease-out),
+    background-color var(--motion-base);
+}
+
+:root[data-paradigm="aether"]
+  .fui-hw-switch[aria-pressed="true"]
+  .fui-hw-switch-thumb,
+:root[data-paradigm="aether"]
+  .fui-hw-switch[aria-checked="true"]
+  .fui-hw-switch-thumb,
+:root[data-paradigm="aether"][data-fui-theme="cleanroom"] .fui-hw-switch-thumb {
+  transform: translateX(16px);
+}
+
+/* Command Palette Trigger Button */
+:root[data-paradigm="aether"] .fui-cmd-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font: 600 13px/1 var(--fui-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base) var(--ease-out),
+    background-color var(--motion-base) var(--ease-out),
+    color var(--motion-base) var(--ease-out);
+}
+
+:root[data-paradigm="aether"] .fui-cmd-trigger:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary);
+  color: var(--fui-accent-ink);
+}
+
+/* ======================================= HUD DOCK: backing + clearance */
+:root[data-paradigm="aether"] .fui-hud-dock {
+  padding: 4px 6px;
+  background: var(--fui-chrome-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .fui-hud-bottom-left {
+  padding: 2px 6px;
+  background: var(--fui-chrome-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Reserve space under the last content so the dock never covers it. */
+:root[data-paradigm="aether"] .studio-footer {
+  padding-bottom: 84px;
+}
+
+/* Mobile / touch: no bottom HUD (theme stays reachable via header toggle). */
+@media (max-width: 768px), (pointer: coarse) {
+  :root[data-paradigm="aether"] .fui-hud-dock,
+  :root[data-paradigm="aether"] .fui-hud-bottom-left,
+  :root[data-paradigm="aether"] .fui-hud-corner--bl,
+  :root[data-paradigm="aether"] .fui-hud-corner--br {
+    display: none !important;
+  }
+}
+
+@media (max-width: 479px) {
+  :root[data-paradigm="aether"] .aether-strip-label {
+    display: none;
+  }
+}

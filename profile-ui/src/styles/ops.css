@@ -1,0 +1,229 @@
+/* Operate surfaces: Account, Admin, Messages */
+.ops-page {
+  padding-bottom: clamp(64px, 7vw, 96px);
+}
+.ops-page .studio-page-intro {
+  padding-block: 40px 32px;
+}
+.ops-page .studio-page-heading {
+  font-size: clamp(2rem, 1rem + 2.9vw, 3rem);
+  margin-bottom: 16px;
+}
+.ops-column {
+  max-width: 880px;
+}
+.ops-back {
+  display: inline-flex;
+  margin: 0 0 16px;
+}
+.ops-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.ops-identity .page-small {
+  overflow-wrap: anywhere;
+}
+.ops-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.ops-badge--ok {
+  color: var(--color-success);
+}
+.ops-badge--role {
+  color: var(--color-primary);
+}
+.ops-stack {
+  display: grid;
+  gap: 24px;
+}
+.ops-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border);
+}
+.ops-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-textSecondary);
+}
+.ops-danger {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+.ops-danger p {
+  margin: 0;
+  max-width: 56ch;
+}
+.ops-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+}
+.ops-list > li {
+  display: grid;
+  gap: 8px;
+  padding: 20px clamp(16px, 2.5vw, 24px);
+}
+.ops-list > li + li {
+  border-top: 1px solid var(--color-border);
+}
+.ops-row-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+.ops-row-head h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.ops-row-head time {
+  color: var(--color-textSecondary);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.ops-message {
+  margin: 0;
+  max-width: 68ch;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.ops-row-actions {
+  margin-top: 4px;
+}
+.ops-pager {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+.ops-empty {
+  margin: 0;
+  padding: 32px 0;
+  color: var(--color-textSecondary);
+}
+.ops-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+@media (max-width: 719px) {
+  .ops-actions .studio-button,
+  .ops-toolbar .studio-button,
+  .ops-toolbar .studio-button-secondary {
+    flex: 1 1 100%;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ops-spinner {
+    animation: resume-spin 1s linear infinite;
+  }
+}
+.ops-danger-zone {
+  margin-top: 48px;
+}
+
+/* ---------- Admin visitors panel ---------- */
+.visitors-panel {
+  display: grid;
+  gap: 16px;
+}
+.visitors-panel .panel-title {
+  margin: 0;
+}
+.visitors-panel .page-notice {
+  margin: 0;
+}
+.ops-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+}
+.ops-table-wrap:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+.ops-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+.ops-table th,
+.ops-table td {
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--color-border);
+}
+.ops-table thead th {
+  color: var(--color-textSecondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.ops-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.ops-table-email {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.ops-num {
+  font-variant-numeric: tabular-nums;
+}
+.ops-pager {
+  align-items: center;
+  margin-top: 0;
+}
+.ops-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dialog);
+  background: color-mix(in srgb, var(--color-background) 30%, black 70%);
+}
+.ops-dialog {
+  position: fixed;
+  z-index: calc(var(--z-dialog) + 1);
+  top: 50%;
+  left: 50%;
+  display: grid;
+  gap: 16px;
+  width: min(480px, calc(100vw - 32px));
+  padding: 24px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.ops-dialog .panel-title {
+  margin: 0;
+}
+.ops-dialog .page-copy {
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}

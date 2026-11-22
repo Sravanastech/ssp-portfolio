@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { cv } from "@/theme/cssVars";
-import { m, AnimatePresence } from "framer-motion";
 import { ChevronUp } from "lucide-react";
 
 const BackToTop = () => {
@@ -33,26 +32,21 @@ const BackToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  if (!isVisible) return null;
+
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <m.button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 p-3 rounded-full shadow-lg transition-all hover:scale-110 focus:ring-2 focus:ring-offset-2 focus:outline-none"
-          style={{
-            backgroundColor: cv.primary,
-            color: cv.accent,
-          }}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
-          transition={{ duration: 0.3 }}
-          aria-label="Scroll to top"
-        >
-          <ChevronUp size={24} />
-        </m.button>
-      )}
-    </AnimatePresence>
+    <button
+      type="button"
+      onClick={scrollToTop}
+      className="fixed bottom-8 right-8 p-3 rounded-full shadow-lg transition-[opacity,translate,scale] duration-300 ease-out starting:opacity-0 starting:translate-y-5 hover:scale-110 motion-reduce:transition-none motion-reduce:hover:scale-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+      style={{
+        backgroundColor: cv.primary,
+        color: cv.accent,
+      }}
+      aria-label="Scroll to top"
+    >
+      <ChevronUp size={24} />
+    </button>
   );
 };
 

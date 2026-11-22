@@ -67,6 +67,23 @@ private/
 **/AI_MEMORY.md
 profile-ui/DESIGN.md
 profile-ui/PRODUCT.md
+profile-ui/.agents/
+profile-ui/.augment/
+profile-ui/.codebuddy/
+profile-ui/.codewhale/
+profile-ui/.continue/
+profile-ui/.cursor/
+profile-ui/.factory/
+profile-ui/.gemini/
+profile-ui/.kilocode/
+profile-ui/.kiro/
+profile-ui/.opencode/
+profile-ui/.qoder/
+profile-ui/.roo/
+profile-ui/.trae/
+profile-ui/.warp/
+profile-ui/.windsurf/
+profile-ui/.github/prompts/
 
 # Personal planning / learning notes (local only)
 profile-ui/docs/README.md

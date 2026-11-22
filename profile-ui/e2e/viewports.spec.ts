@@ -52,7 +52,7 @@ async function measure(page: Page) {
         if (!clipped) beyond.push((el.className || el.tagName).toString());
       }
     });
-    const strip = box(".mode-strip");
+    const strip = box("header");
     return {
       vw,
       sw: document.documentElement.scrollWidth,

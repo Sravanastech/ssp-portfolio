@@ -1,0 +1,206 @@
+/* Form fields: shared by Contact, Account, Admin */
+.field {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-width: 0;
+}
+.field-label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+.field-label small {
+  font-size: inherit;
+  font-weight: 400;
+  color: var(--color-textSecondary);
+}
+.field-req {
+  color: var(--color-error);
+}
+.field-input,
+.studio-contact form input:not([type="checkbox"]),
+.studio-contact form textarea {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-background);
+  color: var(--color-text);
+  font-size: 1rem;
+  line-height: 1.5;
+  box-shadow: none;
+}
+.field-input::placeholder,
+.studio-contact form ::placeholder {
+  color: var(--color-textSecondary);
+  opacity: 0.8;
+}
+textarea.field-input,
+.studio-contact form textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+.field-input:hover:not(:disabled) {
+  border-color: var(--color-textSecondary);
+}
+.field-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.field-input[aria-invalid="true"],
+.studio-contact form [aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+.field-input:focus-visible,
+.studio-contact form input:focus-visible,
+.studio-contact form textarea:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+.field-input--code {
+  min-height: 65dvh;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre;
+  overflow: auto;
+}
+.field-hint {
+  margin: 0;
+  color: var(--color-textSecondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.field-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.field-stack {
+  display: grid;
+  gap: 24px;
+}
+.field-lock {
+  position: relative;
+}
+.field-lock > svg {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  color: var(--color-textSecondary);
+}
+.field-lock .field-input {
+  padding-right: 40px;
+}
+.kbd {
+  padding: 2px 6px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.75rem;
+}
+
+/* Contact */
+.studio-page .studio-contact form {
+  border-radius: 6px;
+  box-shadow: none;
+  padding: clamp(20px, 3vw, 32px);
+}
+.studio-contact form h2 {
+  font-size: clamp(1.5rem, 0.875rem + 1.4vw, 1.875rem);
+  font-weight: 500;
+}
+.studio-contact form label,
+.studio-contact form span.text-sm {
+  font-weight: 500;
+}
+.studio-contact form .font-mono {
+  font-family: inherit;
+  font-size: 0.8125rem;
+  opacity: 1;
+}
+.studio-contact form button[type="submit"] {
+  border-radius: 6px;
+  box-shadow: none;
+  font-weight: 500;
+}
+.contact-aside h2 {
+  margin: 0 0 20px;
+  font-size: clamp(1.75rem, 1rem + 2.1vw, 2.5rem);
+  font-weight: 500;
+}
+.contact-methods {
+  display: grid;
+  gap: 24px;
+  margin-top: 40px;
+}
+.contact-methods dt {
+  margin-bottom: 4px;
+  color: var(--color-textSecondary);
+  font-size: 0.875rem;
+}
+.contact-methods dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.contact-main {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.contact-main .page-notice {
+  margin: 0;
+}
+.notice-body {
+  display: grid;
+  gap: 12px;
+}
+.notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+.contact-success {
+  display: grid;
+  gap: 24px;
+}
+.contact-success h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.5rem, 0.875rem + 1.4vw, 1.875rem);
+  font-weight: 500;
+}
+.contact-success > svg {
+  color: var(--color-success);
+}
+.contact-recap {
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-background);
+  font-size: 0.9375rem;
+}
+.contact-recap p {
+  margin: 0;
+}
+.contact-recap p + p {
+  margin-top: 8px;
+}
+
+@media (max-width: 719px) {
+  .field-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

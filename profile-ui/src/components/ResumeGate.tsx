@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { CheckCircle2, Info, Loader2, Mail, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/auth/auth";
 import { setToken } from "@/lib/otpSession";

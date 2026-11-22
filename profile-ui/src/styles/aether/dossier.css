@@ -1,0 +1,196 @@
+/* ========================================== TECHNICAL DOSSIER MODAL */
+:root[data-paradigm="aether"] .fui-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: grid;
+  place-items: center;
+  padding: clamp(12px, 3vw, 32px);
+  background: var(--fui-backdrop);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: fui-backdrop-in var(--motion-base) var(--ease-out) both;
+}
+
+:root[data-paradigm="aether"] .fui-dossier {
+  position: relative;
+  width: min(100%, 840px);
+  max-height: min(88svh, 780px);
+  overflow-y: auto;
+  padding: clamp(20px, 3.5vw, 36px);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--accent-primary);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 18px) 0,
+    100% 18px,
+    100% 100%,
+    18px 100%,
+    0 calc(100% - 18px)
+  );
+  animation: fui-panel-in var(--motion-slow) var(--ease-out) both;
+}
+
+:root[data-paradigm="aether"] .fui-dossier-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+:root[data-paradigm="aether"] .fui-dossier-code {
+  font: 700 13px/1 var(--fui-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-org {
+  margin: 0;
+  font: 500 13px/1.3 var(--fui-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-title {
+  margin: 0;
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-block: 20px;
+}
+
+:root[data-paradigm="aether"] .fui-section-label {
+  margin: 0 0 8px;
+  font: 700 13px/1.2 var(--fui-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+}
+
+:root[data-paradigm="aether"] .fui-arch-note {
+  margin: 0;
+  font: 500 13px/1.5 var(--fui-mono);
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+:root[data-paradigm="aether"] .fui-dossier-block {
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-block p {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-hairline);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:root[data-paradigm="aether"] .fui-tag {
+  padding: 4px 8px;
+  border: 1px solid var(--border-hairline);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font: 500 13px/1.2 var(--fui-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+:root[data-paradigm="aether"] .fui-dossier-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font: 600 13px/1 var(--fui-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base),
+    color var(--motion-base),
+    background-color var(--motion-base);
+}
+
+:root[data-paradigm="aether"] .fui-dossier-close:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--fui-accent-soft);
+}
+
+:root[data-paradigm="aether"] .fui-arch-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 12px 0;
+  padding: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-hairline);
+  --fui-accent: var(--accent-primary);
+  --fui-surface-elevated: var(--bg-elevated);
+}
+
+:root[data-paradigm="aether"] .fui-arch-node {
+  fill: var(--bg-elevated);
+  stroke: var(--border-strong);
+  stroke-width: 1.25;
+  transition:
+    stroke var(--motion-base) var(--ease-out),
+    fill var(--motion-base) var(--ease-out);
+}
+
+:root[data-paradigm="aether"] .fui-arch-node:hover,
+:root[data-paradigm="aether"] .fui-arch-node:focus-visible {
+  stroke: var(--accent-primary);
+  fill: var(--fui-accent-soft);
+}

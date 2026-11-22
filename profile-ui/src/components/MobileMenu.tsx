@@ -4,7 +4,6 @@ import { PrefetchNavLink as NavLink } from "./PrefetchLink";
 import { useAuth } from "@/auth/auth";
 import { SiteText } from "@/content/SiteContent";
 import { useSiteContent } from "@/content/siteContentContext";
-import { useTheme } from "@/theme/theme-context";
 import { cv, tint } from "@/theme/cssVars";
 import "@/styles/menu.css";
 import { trackEvent } from "@/lib/analytics";
@@ -21,8 +20,6 @@ import {
   LogOut,
   LogIn,
   ChevronRight,
-  Sun,
-  Moon,
   Settings,
   Compass,
 } from "lucide-react";
@@ -34,14 +31,41 @@ import {
   SheetDescription,
 } from "./ui/sheet";
 
+function getNavIcon(path: string) {
+  switch (path) {
+    case "/":
+      return Home;
+    case "/work":
+      return Briefcase;
+    case "/about":
+      return User;
+    case "/contact":
+      return Mail;
+    default:
+      return Compass;
+  }
+}
+
+function getNavSubtitle(path: string) {
+  switch (path) {
+    case "/":
+      return "Overview & highlights";
+    case "/work":
+      return "Architecture & systems";
+    case "/about":
+      return "Engineering background";
+    case "/contact":
+      return "Let's connect";
+    default:
+      return "";
+  }
+}
+
 function MobileMenuClient() {
   const { navigation } = useSiteContent();
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const { currentTheme, setTheme } = useTheme();
   const { isAuthenticated, user, loginWithRedirect, logout } = useAuth();
-
-  const isDark = currentTheme === "midnight";
 
   const initials =
     (
@@ -58,36 +82,6 @@ function MobileMenuClient() {
   const handleLogout = () => {
     setOpen(false);
     logout({ logoutParams: { returnTo: window.location.origin } });
-  };
-
-  const getNavIcon = (path: string) => {
-    switch (path) {
-      case "/":
-        return Home;
-      case "/work":
-        return Briefcase;
-      case "/about":
-        return User;
-      case "/contact":
-        return Mail;
-      default:
-        return Compass;
-    }
-  };
-
-  const getNavSubtitle = (path: string) => {
-    switch (path) {
-      case "/":
-        return "Overview & highlights";
-      case "/work":
-        return "Architecture & systems";
-      case "/about":
-        return "Engineering background";
-      case "/contact":
-        return "Let's connect";
-      default:
-        return "";
-    }
   };
 
   const isResumeActive = location.pathname === "/resume";
@@ -368,45 +362,6 @@ function MobileMenuClient() {
           className="pt-2.5 border-t mt-2 space-y-2 shrink-0 pb-[env(safe-area-inset-bottom)]"
           style={{ borderTopColor: cv.border }}
         >
-          {/* Appearance */}
-          <div
-            className="flex items-center justify-between gap-3 py-1.5 pl-3 pr-1.5 rounded-xl border"
-            style={{
-              backgroundColor: cv.background,
-              borderColor: cv.border,
-            }}
-          >
-            <span
-              id="mobile-appearance-label"
-              className="text-sm font-bold"
-              style={{ color: cv.text }}
-            >
-              Appearance
-            </span>
-            <div
-              role="group"
-              aria-labelledby="mobile-appearance-label"
-              className="menu-segmented"
-            >
-              <button
-                type="button"
-                aria-pressed={!isDark}
-                onClick={() => setTheme("sunrise")}
-              >
-                <Sun className="w-3.5 h-3.5" aria-hidden="true" />
-                Light
-              </button>
-              <button
-                type="button"
-                aria-pressed={isDark}
-                onClick={() => setTheme("midnight")}
-              >
-                <Moon className="w-3.5 h-3.5" aria-hidden="true" />
-                Dark
-              </button>
-            </div>
-          </div>
-
           {/* Dynamic Sign in / Sign out button */}
           {isAuthenticated ? (
             <button

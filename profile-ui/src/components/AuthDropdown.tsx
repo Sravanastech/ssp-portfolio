@@ -5,10 +5,7 @@ import { cv } from "@/theme/cssVars";
 import "@/styles/menu.css";
 import { trackEvent } from "@/lib/analytics";
 import { useKeyboardNav } from "@/hooks/useKeyboardNav";
-import {
-  UserCircleIcon,
-  ArrowRightEndOnRectangleIcon,
-} from "@heroicons/react/24/solid";
+import { CircleUser, LogOut } from "lucide-react";
 
 const AuthDropdownClient = () => {
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth();
@@ -101,7 +98,7 @@ const AuthDropdownClient = () => {
         aria-haspopup="true"
         {...dropdownHandler}
       >
-        <UserCircleIcon className="w-6 h-6" aria-hidden="true" />
+        <CircleUser className="w-6 h-6" aria-hidden="true" />
       </button>
 
       {/* Dropdown Menu */}
@@ -162,7 +159,7 @@ const AuthDropdownClient = () => {
                 style={{ color: cv.error, borderTopColor: cv.border }}
                 role="menuitem"
               >
-                <ArrowRightEndOnRectangleIcon className="w-5 h-5" />
+                <LogOut className="w-5 h-5" />
                 <span className="font-medium">Logout</span>
               </button>
             </>

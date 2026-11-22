@@ -18,7 +18,7 @@
   z-index: 1;
 }
 :root[data-paradigm-transition="portal"]::view-transition-new(root) {
-  z-index: 9999;
+  z-index: var(--z-transition);
 }
 @media (prefers-reduced-motion: reduce) {
   :root[data-paradigm-transition="portal"]::view-transition-old(root),
@@ -103,7 +103,6 @@
 
 /* ----------------------------------------- old controls hidden, compositions neutral */
 :root[data-paradigm="kinetic"] .theme-switcher,
-:root[data-paradigm="kinetic"] .mode-toggle,
 :root[data-paradigm="kinetic"] .composition-switcher {
   display: none !important;
 }
@@ -465,10 +464,9 @@
   translate: 4px 0;
 }
 
-/* ------------------------------------------------------------- mode strip */
-:root[data-paradigm="kinetic"] .mode-strip {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+/* ------------------------------------------------------------- ticker bar */
+:root[data-paradigm="kinetic"] .kinetic-ticker-bar {
+  display: flex;
   align-items: stretch;
   min-height: 32px;
   background: var(--kinetic-void);
@@ -478,81 +476,15 @@
   font-size: 0.6875rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-}
-:root[data-paradigm="kinetic"] .mode-strip-lead {
-  min-width: 0;
   overflow: hidden;
-  display: flex;
-  align-items: center;
 }
-:root[data-paradigm="kinetic"] .mode-strip-lead > .kinetic-stage {
+:root[data-paradigm="kinetic"] .kinetic-ticker-bar > .kinetic-stage {
   flex: 1 1 auto;
   align-self: stretch;
   min-width: 0;
 }
-:root[data-paradigm="kinetic"] .mode-switch {
-  display: flex;
-  align-items: stretch;
-  gap: 2px;
-  padding-inline: 4px;
-}
-:root[data-paradigm="kinetic"] .mode-switch button[data-mode] {
-  position: relative;
-  isolation: isolate;
-  padding-inline: 12px;
-  border: 0;
-  background: none;
-  color: var(--color-textSecondary);
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-:root[data-paradigm="kinetic"] .mode-switch button[data-mode]:hover {
-  color: var(--color-text);
-}
-:root[data-paradigm="kinetic"]
-  .mode-switch
-  button[data-mode][aria-pressed="true"] {
-  color: var(--kinetic-lime);
-}
-:root[data-paradigm="kinetic"] .mode-switch button[data-mode]::before,
-:root[data-paradigm="kinetic"] .mode-switch button[data-mode]::after {
-  content: "";
-  position: absolute;
-  inset: auto 6px 0;
-  pointer-events: none;
-  opacity: 0;
-  transition:
-    opacity 0.3s,
-    scale 0.45s var(--kinetic-spring);
-}
-:root[data-paradigm="kinetic"] .mode-switch button[data-mode]::after {
-  height: 2px;
-  background: var(--kinetic-lime);
-  scale: 0 1;
-}
-:root[data-paradigm="kinetic"] .mode-switch button[data-mode]::before {
-  z-index: -1;
-  top: 0;
-  background: linear-gradient(to top, rgb(212 255 0 / 0.22), transparent);
-}
-:root[data-paradigm="kinetic"]
-  .mode-switch
-  button[data-mode][aria-pressed="true"]::before,
-:root[data-paradigm="kinetic"]
-  .mode-switch
-  button[data-mode][aria-pressed="true"]::after {
-  opacity: 1;
-  scale: 1 1;
-}
-:root[data-paradigm="kinetic"] .mode-switch button[data-mode]:focus-visible {
-  outline: 2px solid var(--kinetic-cyan);
-  outline-offset: -3px;
-}
 @media (pointer: coarse) {
-  :root[data-paradigm="kinetic"] .mode-strip {
+  :root[data-paradigm="kinetic"] .kinetic-ticker-bar {
     min-height: 44px;
   }
 }
@@ -640,12 +572,12 @@
     inline-size: 5.1em;
   }
 }
-/* Too narrow for a useful ticker: keep the strip + mode switch only. */
+/* Too narrow for a useful ticker: hide it (the bar collapses with it). */
 @media (max-width: 479px) {
-  :root[data-paradigm="kinetic"] .mode-strip {
-    grid-template-columns: minmax(0, 1fr) auto;
+  :root[data-paradigm="kinetic"] .kinetic-ticker-bar > .kinetic-stage {
+    display: none;
   }
-  :root[data-paradigm="kinetic"] .mode-strip-lead > .kinetic-stage {
+  :root[data-paradigm="kinetic"] .kinetic-ticker-bar {
     display: none;
   }
 }
@@ -659,7 +591,7 @@
     display: block;
     position: fixed;
     inset: 0 auto auto 0;
-    z-index: 9000;
+    z-index: var(--z-fx-reticle);
     width: 36px;
     height: 36px;
     margin: -18px 0 0 -18px;
