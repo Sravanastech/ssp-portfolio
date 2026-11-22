@@ -95,7 +95,7 @@ describe("HudFrame", () => {
     );
 
     const trigger = screen.getByRole("button", {
-      name: "Open appearance settings",
+      name: /^Open appearance settings/,
     });
     expect(trigger).toHaveAttribute("aria-haspopup", "dialog");
     expect(trigger).toHaveAttribute("data-state", "void");

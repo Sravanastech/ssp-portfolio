@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { AlertCircle, Info, Loader2, Trash2 } from "lucide-react";
 import { useAuth } from "@/auth/auth";
 import { adminRequest } from "@/api/accountApi";

@@ -142,11 +142,12 @@ export default function HudFrame({
         <button
           type="button"
           aria-haspopup="dialog"
-          aria-label="Open appearance settings"
           data-state={fuiTheme}
           className="fui-hud-switch inline-flex items-center gap-2 px-2.5 py-1.5"
           onClick={onOpenAppearance}
         >
+          {/* Visible labels stay part of the accessible name (WCAG 2.5.3). */}
+          <span className="sr-only">Open appearance settings, theme: </span>
           <span
             className="fui-hud-switch-option"
             data-active={fuiTheme === "void"}
@@ -166,10 +167,10 @@ export default function HudFrame({
 
         <button
           type="button"
-          aria-label="Open system command palette"
           className="fui-hud-cmd inline-flex items-center justify-center px-2.5 py-1.5"
           onClick={onOpenCommand}
         >
+          <span className="sr-only">Open system command palette</span>
           <kbd aria-hidden="true">⌘K</kbd>
         </button>
       </div>

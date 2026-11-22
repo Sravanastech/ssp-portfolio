@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useInRouterContext } from "react-router-dom";
-import { z } from "zod";
+import { z } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import FormErrorSummary from "./FormErrorSummary";
 import {

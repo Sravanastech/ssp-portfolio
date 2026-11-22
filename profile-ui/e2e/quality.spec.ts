@@ -87,65 +87,70 @@ test.describe("private resume is never public", () => {
   });
 });
 
-test("engineering motion is finite and respects reduced motion", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page.getByRole("button", { name: /Develop/ }).click();
-  await expect(page.locator(".system-model")).toHaveAttribute(
-    "data-layer",
-    "3",
-  );
-  const path = page.locator(".workflow-connections > path").first();
-  await expect
-    .poll(() => path.evaluate((el) => getComputedStyle(el).animationName))
-    .toBe("studio-draw");
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await expect
-    .poll(() => path.evaluate((el) => getComputedStyle(el).animationName))
-    .toBe("none");
-  await expect(
-    page.getByRole("heading", { name: "Build the complete experience." }),
-  ).toBeVisible();
-});
+// The engineering workflow lives in the Studio hero; Aether is the default design.
+test.describe("Studio engineering workflow", () => {
+  test.use({ paradigm: "studio" });
 
-for (const width of [1440, 390]) {
-  test(`workflow signals and technical flow at ${width}px`, async ({
+  test("engineering motion is finite and respects reduced motion", async ({
     page,
   }) => {
-    await page.setViewportSize({ width, height: 1000 });
     await page.goto("/");
     await page.getByRole("button", { name: /Develop/ }).click();
-    const flow = page.getByRole("img", {
-      name: "Conceptual system: UI exchanges data with API and Database.",
-    });
-    await expect(flow).toBeVisible();
-    await expect(flow.locator(".workflow-system-node")).toHaveCount(3);
-    const signal = flow.locator(".workflow-signal").first();
-    expect(
-      await signal.evaluate(
-        (el) => getComputedStyle(el).animationIterationCount,
-      ),
-    ).toBe("1");
-    expect(
-      await signal.evaluate((el) => getComputedStyle(el).animationDuration),
-    ).toBe("0.85s");
-    await page.getByRole("button", { name: /Deliver/ }).click();
-    const release = page.getByRole("img", {
-      name: "Conceptual delivery: UI, API, and Database connect to Production.",
-    });
-    await expect(release).toBeVisible();
-    await expect(
-      release.getByText("Production", { exact: true }),
-    ).toBeVisible();
+    await expect(page.locator(".system-model")).toHaveAttribute(
+      "data-layer",
+      "3",
+    );
+    const path = page.locator(".workflow-connections > path").first();
+    await expect
+      .poll(() => path.evaluate((el) => getComputedStyle(el).animationName))
+      .toBe("studio-draw");
     await page.emulateMedia({ reducedMotion: "reduce" });
-    for (const path of await release.locator(".workflow-signal").all()) {
-      expect(
-        await path.evaluate((el) => getComputedStyle(el).animationName),
-      ).toBe("none");
-    }
-    await page
-      .locator(".engineering-workflow")
-      .screenshot({ path: `/tmp/workflow-animated-${width}.png` });
+    await expect
+      .poll(() => path.evaluate((el) => getComputedStyle(el).animationName))
+      .toBe("none");
+    await expect(
+      page.getByRole("heading", { name: "Build the complete experience." }),
+    ).toBeVisible();
   });
-}
+
+  for (const width of [1440, 390]) {
+    test(`workflow signals and technical flow at ${width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto("/");
+      await page.getByRole("button", { name: /Develop/ }).click();
+      const flow = page.getByRole("img", {
+        name: "Conceptual system: UI exchanges data with API and Database.",
+      });
+      await expect(flow).toBeVisible();
+      await expect(flow.locator(".workflow-system-node")).toHaveCount(3);
+      const signal = flow.locator(".workflow-signal").first();
+      expect(
+        await signal.evaluate(
+          (el) => getComputedStyle(el).animationIterationCount,
+        ),
+      ).toBe("1");
+      expect(
+        await signal.evaluate((el) => getComputedStyle(el).animationDuration),
+      ).toBe("0.85s");
+      await page.getByRole("button", { name: /Deliver/ }).click();
+      const release = page.getByRole("img", {
+        name: "Conceptual delivery: UI, API, and Database connect to Production.",
+      });
+      await expect(release).toBeVisible();
+      await expect(
+        release.getByText("Production", { exact: true }),
+      ).toBeVisible();
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      for (const path of await release.locator(".workflow-signal").all()) {
+        expect(
+          await path.evaluate((el) => getComputedStyle(el).animationName),
+        ).toBe("none");
+      }
+      await page
+        .locator(".engineering-workflow")
+        .screenshot({ path: `/tmp/workflow-animated-${width}.png` });
+    });
+  }
+});
