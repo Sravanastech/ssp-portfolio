@@ -3,23 +3,11 @@ import { Auth0Provider, useAuth0, type AppState } from "@auth0/auth0-react";
 import { useNavigate } from "react-router-dom";
 import AccountSessionBootstrap from "./AccountSessionBootstrap";
 import type { AuthMethods, AuthSnapshot } from "./auth";
+import { safeReturnPath } from "./returnTo";
 
 type Props = {
   onChange: (snapshot: AuthSnapshot, methods: AuthMethods) => void;
 };
-
-const ALLOWED_RETURN_PATHS = [
-  "/",
-  "/resume",
-  "/work",
-  "/about",
-  "/contact",
-  "/privacy",
-  "/termsconditions",
-  "/account",
-  "/admin",
-  "/admin/inquiries",
-];
 
 function Reporter({ onChange }: Props) {
   const auth = useAuth0();
@@ -88,12 +76,9 @@ export default function Auth0Bridge({ onChange }: Props) {
     return <Unconfigured onChange={onChange} />;
   }
 
+  // The only navigation after a completed sign-in: back to the page the visitor started on.
   const onRedirectCallback = (state?: AppState) => {
-    const target = state?.returnTo || "/";
-    const targetPath = target.split("?")[0].split("#")[0];
-    navigate(ALLOWED_RETURN_PATHS.includes(targetPath) ? target : "/", {
-      replace: true,
-    });
+    navigate(safeReturnPath(state?.returnTo), { replace: true });
   };
 
   return (

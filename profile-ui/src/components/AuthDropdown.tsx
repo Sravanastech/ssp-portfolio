@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { currentReturnPath } from "@/auth/returnTo";
 import { useAuth } from "@/auth/auth";
 import { useLocation, useNavigate } from "react-router-dom";
 import { cv } from "@/theme/cssVars";
@@ -71,8 +72,7 @@ const AuthDropdownClient = () => {
   }, [focusedIndex, isOpen]);
 
   if (!isAuthenticated) {
-    const currentPath = location.pathname + location.search + location.hash;
-    const returnTo = currentPath === "/auth-callback" ? "/" : currentPath;
+    const returnTo = currentReturnPath(location);
     return (
       <button
         type="button"

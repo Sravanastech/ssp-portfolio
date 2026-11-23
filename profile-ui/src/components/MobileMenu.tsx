@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { PrefetchNavLink as NavLink } from "./PrefetchLink";
+import { currentReturnPath } from "@/auth/returnTo";
 import { useAuth } from "@/auth/auth";
 import { SiteText } from "@/content/SiteContent";
 import { useSiteContent } from "@/content/siteContentContext";
@@ -76,7 +77,9 @@ function MobileMenuClient() {
   const handleSignIn = () => {
     setOpen(false);
     trackEvent("resume_sign_in_click");
-    void loginWithRedirect({ appState: { returnTo: "/resume" } });
+    void loginWithRedirect({
+      appState: { returnTo: currentReturnPath(location) },
+    });
   };
 
   const handleLogout = () => {
