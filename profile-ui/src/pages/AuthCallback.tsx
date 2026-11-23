@@ -1,5 +1,5 @@
 import { useAuth } from "@/auth/auth";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useEffect } from "react";
 import { warmBackend } from "@/lib/backendWarmup";
@@ -7,11 +7,15 @@ import ErrorPage from "./ErrorPage";
 
 const AuthCallback = () => {
   const { isLoading, isAuthenticated, error } = useAuth();
+  const { search } = useLocation();
+  // While the URL still carries the OAuth response, the SDK's onRedirectCallback owns the
+  // navigation back to the page the visitor started on. Navigating here as well would race
+  // it (and used to win, sending every sign-in to /resume).
+  const handlingCallback =
+    /[?&](code|error)=/.test(search) && /[?&]state=/.test(search);
   useEffect(() => {
-    warmBackend(); // the visitor is about to land on /resume
+    warmBackend(); // a signed-in visitor is likely to open the resume or account next
   }, []);
-  // The provider honors appState.returnTo. This route is a fallback for a
-  // completed callback without appState; it needs no separate account database.
   if (!isLoading && (error || !isAuthenticated)) {
     return (
       <ErrorPage
@@ -21,7 +25,9 @@ const AuthCallback = () => {
       />
     );
   }
-  if (!isLoading && isAuthenticated) return <Navigate to="/resume" replace />;
+  // Opened directly while already signed in (no OAuth response to process): go home.
+  if (!isLoading && isAuthenticated && !handlingCallback)
+    return <Navigate to="/" replace />;
   return (
     <>
       <Helmet>

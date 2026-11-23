@@ -13,7 +13,7 @@
  */
 exports.onExecutePostLogin = async (event, api) => {
   // Owner/admin accounts that must always use MFA. Edit in the dashboard copy as needed.
-  const ADMIN_EMAILS = ['sravan@thedevtag.com'];
+  const ADMIN_EMAILS = ['admin@sravanasparimi.com'];
 
   const email = (event.user.email || '').toLowerCase();
   const isAdminCandidate = event.user.email_verified === true && ADMIN_EMAILS.includes(email);

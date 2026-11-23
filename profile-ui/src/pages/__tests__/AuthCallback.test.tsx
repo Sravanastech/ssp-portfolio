@@ -14,13 +14,14 @@ const auth = vi.hoisted(() => ({
 }));
 vi.mock("@/auth/auth", () => ({ useAuth: () => auth }));
 
-function callback() {
+function callback(url = "/auth-callback") {
   return render(
     <HelmetProvider>
       <QueryClientProvider client={new QueryClient()}>
-        <MemoryRouter initialEntries={["/auth-callback"]}>
+        <MemoryRouter initialEntries={[url]}>
           <Routes>
             <Route path="/auth-callback" element={<AuthCallback />} />
+            <Route path="/" element={<h1>Home</h1>} />
             <Route path="/resume" element={<h1>Secure resume</h1>} />
           </Routes>
         </MemoryRouter>
@@ -36,11 +37,16 @@ describe("sign-in callback", () => {
     auth.error = undefined;
   });
 
-  it("finishes sign-in even when the identity has no email or account API", async () => {
+  it("opened directly while signed in, goes home (never to /resume)", async () => {
     callback();
-    expect(
-      await screen.findByRole("heading", { name: "Secure resume" }),
-    ).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Home" })).toBeVisible();
+  });
+
+  it("leaves navigation to the SDK's return-to handler while the OAuth response is in the URL", () => {
+    callback("/auth-callback?code=abc&state=xyz");
+    expect(screen.getByRole("status")).toHaveTextContent("Signing in");
+    expect(screen.queryByRole("heading", { name: "Secure resume" })).toBeNull();
+    expect(screen.queryByRole("heading", { name: "Home" })).toBeNull();
   });
 
   it("waits for Auth0 to finish processing", () => {
