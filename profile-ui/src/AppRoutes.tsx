@@ -14,6 +14,10 @@ const ContactPage = routeComponent("/contact");
 const ResumePage = routeComponent("/resume");
 const AccountPage = lazy(() => import("./pages/AccountPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
+const AdminShell = lazy(() => import("./admin/AdminShell"));
+const TeamPage = lazy(() => import("./admin/TeamPage"));
+const AuditPage = lazy(() => import("./admin/AuditPage"));
+const InviteAcceptPage = lazy(() => import("./admin/InviteAcceptPage"));
 const InquiriesPage = lazy(() => import("./pages/InquiriesPage"));
 import ErrorPage from "./pages/ErrorPage";
 import { DEFINED_ROUTES } from "./routes";
@@ -56,10 +60,19 @@ const AppRoutes = () => {
           <Route
             path={DEFINED_ROUTES.ADMIN}
             element={
-              <ProtectedRoute>
-                <AdminPage />
+              <ProtectedRoute mfa>
+                <AdminShell />
               </ProtectedRoute>
             }
+          >
+            <Route index element={<AdminPage />} />
+            <Route path="team" element={<TeamPage />} />
+            <Route path="audit" element={<AuditPage />} />
+          </Route>
+          {/* Invite acceptance handles its own sign-in so the #token fragment survives. */}
+          <Route
+            path={DEFINED_ROUTES.ADMIN_INVITE}
+            element={<InviteAcceptPage />}
           />
           <Route
             path={DEFINED_ROUTES.INQUIRIES}

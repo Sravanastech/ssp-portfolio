@@ -17,6 +17,9 @@ const NON_INDEXED_APP_ROUTES = new Set<string>([
   "/account",
   "/admin",
   "/admin/inquiries",
+  "/admin/team",
+  "/admin/audit",
+  "/admin/invite",
 ]);
 
 export default function PageMetadata() {
