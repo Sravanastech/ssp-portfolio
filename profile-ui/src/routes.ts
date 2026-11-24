@@ -12,6 +12,9 @@ export const DEFINED_ROUTES = {
   ACCOUNT: "/account",
   ADMIN: "/admin",
   INQUIRIES: "/admin/inquiries",
+  ADMIN_TEAM: "/admin/team",
+  ADMIN_AUDIT: "/admin/audit",
+  ADMIN_INVITE: "/admin/invite",
 } as const;
 
 /** Slugs of the per-project pages under /work/, in display order. */

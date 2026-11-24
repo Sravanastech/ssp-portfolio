@@ -1,6 +1,8 @@
 package com.sravanaparimi.profile.content;
 
-import com.sravanaparimi.profile.accounts.AdminAuthorization;
+import com.sravanaparimi.profile.accounts.Authz;
+import com.sravanaparimi.profile.accounts.Permission;
+import com.sravanaparimi.profile.audit.AuditLog;
 import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,14 +18,16 @@ public class ContentEditorService {
 
   private final JdbcTemplate db;
   private final JsonMapper json;
-  private final AdminAuthorization admin;
+  private final Authz authz;
+  private final AuditLog audit;
   private final ContentService content;
 
   public ContentEditorService(
-      JdbcTemplate db, JsonMapper json, AdminAuthorization admin, ContentService content) {
+      JdbcTemplate db, JsonMapper json, Authz authz, AuditLog audit, ContentService content) {
     this.db = db;
     this.json = json;
-    this.admin = admin;
+    this.authz = authz;
+    this.audit = audit;
     this.content = content;
   }
 
@@ -36,7 +40,7 @@ public class ContentEditorService {
   }
 
   public List<DraftDto> list(Jwt jwt) {
-    admin.require(jwt);
+    authz.require(jwt, Permission.CONTENT_EDIT);
     return db.query(
         "SELECT * FROM content_revision WHERE state='draft' ORDER BY id DESC LIMIT 50",
         (rs, n) -> row(rs));
@@ -44,7 +48,7 @@ public class ContentEditorService {
 
   @Transactional
   public DraftDto create(Jwt jwt) {
-    var actor = admin.require(jwt);
+    var actor = authz.require(jwt, Permission.CONTENT_EDIT).accountId();
     long id =
         db.queryForObject(
             "INSERT INTO content_revision(state,content) VALUES ('draft',?::jsonb) RETURNING id",
@@ -65,7 +69,7 @@ public class ContentEditorService {
 
   @Transactional
   public DraftDto save(Jwt jwt, long id, long version, Map<String, Object> input) {
-    var actor = admin.require(jwt);
+    var actor = authz.require(jwt, Permission.CONTENT_EDIT).accountId();
     validate(input, content.published().content(), "content", 0);
     if (json.writeValueAsBytes(input).length > 250000)
       throw new IllegalArgumentException("Content too large");
@@ -82,11 +86,7 @@ public class ContentEditorService {
   }
 
   public void audit(UUID actor, String action, long id) {
-    db.update(
-        "INSERT INTO audit_events(actor,action,resource) VALUES (?,?,?)",
-        actor,
-        action,
-        Long.toString(id));
+    audit.record(actor, action, Long.toString(id));
   }
 
   private void validate(Object value, Object model, String field, int depth) {

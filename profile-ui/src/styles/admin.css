@@ -1,0 +1,257 @@
+/*
+ * Admin console (shell, Team, Audit, Invite). Operate mode: dense and scannable.
+ * Base rules use the shared --color-* tokens, which every paradigm defines, so the
+ * Studio design looks right with no extra work. The Aether block below only tightens
+ * borders and mono type using the existing Aether tokens. No new palette or fonts.
+ */
+.admin-shell {
+  --admin-mono: var(
+    --fui-mono,
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace
+  );
+}
+.admin-section {
+  display: grid;
+  gap: 24px;
+  padding-block: 8px 24px;
+}
+.admin-narrow {
+  max-width: 640px;
+}
+
+/* ---------- Navigation ---------- */
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-top: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+.admin-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border-bottom: 2px solid transparent;
+  color: var(--color-textSecondary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 150ms ease-out;
+}
+.admin-nav-link:hover {
+  color: var(--color-text);
+}
+.admin-nav-link[aria-current="page"] {
+  border-bottom-color: var(--color-primary);
+  color: var(--color-text);
+}
+.admin-nav-link:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: -3px;
+}
+.admin-role {
+  color: var(--color-textSecondary);
+  font-family: var(--admin-mono);
+  font-size: 0.8125rem;
+}
+
+/* ---------- Headings and blocks ---------- */
+.admin-head {
+  display: grid;
+  gap: 8px;
+  padding-top: 24px;
+}
+.admin-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 1rem + 1.6vw, 2rem);
+  font-weight: 500;
+}
+.admin-subtitle {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+.admin-block {
+  display: grid;
+  gap: 12px;
+}
+.admin-section .page-notice {
+  margin: 0;
+}
+
+/* ---------- Tables ---------- */
+.admin-table {
+  min-width: 720px;
+}
+.admin-table th[scope="row"] {
+  font-weight: 500;
+}
+.admin-mono {
+  font-family: var(--admin-mono);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+.admin-wrap {
+  overflow-wrap: anywhere;
+}
+.admin-outcome {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+.admin-outcome--denied {
+  border-color: var(--color-error);
+}
+.admin-details-cell {
+  background: var(--color-background);
+}
+.admin-details {
+  margin: 0;
+  max-height: 240px;
+  overflow: auto;
+  font-family: var(--admin-mono);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Switch (publish toggle): state is text, not colour alone ---------- */
+.admin-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.admin-switch-track {
+  position: relative;
+  flex: none;
+  width: 36px;
+  height: 20px;
+  border: 1px solid var(--color-textSecondary);
+  border-radius: 999px;
+  background: transparent;
+  transition: background-color 150ms ease-out;
+}
+.admin-switch-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-textSecondary);
+  transition:
+    transform 150ms ease-out,
+    background-color 150ms ease-out;
+}
+.admin-switch[aria-checked="true"] .admin-switch-track {
+  border-color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+.admin-switch[aria-checked="true"] .admin-switch-track::after {
+  transform: translateX(16px);
+  background: var(--color-primary);
+}
+.admin-switch:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* ---------- Forms ---------- */
+.admin-form {
+  display: grid;
+  gap: 16px;
+  max-width: 480px;
+}
+.admin-form .studio-button {
+  justify-self: start;
+}
+.admin-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-weight: 500;
+}
+.admin-check input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--color-primary);
+}
+.admin-check input:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+.admin-filters {
+  max-width: 320px;
+}
+.admin-dialog .field-input {
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 719px) {
+  .admin-form .studio-button,
+  .admin-dialog .page-actions .studio-button,
+  .admin-dialog .page-actions .studio-button-secondary {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-nav-link,
+  .admin-switch-track,
+  .admin-switch-track::after {
+    transition: none;
+  }
+}
+
+/* ---------- Aether ---------- */
+:root[data-paradigm="aether"] .admin-nav,
+:root[data-paradigm="aether"] .admin-table th,
+:root[data-paradigm="aether"] .admin-table td {
+  border-color: var(--border-hairline);
+}
+:root[data-paradigm="aether"] .admin-outcome {
+  border-color: var(--border-strong);
+}
+:root[data-paradigm="aether"] .admin-outcome--denied {
+  border-color: var(--color-error);
+}
+:root[data-paradigm="aether"] .admin-nav-link[aria-current="page"] {
+  border-bottom-color: var(--accent-primary);
+}
+:root[data-paradigm="aether"] .admin-details-cell {
+  background: var(--bg-primary);
+}
+:root[data-paradigm="aether"] .admin-title,
+:root[data-paradigm="aether"] .admin-subtitle {
+  letter-spacing: 0.01em;
+}

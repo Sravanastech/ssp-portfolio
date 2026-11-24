@@ -1,30 +1,29 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/auth/auth";
-import { AlertCircle, Info, Loader2 } from "lucide-react";
-import { ensureAccount, adminRequest } from "@/api/accountApi";
+import { Info } from "lucide-react";
+import { adminRequest } from "@/api/accountApi";
+import { useAdmin } from "@/admin/AdminContext";
+import Forbidden from "@/admin/Forbidden";
 import VisitorsPanel from "@/components/admin/VisitorsPanel";
 import "@/styles/pages.css";
 
 type Draft = { id: number; version: number; content: Record<string, unknown> };
 export default function AdminPage() {
-  const { getAccessTokenSilently, user } = useAuth();
+  const { getAccessTokenSilently } = useAuth();
+  const { me } = useAdmin();
+  const canEdit = me.permissions.includes("content.edit");
+  const canPublish = me.permissions.includes("content.publish");
+  const canSeePeople = me.permissions.includes("people.read");
   const [draft, setDraft] = useState<Draft>();
   const [source, setSource] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
-  const [allowed, setAllowed] = useState<boolean>();
   const load = useCallback(async () => {
     setBusy(true);
     setNotice("");
     try {
       const token = await getAccessTokenSilently();
-      const who = await ensureAccount(token, {
-        firstName: user?.given_name,
-        lastName: user?.family_name,
-      });
-      setAllowed(who.admin);
-      if (!who.admin) return;
       const drafts = await adminRequest<Draft[]>(token, "/drafts");
       const latest =
         drafts[0] ?? (await adminRequest<Draft>(token, "/drafts", "POST"));
@@ -37,10 +36,10 @@ export default function AdminPage() {
     } finally {
       setBusy(false);
     }
-  }, [getAccessTokenSilently, user]);
+  }, [getAccessTokenSilently]);
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (canEdit) void load();
+  }, [canEdit, load]);
   async function save() {
     if (!draft) return;
     setBusy(true);
@@ -92,7 +91,7 @@ export default function AdminPage() {
     }
   }
   return (
-    <div className="studio-page ops-page">
+    <div className="admin-section-wrap">
       <div className="studio-container">
         <header className="studio-page-intro">
           <Link className="studio-link ops-back" to="/account">
@@ -106,19 +105,14 @@ export default function AdminPage() {
             draft.
           </p>
         </header>
-        {allowed === false && (
-          <p role="alert" className="page-notice page-notice--error">
-            <AlertCircle size={20} aria-hidden="true" />
-            <span>This account does not have owner access.</span>
-          </p>
-        )}
+        {!canEdit && <Forbidden />}
         {notice && (
           <p role="status" aria-live="polite" className="page-notice">
             <Info size={20} aria-hidden="true" />
             <span>{notice}</span>
           </p>
         )}
-        {allowed && (
+        {canEdit && (
           <div className="ops-stack">
             <div className="page-actions">
               <Link className="studio-link" to="/admin/inquiries">
@@ -156,13 +150,15 @@ export default function AdminPage() {
                 >
                   {busy ? "Saving…" : "Save draft"}
                 </button>
-                <button
-                  className="studio-button-secondary"
-                  disabled={busy || !draft}
-                  onClick={() => void publish()}
-                >
-                  Publish saved draft
-                </button>
+                {canPublish && (
+                  <button
+                    className="studio-button-secondary"
+                    disabled={busy || !draft}
+                    onClick={() => void publish()}
+                  >
+                    Publish saved draft
+                  </button>
+                )}
                 <button
                   className="studio-button-secondary"
                   disabled={busy}
@@ -172,14 +168,8 @@ export default function AdminPage() {
                 </button>
               </div>
             </div>
-            <VisitorsPanel />
+            <VisitorsPanel enabled={canSeePeople} />
           </div>
-        )}
-        {allowed === undefined && busy && (
-          <p role="status" className="ops-loading">
-            <Loader2 className="ops-spinner" size={18} aria-hidden="true" />
-            Loading owner access…
-          </p>
         )}
       </div>
     </div>

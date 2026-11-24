@@ -126,7 +126,14 @@ class BackendIntegrationTest {
   static void admin() throws Exception {
     int status = call("POST", "/api/me", "owner", "{}").statusCode();
     assertTrue(status == 200 || status == 201);
-    sql.update("UPDATE accounts SET is_admin=true WHERE subject='owner'");
+    sql.update("UPDATE accounts SET role='owner' WHERE subject='owner'");
+  }
+
+  static void editor(String subject, boolean canPublish) throws Exception {
+    int status = call("POST", "/api/me", subject, "{}").statusCode();
+    assertTrue(status == 200 || status == 201);
+    sql.update(
+        "UPDATE accounts SET role='editor', can_publish=? WHERE subject=?", canPublish, subject);
   }
 
   @Test
@@ -213,8 +220,76 @@ class BackendIntegrationTest {
   void viewerCannotEditAndRevokedAdminCannotWrite() throws Exception {
     assertEquals(403, call("POST", "/api/admin/drafts", "visitor", "{}").statusCode());
     admin();
-    sql.update("UPDATE accounts SET is_admin=false WHERE subject='owner'");
+    sql.update("UPDATE accounts SET role=NULL WHERE subject='owner'");
     assertEquals(403, call("GET", "/api/admin/drafts", "owner", null).statusCode());
+  }
+
+  @Test
+  void editorEditsDraftsButCannotSeePeopleOrPublishWithoutFlag() throws Exception {
+    editor("ed", false);
+    assertEquals(200, call("GET", "/api/admin/drafts", "ed", null).statusCode());
+    var denied = call("GET", "/api/admin/resume-visitors", "ed", null);
+    assertEquals(403, denied.statusCode());
+    assertEquals("forbidden", json.readTree(denied.body()).get("code").asText());
+    var d = json.readTree(call("POST", "/api/admin/drafts", "ed", "{}").body());
+    assertEquals(
+        403,
+        call("POST", "/api/admin/drafts/" + d.get("id").asLong() + "/publish", "ed", "{\"version\":1}")
+            .statusCode());
+    sql.update("UPDATE accounts SET can_publish=true WHERE subject='ed'");
+    assertNotEquals(
+        403,
+        call("POST", "/api/admin/drafts/" + d.get("id").asLong() + "/publish", "ed", "{\"version\":1}")
+            .statusCode());
+    // The publish above queued a job; clear it so the shared-DB publication tests start clean.
+    sql.update("DELETE FROM publication_jobs WHERE status='pending'");
+  }
+
+  @Test
+  void auditRecordsDetailsAndDenialsOnlyForRoleHolders() throws Exception {
+    sql.update("DELETE FROM audit_events"); // class shares one DB; isolate counts
+    admin();
+    editor("ed2", false);
+    call("POST", "/api/admin/drafts", "owner", "{}");
+    call("GET", "/api/admin/resume-visitors", "ed2", null); // denied, role holder
+    call("GET", "/api/admin/resume-visitors", "stranger", null); // denied, no account/role
+    assertEquals(
+        1,
+        sql.queryForObject(
+            "SELECT count(*) FROM audit_events WHERE outcome='denied' AND"
+                + " details->>'permission'='people.read'",
+            Integer.class));
+    assertEquals(
+        1,
+        sql.queryForObject(
+            "SELECT count(*) FROM audit_events WHERE action='draft.create' AND outcome='ok'",
+            Integer.class));
+  }
+
+  @Test
+  void denialInsideTransactionalEndpointIsStillAudited() throws Exception {
+    sql.update("DELETE FROM audit_events");
+    editor("ed3", false);
+    var d = json.readTree(call("POST", "/api/admin/drafts", "ed3", "{}").body());
+    assertEquals(
+        403,
+        call("POST", "/api/admin/drafts/" + d.get("id").asLong() + "/publish", "ed3", "{\"version\":1}")
+            .statusCode());
+    assertEquals(
+        1,
+        sql.queryForObject(
+            "SELECT count(*) FROM audit_events WHERE outcome='denied' AND"
+                + " details->>'permission'='content.publish'",
+            Integer.class));
+  }
+
+  @Test
+  void noMfaReturnsMachineCode() throws Exception {
+    admin();
+    var r =
+        request("GET", "/api/admin/drafts", token("owner", "test-api", issuer, 300, false), null, null);
+    assertEquals(403, r.statusCode());
+    assertEquals("mfa_required", json.readTree(r.body()).get("code").asText());
   }
 
   @Test

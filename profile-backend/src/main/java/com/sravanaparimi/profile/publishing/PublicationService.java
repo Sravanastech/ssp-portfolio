@@ -1,6 +1,8 @@
 package com.sravanaparimi.profile.publishing;
 
-import com.sravanaparimi.profile.accounts.AdminAuthorization;
+import com.sravanaparimi.profile.accounts.Authz;
+import com.sravanaparimi.profile.accounts.Permission;
+import com.sravanaparimi.profile.audit.AuditLog;
 import java.util.*;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -13,18 +15,20 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class PublicationService {
   private final JdbcTemplate db;
-  private final AdminAuthorization admin;
+  private final Authz authz;
+  private final AuditLog audit;
   private final Environment env;
 
-  public PublicationService(JdbcTemplate db, AdminAuthorization admin, Environment env) {
+  public PublicationService(JdbcTemplate db, Authz authz, AuditLog audit, Environment env) {
     this.db = db;
-    this.admin = admin;
+    this.authz = authz;
+    this.audit = audit;
     this.env = env;
   }
 
   @Transactional
   public Map<String, Object> publish(Jwt jwt, long id, long version) {
-    var actor = admin.require(jwt);
+    var actor = authz.require(jwt, Permission.CONTENT_PUBLISH).accountId();
     if (!env.getProperty("profile.publishing.enabled", Boolean.class, true))
       throw new ResponseStatusException(
           HttpStatus.SERVICE_UNAVAILABLE, "Publishing is disabled in this environment");
@@ -48,15 +52,12 @@ public class PublicationService {
     UUID job = UUID.randomUUID();
     db.update("INSERT INTO publication_jobs(id,revision_id) VALUES (?,?)", job, revision);
     db.update("UPDATE site_state SET target_revision=?", revision);
-    db.update(
-        "INSERT INTO audit_events(actor,action,resource) VALUES (?,'publish.request',?)",
-        actor,
-        Long.toString(revision));
+    audit.record(actor, "publish.request", Long.toString(revision));
     return Map.of("job", job, "revision", revision, "status", "pending");
   }
 
   public List<Map<String, Object>> jobs(Jwt jwt) {
-    admin.require(jwt);
+    authz.require(jwt, Permission.CONTENT_PUBLISH);
     return db.queryForList(
         "SELECT id,revision_id,status,error,created_at FROM publication_jobs ORDER BY created_at"
             + " DESC LIMIT 25");

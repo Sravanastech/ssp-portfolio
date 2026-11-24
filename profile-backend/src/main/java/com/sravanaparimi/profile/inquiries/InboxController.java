@@ -1,6 +1,8 @@
 package com.sravanaparimi.profile.inquiries;
 
-import com.sravanaparimi.profile.accounts.AdminAuthorization;
+import com.sravanaparimi.profile.accounts.Authz;
+import com.sravanaparimi.profile.accounts.Permission;
+import com.sravanaparimi.profile.audit.AuditLog;
 import java.util.*;
 import org.springframework.http.*;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,17 +14,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin/inquiries")
 public class InboxController {
   private final JdbcTemplate db;
-  private final AdminAuthorization admin;
+  private final Authz authz;
+  private final AuditLog audit;
 
-  public InboxController(JdbcTemplate db, AdminAuthorization admin) {
+  public InboxController(JdbcTemplate db, Authz authz, AuditLog audit) {
     this.db = db;
-    this.admin = admin;
+    this.authz = authz;
+    this.audit = audit;
   }
 
   @GetMapping
   public ResponseEntity<List<Map<String, Object>>> list(
       @AuthenticationPrincipal Jwt jwt, @RequestParam(defaultValue = "0") int page) {
-    admin.require(jwt);
+    authz.require(jwt, Permission.INQUIRIES_MANAGE);
     if (page < 0 || page > 10000) throw new IllegalArgumentException();
     return ResponseEntity.ok()
         .cacheControl(CacheControl.noStore())
@@ -36,12 +40,9 @@ public class InboxController {
 
   @PatchMapping("/{id}/archive")
   public ResponseEntity<Void> archive(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
-    var actor = admin.require(jwt);
+    var actor = authz.require(jwt, Permission.INQUIRIES_MANAGE).accountId();
     db.update("UPDATE inquiries SET archived=true WHERE id=?", id);
-    db.update(
-        "INSERT INTO audit_events(actor,action,resource) VALUES (?,'inquiry.archive',?)",
-        actor,
-        id.toString());
+    audit.record(actor, "inquiry.archive", id.toString());
     return ResponseEntity.noContent().cacheControl(CacheControl.noStore()).build();
   }
 }

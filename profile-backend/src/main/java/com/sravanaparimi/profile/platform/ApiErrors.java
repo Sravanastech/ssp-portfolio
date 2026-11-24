@@ -14,6 +14,8 @@ public class ApiErrors {
     var p =
         ProblemDetail.forStatusAndDetail(
             ex.getStatusCode(), ex.getReason() == null ? "Request rejected" : ex.getReason());
+    if (ex instanceof com.sravanaparimi.profile.accounts.AuthzException a)
+      p.setProperty("code", a.code());
     return ResponseEntity.status(ex.getStatusCode()).cacheControl(CacheControl.noStore()).body(p);
   }
 

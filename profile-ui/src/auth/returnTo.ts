@@ -12,6 +12,9 @@ const ALLOWED_RETURN_PATHS = new Set([
   "/account",
   "/admin",
   "/admin/inquiries",
+  "/admin/team",
+  "/admin/audit",
+  "/admin/invite",
   ...PROJECT_SLUGS.map((slug) => `/work/${slug}`),
 ]);
 

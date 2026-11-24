@@ -24,7 +24,7 @@ export function AccountSecurityPanel({
           Verified Identity
         </span>
         {account?.admin && (
-          <span className="ops-badge ops-badge--role">Administrator</span>
+          <span className="ops-badge ops-badge--role">Admin access</span>
         )}
         <span className="page-small">{userEmail}</span>
       </div>
