@@ -103,7 +103,7 @@ public class AccountService {
     AccountDto account = find(jwt);
     db.update(
         "UPDATE accounts SET"
-            + " first_name='',last_name='',email=NULL,phone=NULL,address_line1=NULL,address_line2=NULL,city=NULL,region=NULL,postal_code=NULL,country=NULL,is_admin=false,deleted_at=now()"
+            + " first_name='',last_name='',email=NULL,phone=NULL,address_line1=NULL,address_line2=NULL,city=NULL,region=NULL,postal_code=NULL,country=NULL,is_admin=false,role=NULL,can_publish=false,role_granted_at=NULL,deleted_at=now()"
             + " WHERE id=?",
         account.id());
   }
@@ -119,7 +119,7 @@ public class AccountService {
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("email"),
-                rs.getBoolean("is_admin"),
+                rs.getString("role") != null,
                 rs.getString("phone"),
                 rs.getString("address_line1"),
                 rs.getString("address_line2"),

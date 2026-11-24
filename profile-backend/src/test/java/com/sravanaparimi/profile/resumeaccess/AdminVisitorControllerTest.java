@@ -9,8 +9,7 @@ import com.nimbusds.jose.jwk.*;
 import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.*;
 import com.sravanaparimi.profile.ProfileApplication;
-import com.sravanaparimi.profile.accounts.AccountService;
-import com.sravanaparimi.profile.accounts.AdminAuthorization;
+import com.sravanaparimi.profile.accounts.Authz;
 import com.sun.net.httpserver.HttpServer;
 import java.net.*;
 import java.net.http.*;
@@ -21,8 +20,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.server.ResponseStatusException;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
@@ -80,7 +77,8 @@ class AdminVisitorControllerTest {
     tokens = app.getBean(ResumeTokenService.class);
     for (String sub : List.of("owner", "other-admin")) {
       assertTrue(List.of(200, 201).contains(call("POST", "/api/me", token(sub, true), "{}").statusCode()));
-      sql.update("UPDATE accounts SET is_admin=true WHERE subject=?", sub);
+      sql.update(
+          "UPDATE accounts SET role=? WHERE subject=?", sub.equals("owner") ? "owner" : "editor", sub);
     }
   }
 
@@ -218,30 +216,17 @@ class AdminVisitorControllerTest {
   }
 
   @Test
-  void blankOwnerSubFailsClosedAndMismatchIsForbidden() {
-    var accounts = mock(AccountService.class);
-    var account =
-        new AccountService.AccountDto(UUID.randomUUID(), null, null, null, true, null, null, null, null, null, null, null);
-    when(accounts.getOwn(any())).thenReturn(account);
-    var jwt =
-        Jwt.withTokenValue("t")
-            .header("alg", "RS256")
-            .subject("owner")
-            .claim("amr", List.of("mfa"))
-            .build();
-    for (String configured : new String[] {"", "someone-else"}) {
-      var auth =
-          new AdminAuthorization(
-              accounts, new MockEnvironment().withProperty("profile.admin.owner-sub", configured));
-      var ex = assertThrows(ResponseStatusException.class, () -> auth.requireOwner(jwt));
-      assertEquals(403, ex.getStatusCode().value(), configured);
-    }
-    var ok =
-        new AdminAuthorization(
-            accounts, new MockEnvironment().withProperty("profile.admin.owner-sub", "owner"));
-    assertEquals(account.id(), ok.requireOwner(jwt));
-    // The unset property must also deny.
-    var unset = new AdminAuthorization(accounts, new MockEnvironment());
-    assertEquals(403, assertThrows(ResponseStatusException.class, () -> unset.requireOwner(jwt)).getStatusCode().value());
+  void ownerSubComparisonFailsClosed() {
+    assertFalse(new Authz(mock(JdbcTemplate.class), new MockEnvironment()).isOwnerSub("owner"));
+    assertFalse(
+        new Authz(
+                mock(JdbcTemplate.class),
+                new MockEnvironment().withProperty("profile.admin.owner-sub", "x"))
+            .isOwnerSub("owner"));
+    assertTrue(
+        new Authz(
+                mock(JdbcTemplate.class),
+                new MockEnvironment().withProperty("profile.admin.owner-sub", "owner"))
+            .isOwnerSub("owner"));
   }
 }

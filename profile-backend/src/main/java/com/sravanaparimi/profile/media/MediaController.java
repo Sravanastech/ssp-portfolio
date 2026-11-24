@@ -1,6 +1,7 @@
 package com.sravanaparimi.profile.media;
 
-import com.sravanaparimi.profile.accounts.AdminAuthorization;
+import com.sravanaparimi.profile.accounts.Authz;
+import com.sravanaparimi.profile.accounts.Permission;
 import java.io.ByteArrayInputStream;
 import java.nio.file.*;
 import java.security.MessageDigest;
@@ -19,12 +20,12 @@ import org.springframework.web.server.ResponseStatusException;
 public class MediaController {
   public record MediaReceipt(UUID id, String url, String altText) {}
 
-  private final AdminAuthorization admin;
+  private final Authz authz;
   private final JdbcTemplate db;
   private final Path root;
 
-  public MediaController(AdminAuthorization admin, JdbcTemplate db, Environment env) {
-    this.admin = admin;
+  public MediaController(Authz authz, JdbcTemplate db, Environment env) {
+    this.authz = authz;
     this.db = db;
     this.root =
         Path.of(env.getProperty("profile.media.root", ".local/media"))
@@ -39,7 +40,7 @@ public class MediaController {
       @RequestPart("file") MultipartFile file,
       @RequestParam(defaultValue = "") String altText)
       throws Exception {
-    UUID actor = admin.require(jwt);
+    UUID actor = authz.require(jwt, Permission.MEDIA_UPLOAD).accountId();
     if (file.isEmpty() || file.getSize() > 2_000_000 || altText.length() > 500)
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "Image size or description is invalid");

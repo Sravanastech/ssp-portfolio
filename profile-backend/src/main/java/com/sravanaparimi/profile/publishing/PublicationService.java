@@ -1,6 +1,7 @@
 package com.sravanaparimi.profile.publishing;
 
-import com.sravanaparimi.profile.accounts.AdminAuthorization;
+import com.sravanaparimi.profile.accounts.Authz;
+import com.sravanaparimi.profile.accounts.Permission;
 import java.util.*;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -13,18 +14,18 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class PublicationService {
   private final JdbcTemplate db;
-  private final AdminAuthorization admin;
+  private final Authz authz;
   private final Environment env;
 
-  public PublicationService(JdbcTemplate db, AdminAuthorization admin, Environment env) {
+  public PublicationService(JdbcTemplate db, Authz authz, Environment env) {
     this.db = db;
-    this.admin = admin;
+    this.authz = authz;
     this.env = env;
   }
 
   @Transactional
   public Map<String, Object> publish(Jwt jwt, long id, long version) {
-    var actor = admin.require(jwt);
+    var actor = authz.require(jwt, Permission.CONTENT_PUBLISH).accountId();
     if (!env.getProperty("profile.publishing.enabled", Boolean.class, true))
       throw new ResponseStatusException(
           HttpStatus.SERVICE_UNAVAILABLE, "Publishing is disabled in this environment");
@@ -56,7 +57,7 @@ public class PublicationService {
   }
 
   public List<Map<String, Object>> jobs(Jwt jwt) {
-    admin.require(jwt);
+    authz.require(jwt, Permission.CONTENT_PUBLISH);
     return db.queryForList(
         "SELECT id,revision_id,status,error,created_at FROM publication_jobs ORDER BY created_at"
             + " DESC LIMIT 25");
