@@ -51,8 +51,7 @@ public class AccountService {
   @Transactional
   public Provisioned provision(Jwt jwt, ProfileCreate input) {
     String issuer = jwt.getIssuer().toString(), subject = jwt.getSubject();
-    String email =
-        Boolean.TRUE.equals(jwt.getClaim("email_verified")) ? jwt.getClaimAsString("email") : null;
+    String email = VerifiedEmail.from(jwt).orElse(null);
     int inserted =
         db.update(
             "INSERT INTO accounts(id,issuer,subject,email,first_name,last_name) VALUES"
