@@ -1,0 +1,37 @@
+package com.sravanaparimi.profile.accounts;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+/** Access refusal carrying a machine code the UI maps to an actionable message. */
+public class AuthzException extends ResponseStatusException {
+  private final String code;
+
+  public AuthzException(HttpStatus status, String code, String reason) {
+    super(status, reason);
+    this.code = code;
+  }
+
+  public String code() {
+    return code;
+  }
+
+  public static AuthzException forbidden() {
+    return new AuthzException(HttpStatus.FORBIDDEN, "forbidden", "Your role does not allow this");
+  }
+
+  public static AuthzException mfaRequired() {
+    return new AuthzException(
+        HttpStatus.FORBIDDEN, "mfa_required", "Sign in again and complete MFA");
+  }
+
+  public static AuthzException notProvisioned() {
+    return new AuthzException(
+        HttpStatus.FORBIDDEN, "account_not_provisioned", "Open your account page once first");
+  }
+
+  public static AuthzException inviteUnavailable() {
+    return new AuthzException(
+        HttpStatus.GONE, "invite_unavailable", "This invite is expired, used, or revoked");
+  }
+}
