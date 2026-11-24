@@ -5,14 +5,16 @@
  * screen and the flow RESUMES AT THE NEXT ACTION. This Action does not run again, and the MFA result is
  * only visible to the next Action ("2-emit-mfa-claim.js"). Keep this one directly BEFORE that one.
  *
- * Users already enrolled in a factor get a challenge. Users with no factor get an enrollment screen
- * (challengeWith* needs an enrolled factor; enrollWith* creates one).
+ * Uses the classic api.multifactor.enable: users with no factor get the enrollment screen, enrolled
+ * users get a challenge, using the factors enabled for the tenant. (The challengeWith* / enrollWith*
+ * APIs need the separate "Customize MFA Factors using Actions" feature and fail without it, showing
+ * "Two-factor authentication is required ... contact your system administrator".)
  *
- * MFA is required when the app requests it (acr_values = multi-factor, sent by the /admin sign-in) or
- * when the verified email is in ADMIN_EMAILS.
+ * MFA is required when the app requests it (acr_values = multi-factor, sent by the /admin and invite
+ * sign-in) or when the verified email is in ADMIN_EMAILS.
  *
- * Prerequisite: enable the factors in Auth0 Dashboard > Security > Multi-factor Auth
- * (One-time Password and/or WebAuthn). Leave the policy on "Never"; this Action challenges admins only.
+ * Prerequisite: enable a factor in Auth0 Dashboard > Security > Multi-factor Auth (One-time Password).
+ * Leave the policy on "Never"; this Action challenges admins only.
  */
 exports.onExecutePostLogin = async (event, api) => {
   // Owner/admin accounts that must always use MFA. Edit in the dashboard copy as needed.
@@ -26,8 +28,5 @@ exports.onExecutePostLogin = async (event, api) => {
   const hasMfa = (event.authentication?.methods || []).some((m) => m.name === 'mfa');
   if (!(requested || isListed) || hasMfa) return;
 
-  const factors = [{ type: 'otp' }, { type: 'webauthn-roaming' }, { type: 'webauthn-platform' }];
-  const enrolled = (event.user.enrolledFactors || []).length > 0;
-  if (enrolled) api.authentication.challengeWithAny(factors);
-  else api.authentication.enrollWithAny(factors);
+  api.multifactor.enable('any', { allowRememberBrowser: false });
 };
