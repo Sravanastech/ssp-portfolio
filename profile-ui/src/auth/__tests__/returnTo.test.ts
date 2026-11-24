@@ -27,6 +27,13 @@ describe("safeReturnPath", () => {
   });
 });
 
+describe("admin sub-pages", () => {
+  it("allows admin sub-pages and the invite page", () => {
+    for (const p of ["/admin/team", "/admin/audit", "/admin/invite"])
+      expect(safeReturnPath(p)).toBe(p);
+  });
+});
+
 describe("currentReturnPath", () => {
   it("returns the visitor's current page with query and hash", () => {
     expect(

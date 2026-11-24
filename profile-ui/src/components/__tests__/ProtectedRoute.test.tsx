@@ -45,6 +45,30 @@ describe("ProtectedRoute", () => {
     expect(screen.queryByText("Protected Content")).not.toBeInTheDocument();
   });
 
+  it("asks for MFA when the route requires it", () => {
+    const loginWithRedirect = vi.fn();
+    vi.mocked(useAuth).mockReturnValue({
+      isAuthenticated: false,
+      isLoading: false,
+      error: undefined,
+      loginWithRedirect,
+    } as unknown as AuthContextValue);
+    window.history.pushState({}, "", "/admin/team");
+
+    renderWithProviders(
+      <ProtectedRoute mfa>
+        <div>Protected Content</div>
+      </ProtectedRoute>,
+    );
+    expect(loginWithRedirect).toHaveBeenCalledWith({
+      appState: { returnTo: "/admin/team" },
+      authorizationParams: {
+        acr_values:
+          "http://schemas.openid.net/pape/policies/2007/06/multi-factor",
+      },
+    });
+  });
+
   it("shows a 403 page when authentication errored, without redirect loop", () => {
     const loginWithRedirect = vi.fn();
     vi.mocked(useAuth).mockReturnValue({

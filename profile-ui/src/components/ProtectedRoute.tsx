@@ -1,13 +1,16 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/auth/auth";
+import { adminLoginOptions } from "@/admin/adminLogin";
 import ErrorPage from "@/pages/ErrorPage";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
+  /** Ask Auth0 for multi-factor sign-in (admin surfaces). */
+  mfa?: boolean;
 }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children, mfa = false }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading, error, loginWithRedirect } = useAuth();
   const location = useLocation();
   const returnTo = location.pathname + location.search;
@@ -15,9 +18,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   useEffect(() => {
     if (shouldSignIn) {
-      void loginWithRedirect({ appState: { returnTo } });
+      void loginWithRedirect(
+        mfa ? adminLoginOptions(returnTo) : { appState: { returnTo } },
+      );
     }
-  }, [shouldSignIn, loginWithRedirect, returnTo]);
+  }, [shouldSignIn, loginWithRedirect, returnTo, mfa]);
 
   if (isLoading || shouldSignIn) {
     return (
