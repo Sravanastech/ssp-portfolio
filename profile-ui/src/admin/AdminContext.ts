@@ -1,7 +1,11 @@
 import { createContext, useContext } from "react";
 import type { AdminMe } from "@/api/adminApi";
 
-export type AdminContextValue = { me: AdminMe; token: string };
+/** `getToken` asks Auth0 for a current access token; call it right before each request. */
+export type AdminContextValue = {
+  me: AdminMe;
+  getToken: () => Promise<string>;
+};
 
 export const AdminContext = createContext<AdminContextValue | null>(null);
 

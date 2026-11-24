@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/auth/auth";
@@ -20,14 +20,18 @@ export default function AdminShell() {
   const location = useLocation();
   const [state, setState] = useState<State>({ phase: "loading" });
   const [attempt, setAttempt] = useState(0);
+  const getToken = useCallback(
+    async (): Promise<string> => getAccessTokenSilently(),
+    [getAccessTokenSilently],
+  );
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const token = await getAccessTokenSilently();
+        const token = await getToken();
         const me = await adminFetch<AdminMe>(token, "/me");
-        if (!cancelled) setState({ phase: "ready", value: { me, token } });
+        if (!cancelled) setState({ phase: "ready", value: { me, getToken } });
       } catch (error) {
         if (!cancelled)
           setState({
@@ -39,7 +43,7 @@ export default function AdminShell() {
     return () => {
       cancelled = true;
     };
-  }, [getAccessTokenSilently, attempt]);
+  }, [getToken, attempt]);
 
   const nav = useMemo(
     () =>

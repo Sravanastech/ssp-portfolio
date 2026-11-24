@@ -45,7 +45,7 @@ function prettyDetails(raw: string | null): string {
   }
 }
 
-function AuditPageBody({ token }: { token: string }) {
+function AuditPageBody({ getToken }: { getToken: () => Promise<string> }) {
   const [action, setAction] = useState("");
   const [items, setItems] = useState<Entry[]>([]);
   const [next, setNext] = useState<number | null>(null);
@@ -61,6 +61,7 @@ function AuditPageBody({ token }: { token: string }) {
       if (before !== null) query.set("before", String(before));
       if (action) query.set("action", action);
       try {
+        const token = await getToken();
         const page = await adminFetch<AuditPageData>(
           token,
           `/audit?${query.toString()}`,
@@ -79,7 +80,7 @@ function AuditPageBody({ token }: { token: string }) {
         setLoading(false);
       }
     },
-    [token, action],
+    [getToken, action],
   );
 
   useEffect(() => {
@@ -248,7 +249,7 @@ function AuditPageBody({ token }: { token: string }) {
 }
 
 export default function AuditPage() {
-  const { me, token } = useAdmin();
+  const { me, getToken } = useAdmin();
   if (!me.permissions.includes("audit.read")) return <Forbidden />;
-  return <AuditPageBody token={token} />;
+  return <AuditPageBody getToken={getToken} />;
 }

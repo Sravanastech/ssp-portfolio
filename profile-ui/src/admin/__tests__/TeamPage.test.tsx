@@ -52,12 +52,15 @@ const team = {
 
 type Init = { method?: string };
 
-function renderTeam(perms: Permission[] = ["team.manage"]) {
+function renderTeam(
+  perms: Permission[] = ["team.manage"],
+  getToken: () => Promise<string> = async () => "tok",
+) {
   return render(
     <MemoryRouter>
       <AdminContext.Provider
         value={{
-          token: "tok",
+          getToken,
           me: { role: "owner", canPublish: true, permissions: perms },
         }}
       >
@@ -115,6 +118,27 @@ describe("TeamPage", () => {
         body: { canPublish: true },
       }),
     );
+  });
+
+  it("fetches a fresh access token before each request", async () => {
+    let issued = 0;
+    const getToken = vi.fn(async () => `t${++issued}`);
+    renderTeam(["team.manage"], getToken);
+    const toggle = await screen.findByRole("switch", {
+      name: "Can publish: e@x.com",
+    });
+    expect(api.adminFetch).toHaveBeenCalledWith("t1", "/team");
+    fireEvent.click(toggle);
+    await waitFor(() =>
+      expect(api.adminFetch).toHaveBeenCalledWith("t2", "/team/e1", {
+        method: "PATCH",
+        body: { canPublish: true },
+      }),
+    );
+    await waitFor(() =>
+      expect(api.adminFetch).toHaveBeenLastCalledWith("t3", "/team"),
+    );
+    expect(getToken).toHaveBeenCalledTimes(3);
   });
 
   it("shows the invite link once in a dialog and clears it on close", async () => {

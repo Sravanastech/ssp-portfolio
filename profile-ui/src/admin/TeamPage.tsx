@@ -30,7 +30,7 @@ type Created = { id: string; token: string; expiresAt: string };
 const messageOf = (error: unknown, fallback: string) =>
   error instanceof AdminApiError ? error.message : fallback;
 
-function TeamPageBody({ token }: { token: string }) {
+function TeamPageBody({ getToken }: { getToken: () => Promise<string> }) {
   const [team, setTeam] = useState<Team | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -47,13 +47,14 @@ function TeamPageBody({ token }: { token: string }) {
     setLoading(true);
     setLoadError("");
     try {
+      const token = await getToken();
       setTeam(await adminFetch<Team>(token, "/team"));
     } catch (error) {
       setLoadError(messageOf(error, "Could not load the team. Please retry."));
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [getToken]);
 
   useEffect(() => {
     void load();
@@ -81,6 +82,7 @@ function TeamPageBody({ token }: { token: string }) {
     setSending(true);
     setFormError("");
     try {
+      const token = await getToken();
       const result = await adminFetch<Created>(token, "/team/invites", {
         method: "POST",
         body: { email: email.trim(), canPublish },
@@ -213,11 +215,15 @@ function TeamPageBody({ token }: { token: string }) {
                               className="admin-switch"
                               onClick={() =>
                                 void act(
-                                  () =>
-                                    adminFetch(token, `/team/${m.accountId}`, {
-                                      method: "PATCH",
-                                      body: { canPublish: !m.canPublish },
-                                    }),
+                                  async () =>
+                                    adminFetch(
+                                      await getToken(),
+                                      `/team/${m.accountId}`,
+                                      {
+                                        method: "PATCH",
+                                        body: { canPublish: !m.canPublish },
+                                      },
+                                    ),
                                   "Publish permission updated.",
                                   "Could not update the permission.",
                                 )
@@ -245,10 +251,14 @@ function TeamPageBody({ token }: { token: string }) {
                                 )
                                   return;
                                 void act(
-                                  () =>
-                                    adminFetch(token, `/team/${m.accountId}`, {
-                                      method: "DELETE",
-                                    }),
+                                  async () =>
+                                    adminFetch(
+                                      await getToken(),
+                                      `/team/${m.accountId}`,
+                                      {
+                                        method: "DELETE",
+                                      },
+                                    ),
                                   "Editor removed.",
                                   "Could not remove this editor.",
                                 );
@@ -309,10 +319,14 @@ function TeamPageBody({ token }: { token: string }) {
                             aria-label={`Revoke invite for ${i.email}`}
                             onClick={() =>
                               void act(
-                                () =>
-                                  adminFetch(token, `/team/invites/${i.id}`, {
-                                    method: "DELETE",
-                                  }),
+                                async () =>
+                                  adminFetch(
+                                    await getToken(),
+                                    `/team/invites/${i.id}`,
+                                    {
+                                      method: "DELETE",
+                                    },
+                                  ),
                                 "Invite revoked.",
                                 "Could not revoke this invite.",
                               )
@@ -430,7 +444,7 @@ function TeamPageBody({ token }: { token: string }) {
 }
 
 export default function TeamPage() {
-  const { me, token } = useAdmin();
+  const { me, getToken } = useAdmin();
   if (!me.permissions.includes("team.manage")) return <Forbidden />;
-  return <TeamPageBody token={token} />;
+  return <TeamPageBody getToken={getToken} />;
 }

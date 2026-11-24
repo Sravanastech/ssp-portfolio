@@ -25,7 +25,7 @@ function renderAudit(perms: Permission[] = ["audit.read"]) {
   return render(
     <AdminContext.Provider
       value={{
-        token: "tok",
+        getToken: async () => "tok",
         me: { role: "owner", canPublish: true, permissions: perms },
       }}
     >
