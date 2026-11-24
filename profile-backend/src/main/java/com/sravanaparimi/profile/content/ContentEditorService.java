@@ -2,6 +2,7 @@ package com.sravanaparimi.profile.content;
 
 import com.sravanaparimi.profile.accounts.Authz;
 import com.sravanaparimi.profile.accounts.Permission;
+import com.sravanaparimi.profile.audit.AuditLog;
 import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,13 +19,15 @@ public class ContentEditorService {
   private final JdbcTemplate db;
   private final JsonMapper json;
   private final Authz authz;
+  private final AuditLog audit;
   private final ContentService content;
 
   public ContentEditorService(
-      JdbcTemplate db, JsonMapper json, Authz authz, ContentService content) {
+      JdbcTemplate db, JsonMapper json, Authz authz, AuditLog audit, ContentService content) {
     this.db = db;
     this.json = json;
     this.authz = authz;
+    this.audit = audit;
     this.content = content;
   }
 
@@ -83,11 +86,7 @@ public class ContentEditorService {
   }
 
   public void audit(UUID actor, String action, long id) {
-    db.update(
-        "INSERT INTO audit_events(actor,action,resource) VALUES (?,?,?)",
-        actor,
-        action,
-        Long.toString(id));
+    audit.record(actor, action, Long.toString(id));
   }
 
   private void validate(Object value, Object model, String field, int depth) {

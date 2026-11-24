@@ -10,6 +10,7 @@ import com.nimbusds.jose.jwk.gen.RSAKeyGenerator;
 import com.nimbusds.jwt.*;
 import com.sravanaparimi.profile.ProfileApplication;
 import com.sravanaparimi.profile.accounts.Authz;
+import com.sravanaparimi.profile.audit.AuditLog;
 import com.sun.net.httpserver.HttpServer;
 import java.net.*;
 import java.net.http.*;
@@ -217,15 +218,17 @@ class AdminVisitorControllerTest {
 
   @Test
   void ownerSubComparisonFailsClosed() {
-    assertFalse(new Authz(mock(JdbcTemplate.class), new MockEnvironment()).isOwnerSub("owner"));
+    assertFalse(new Authz(mock(JdbcTemplate.class), mock(AuditLog.class), new MockEnvironment()).isOwnerSub("owner"));
     assertFalse(
         new Authz(
                 mock(JdbcTemplate.class),
+                mock(AuditLog.class),
                 new MockEnvironment().withProperty("profile.admin.owner-sub", "x"))
             .isOwnerSub("owner"));
     assertTrue(
         new Authz(
                 mock(JdbcTemplate.class),
+                mock(AuditLog.class),
                 new MockEnvironment().withProperty("profile.admin.owner-sub", "owner"))
             .isOwnerSub("owner"));
   }

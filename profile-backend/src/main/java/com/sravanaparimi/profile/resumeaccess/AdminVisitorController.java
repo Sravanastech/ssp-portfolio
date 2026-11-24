@@ -2,10 +2,10 @@ package com.sravanaparimi.profile.resumeaccess;
 
 import com.sravanaparimi.profile.accounts.Authz;
 import com.sravanaparimi.profile.accounts.Permission;
+import com.sravanaparimi.profile.audit.AuditLog;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.*;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +23,13 @@ public class AdminVisitorController {
 
   private final VisitorRepository visitors;
   private final Authz authz;
-  private final JdbcTemplate db;
+  private final AuditLog audit;
 
   public AdminVisitorController(
-      VisitorRepository visitors, Authz authz, JdbcTemplate db) {
+      VisitorRepository visitors, Authz authz, AuditLog audit) {
     this.visitors = visitors;
     this.authz = authz;
-    this.db = db;
+    this.audit = audit;
   }
 
   @GetMapping
@@ -40,7 +40,7 @@ public class AdminVisitorController {
     var actor = authz.require(jwt, Permission.PEOPLE_READ).accountId();
     if (page < 0 || page > MAX_PAGE || size < 1) throw new IllegalArgumentException();
     int capped = Math.min(size, MAX_SIZE);
-    audit(actor, "resume_visitor.list", "resume-visitors");
+    audit.record(actor, "resume_visitor.list", "resume-visitors");
     return ResponseEntity.ok()
         .cacheControl(CacheControl.noStore())
         .body(new Page(visitors.page(page, capped), page, capped, visitors.count()));
@@ -50,12 +50,7 @@ public class AdminVisitorController {
   public ResponseEntity<Void> delete(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
     var actor = authz.require(jwt, Permission.PEOPLE_MANAGE).accountId();
     if (!visitors.delete(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not found");
-    audit(actor, "resume_visitor.delete", id.toString());
+    audit.record(actor, "resume_visitor.delete", id.toString());
     return ResponseEntity.noContent().cacheControl(CacheControl.noStore()).build();
-  }
-
-  private void audit(UUID actor, String action, String resource) {
-    db.update(
-        "INSERT INTO audit_events(actor,action,resource) VALUES (?,?,?)", actor, action, resource);
   }
 }

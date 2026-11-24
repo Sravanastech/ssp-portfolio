@@ -2,6 +2,7 @@ package com.sravanaparimi.profile.publishing;
 
 import com.sravanaparimi.profile.accounts.Authz;
 import com.sravanaparimi.profile.accounts.Permission;
+import com.sravanaparimi.profile.audit.AuditLog;
 import java.util.*;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -15,11 +16,13 @@ import org.springframework.web.server.ResponseStatusException;
 public class PublicationService {
   private final JdbcTemplate db;
   private final Authz authz;
+  private final AuditLog audit;
   private final Environment env;
 
-  public PublicationService(JdbcTemplate db, Authz authz, Environment env) {
+  public PublicationService(JdbcTemplate db, Authz authz, AuditLog audit, Environment env) {
     this.db = db;
     this.authz = authz;
+    this.audit = audit;
     this.env = env;
   }
 
@@ -49,10 +52,7 @@ public class PublicationService {
     UUID job = UUID.randomUUID();
     db.update("INSERT INTO publication_jobs(id,revision_id) VALUES (?,?)", job, revision);
     db.update("UPDATE site_state SET target_revision=?", revision);
-    db.update(
-        "INSERT INTO audit_events(actor,action,resource) VALUES (?,'publish.request',?)",
-        actor,
-        Long.toString(revision));
+    audit.record(actor, "publish.request", Long.toString(revision));
     return Map.of("job", job, "revision", revision, "status", "pending");
   }
 

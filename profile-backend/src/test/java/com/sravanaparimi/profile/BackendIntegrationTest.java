@@ -246,6 +246,44 @@ class BackendIntegrationTest {
   }
 
   @Test
+  void auditRecordsDetailsAndDenialsOnlyForRoleHolders() throws Exception {
+    sql.update("DELETE FROM audit_events"); // class shares one DB; isolate counts
+    admin();
+    editor("ed2", false);
+    call("POST", "/api/admin/drafts", "owner", "{}");
+    call("GET", "/api/admin/resume-visitors", "ed2", null); // denied, role holder
+    call("GET", "/api/admin/resume-visitors", "stranger", null); // denied, no account/role
+    assertEquals(
+        1,
+        sql.queryForObject(
+            "SELECT count(*) FROM audit_events WHERE outcome='denied' AND"
+                + " details->>'permission'='people.read'",
+            Integer.class));
+    assertEquals(
+        1,
+        sql.queryForObject(
+            "SELECT count(*) FROM audit_events WHERE action='draft.create' AND outcome='ok'",
+            Integer.class));
+  }
+
+  @Test
+  void denialInsideTransactionalEndpointIsStillAudited() throws Exception {
+    sql.update("DELETE FROM audit_events");
+    editor("ed3", false);
+    var d = json.readTree(call("POST", "/api/admin/drafts", "ed3", "{}").body());
+    assertEquals(
+        403,
+        call("POST", "/api/admin/drafts/" + d.get("id").asLong() + "/publish", "ed3", "{\"version\":1}")
+            .statusCode());
+    assertEquals(
+        1,
+        sql.queryForObject(
+            "SELECT count(*) FROM audit_events WHERE outcome='denied' AND"
+                + " details->>'permission'='content.publish'",
+            Integer.class));
+  }
+
+  @Test
   void noMfaReturnsMachineCode() throws Exception {
     admin();
     var r =

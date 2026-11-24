@@ -2,6 +2,7 @@ package com.sravanaparimi.profile.media;
 
 import com.sravanaparimi.profile.accounts.Authz;
 import com.sravanaparimi.profile.accounts.Permission;
+import com.sravanaparimi.profile.audit.AuditLog;
 import java.io.ByteArrayInputStream;
 import java.nio.file.*;
 import java.security.MessageDigest;
@@ -21,11 +22,13 @@ public class MediaController {
   public record MediaReceipt(UUID id, String url, String altText) {}
 
   private final Authz authz;
+  private final AuditLog audit;
   private final JdbcTemplate db;
   private final Path root;
 
-  public MediaController(Authz authz, JdbcTemplate db, Environment env) {
+  public MediaController(Authz authz, AuditLog audit, JdbcTemplate db, Environment env) {
     this.authz = authz;
+    this.audit = audit;
     this.db = db;
     this.root =
         Path.of(env.getProperty("profile.media.root", ".local/media"))
@@ -80,11 +83,7 @@ public class MediaController {
           altText,
           bytes.length,
           hash);
-      db.update(
-          "INSERT INTO audit_events(actor,action,resource) VALUES (?,?,?)",
-          actor,
-          "media.upload",
-          id.toString());
+      audit.record(actor, "media.upload", id.toString());
     } catch (Exception ex) {
       Files.deleteIfExists(target);
       throw ex;

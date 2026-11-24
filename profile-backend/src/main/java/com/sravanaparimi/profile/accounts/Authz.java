@@ -1,5 +1,6 @@
 package com.sravanaparimi.profile.accounts;
 
+import com.sravanaparimi.profile.audit.AuditLog;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.List;
@@ -16,10 +17,12 @@ public class Authz {
   private record Row(UUID id, String role, boolean canPublish) {}
 
   private final JdbcTemplate db;
+  private final AuditLog audit;
   private final String ownerSub;
 
-  public Authz(JdbcTemplate db, Environment env) {
+  public Authz(JdbcTemplate db, AuditLog audit, Environment env) {
     this.db = db;
+    this.audit = audit;
     this.ownerSub = env.getProperty("profile.admin.owner-sub", "");
   }
 
@@ -47,7 +50,10 @@ public class Authz {
   /** Resolve and require one permission. */
   public Actor require(Jwt jwt, Permission permission) {
     Actor actor = resolve(jwt);
-    if (!actor.can(permission)) throw AuthzException.forbidden();
+    if (!actor.can(permission)) {
+      audit.denied(actor.accountId(), permission); // only reached by role holders
+      throw AuthzException.forbidden();
+    }
     return actor;
   }
 

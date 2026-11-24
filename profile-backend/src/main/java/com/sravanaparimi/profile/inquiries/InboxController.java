@@ -2,6 +2,7 @@ package com.sravanaparimi.profile.inquiries;
 
 import com.sravanaparimi.profile.accounts.Authz;
 import com.sravanaparimi.profile.accounts.Permission;
+import com.sravanaparimi.profile.audit.AuditLog;
 import java.util.*;
 import org.springframework.http.*;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class InboxController {
   private final JdbcTemplate db;
   private final Authz authz;
+  private final AuditLog audit;
 
-  public InboxController(JdbcTemplate db, Authz authz) {
+  public InboxController(JdbcTemplate db, Authz authz, AuditLog audit) {
     this.db = db;
     this.authz = authz;
+    this.audit = audit;
   }
 
   @GetMapping
@@ -39,10 +42,7 @@ public class InboxController {
   public ResponseEntity<Void> archive(@AuthenticationPrincipal Jwt jwt, @PathVariable UUID id) {
     var actor = authz.require(jwt, Permission.INQUIRIES_MANAGE).accountId();
     db.update("UPDATE inquiries SET archived=true WHERE id=?", id);
-    db.update(
-        "INSERT INTO audit_events(actor,action,resource) VALUES (?,'inquiry.archive',?)",
-        actor,
-        id.toString());
+    audit.record(actor, "inquiry.archive", id.toString());
     return ResponseEntity.noContent().cacheControl(CacheControl.noStore()).build();
   }
 }
