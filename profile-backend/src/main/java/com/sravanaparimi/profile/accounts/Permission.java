@@ -6,6 +6,7 @@ public enum Permission {
   CONTENT_PUBLISH("content.publish"),
   MEDIA_UPLOAD("media.upload"),
   INQUIRIES_MANAGE("inquiries.manage"),
+  INQUIRIES_REPLY("inquiries.reply"),
   INSIGHTS_READ("insights.read"),
   PEOPLE_READ("people.read"),
   PEOPLE_MANAGE("people.manage"),

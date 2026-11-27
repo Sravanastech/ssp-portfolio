@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AdminShell from "../AdminShell";
 import { useAdmin } from "../AdminContext";
@@ -20,9 +20,24 @@ vi.mock("@/api/adminApi", async (orig) => ({
   adminFetch: api.adminFetch,
 }));
 
+/** Routes /me and /summary to separate canned responses. */
+function mockApi(me: unknown, summary: unknown) {
+  api.adminFetch.mockImplementation(async (_token: string, path: string) => {
+    if (path === "/me") return me;
+    if (path === "/summary") return summary;
+    throw new Error(`unexpected ${path}`);
+  });
+}
+
 function Probe() {
   const { me } = useAdmin();
-  return <p>role:{me.role}</p>;
+  const { pathname } = useLocation();
+  return (
+    <>
+      <p>role:{me.role}</p>
+      <p>at:{pathname}</p>
+    </>
+  );
 }
 
 function shell(path = "/admin") {
@@ -31,6 +46,7 @@ function shell(path = "/admin") {
       <Routes>
         <Route path="/admin" element={<AdminShell />}>
           <Route index element={<Probe />} />
+          <Route path="*" element={<Probe />} />
         </Route>
       </Routes>
     </MemoryRouter>,
@@ -49,16 +65,22 @@ describe("AdminShell", () => {
   });
 
   it("shows only permitted navigation for an editor", async () => {
-    api.adminFetch.mockResolvedValue({
-      role: "editor",
-      canPublish: false,
-      permissions: ["content.edit", "insights.read"],
-    });
+    mockApi(
+      {
+        role: "editor",
+        canPublish: false,
+        permissions: ["content.edit", "insights.read"],
+      },
+      {},
+    );
     shell();
     expect(await screen.findByText("role:editor")).toBeInTheDocument();
-    expect(screen.getByRole("navigation", { name: "Admin" })).toHaveTextContent(
-      "Overview",
-    );
+    const nav = screen.getByRole("navigation", { name: "Admin" });
+    expect(nav).toHaveTextContent("Home");
+    expect(nav).toHaveTextContent("Content");
+    expect(
+      screen.queryByRole("link", { name: /Inbox/ }),
+    ).not.toBeInTheDocument();
     expect(
       screen.queryByRole("link", { name: "Team" }),
     ).not.toBeInTheDocument();
@@ -66,16 +88,69 @@ describe("AdminShell", () => {
   });
 
   it("shows Team and Audit log for an owner", async () => {
-    api.adminFetch.mockResolvedValue({
-      role: "owner",
-      canPublish: true,
-      permissions: ["team.manage", "audit.read", "content.edit"],
-    });
+    mockApi(
+      {
+        role: "owner",
+        canPublish: true,
+        permissions: ["team.manage", "audit.read", "content.edit"],
+      },
+      {},
+    );
     shell();
     expect(
       await screen.findByRole("link", { name: "Team" }),
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Audit log" })).toBeInTheDocument();
+  });
+
+  it("shows the open-inquiry badge on Inbox", async () => {
+    mockApi(
+      {
+        role: "owner",
+        canPublish: true,
+        permissions: ["inquiries.manage", "inquiries.reply"],
+      },
+      { openInquiries: 3 },
+    );
+    shell();
+    const link = await screen.findByRole("link", { name: /Inbox/ });
+    await waitFor(() => expect(link).toHaveTextContent("3"));
+  });
+
+  it("opens the command palette with Ctrl+K and navigates on Enter", async () => {
+    mockApi(
+      {
+        role: "owner",
+        canPublish: true,
+        permissions: ["team.manage", "audit.read", "content.edit"],
+      },
+      {},
+    );
+    shell();
+    await screen.findByText("role:owner");
+    fireEvent.keyDown(window, { key: "k", ctrlKey: true });
+    const input = await screen.findByRole("combobox", {
+      name: "Search admin pages",
+    });
+    fireEvent.change(input, { target: { value: "audit" } });
+    expect(screen.getAllByRole("option")).toHaveLength(1);
+    fireEvent.keyDown(input, { key: "Enter" });
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
+    expect(await screen.findByText("at:/admin/settings/audit")).toBeVisible();
+  });
+
+  it("closes the palette with Escape", async () => {
+    mockApi({ role: "owner", canPublish: true, permissions: [] }, {});
+    shell();
+    await screen.findByText("role:owner");
+    fireEvent.keyDown(window, { key: "k", metaKey: true });
+    await screen.findByRole("dialog");
+    fireEvent.keyDown(screen.getByRole("combobox"), { key: "Escape" });
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
   });
 
   it("offers MFA sign-in when the server says mfa_required", async () => {

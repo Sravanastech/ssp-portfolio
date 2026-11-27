@@ -8,6 +8,7 @@ import { useSiteContent } from "@/content/siteContentContext";
 import { cv, tint } from "@/theme/cssVars";
 import "@/styles/menu.css";
 import { trackEvent } from "@/lib/analytics";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import {
   Menu,
   Home,
@@ -23,6 +24,7 @@ import {
   ChevronRight,
   Settings,
   Compass,
+  Shield,
 } from "lucide-react";
 import {
   Sheet,
@@ -67,6 +69,7 @@ function MobileMenuClient() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const { isAuthenticated, user, loginWithRedirect, logout } = useAuth();
+  const isAdmin = useIsAdmin();
 
   const initials =
     (
@@ -351,6 +354,41 @@ function MobileMenuClient() {
                       style={{ color: cv.textSecondary }}
                     >
                       Manage saved profile & details
+                    </div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 opacity-40 transition-transform group-hover:translate-x-1" />
+              </NavLink>
+            )}
+
+            {isAdmin && (
+              <NavLink
+                to="/admin"
+                onClick={() => setOpen(false)}
+                className="group flex items-center justify-between px-2.5 py-2 rounded-xl border transition-all active:scale-[0.98]"
+                style={{
+                  backgroundColor: cv.background,
+                  borderColor: cv.border,
+                  color: cv.text,
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                    style={{
+                      backgroundColor: tint("border", 31),
+                      color: cv.text,
+                    }}
+                  >
+                    <Shield className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold leading-tight">Admin</div>
+                    <div
+                      className="text-[11px] font-normal mt-0.5"
+                      style={{ color: cv.textSecondary }}
+                    >
+                      Site console
                     </div>
                   </div>
                 </div>

@@ -29,7 +29,16 @@ describe("safeReturnPath", () => {
 
 describe("admin sub-pages", () => {
   it("allows admin sub-pages and the invite page", () => {
-    for (const p of ["/admin/team", "/admin/audit", "/admin/invite"])
+    for (const p of [
+      "/admin/team",
+      "/admin/audit",
+      "/admin/content",
+      "/admin/inbox",
+      "/admin/people",
+      "/admin/settings/team",
+      "/admin/settings/audit",
+      "/admin/invite",
+    ])
       expect(safeReturnPath(p)).toBe(p);
   });
 });

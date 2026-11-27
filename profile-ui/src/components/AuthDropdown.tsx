@@ -6,12 +6,14 @@ import { cv } from "@/theme/cssVars";
 import "@/styles/menu.css";
 import { trackEvent } from "@/lib/analytics";
 import { useKeyboardNav } from "@/hooks/useKeyboardNav";
-import { CircleUser, LogOut } from "lucide-react";
+import { CircleUser, LogOut, Shield } from "lucide-react";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 const AuthDropdownClient = () => {
   const { isAuthenticated, loginWithRedirect, logout, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const isAdmin = useIsAdmin();
 
   const [isOpen, setIsOpen] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
@@ -144,10 +146,28 @@ const AuthDropdownClient = () => {
                 Account
               </button>
 
+              {isAdmin && (
+                <button
+                  ref={(el) => {
+                    menuItemsRef.current[1] = el;
+                  }}
+                  onClick={() => {
+                    navigate("/admin");
+                    setIsOpen(false);
+                  }}
+                  className="w-full px-4 py-3 flex items-center gap-3 text-left font-medium focus:outline-none focus:ring-2"
+                  style={{ color: cv.text }}
+                  role="menuitem"
+                >
+                  <Shield className="w-5 h-5" aria-hidden="true" />
+                  <span>Admin</span>
+                </button>
+              )}
+
               {/* Menu Items */}
               <button
                 ref={(el) => {
-                  menuItemsRef.current[1] = el;
+                  menuItemsRef.current[isAdmin ? 2 : 1] = el;
                 }}
                 onClick={() => {
                   logout({

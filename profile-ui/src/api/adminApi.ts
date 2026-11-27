@@ -4,7 +4,10 @@ export type AdminErrorCode =
   | "account_not_provisioned"
   | "mfa_required"
   | "forbidden"
-  | "invite_unavailable";
+  | "invite_unavailable"
+  | "no_email"
+  | "reply_rate_limited"
+  | "email_failed";
 
 export class AdminApiError extends Error {
   constructor(
@@ -22,6 +25,9 @@ const MESSAGES: Record<AdminErrorCode, string> = {
   mfa_required: "This area needs multi-factor sign-in.",
   forbidden: "Your role does not include this area.",
   invite_unavailable: "This invite is expired, already used, or revoked.",
+  no_email: "This person left no email address. Call or text instead.",
+  reply_rate_limited: "Reply limit reached. Try again in an hour.",
+  email_failed: "The email could not be sent. Nothing was delivered.",
 };
 
 export async function adminFetch<T>(
@@ -53,7 +59,7 @@ export async function adminFetch<T>(
       code
         ? MESSAGES[code]
         : res.status === 429
-          ? "Too many invites. Try again later."
+          ? "Too many requests. Try again later."
           : "Request failed. Please retry.",
       res.status,
       code,
@@ -66,4 +72,33 @@ export type AdminMe = {
   role: "owner" | "editor";
   canPublish: boolean;
   permissions: Permission[];
+};
+
+/** Counts for the Home page and Inbox badge; each field only exists with its permission. */
+export type AdminSummary = {
+  openInquiries?: number;
+  draftPending?: boolean;
+  newResumeVisitors7d?: number;
+  deniedEvents7d?: number;
+};
+
+export type InquiryRow = {
+  id: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  message: string;
+  archived: boolean;
+  created_at: string;
+  delivery: string;
+  replied_at: string | null;
+  reply_count: number;
+};
+
+export type InquiryReply = {
+  id: string;
+  authorName: string;
+  body: string;
+  status: "sending" | "sent" | "failed";
+  createdAt: string;
 };

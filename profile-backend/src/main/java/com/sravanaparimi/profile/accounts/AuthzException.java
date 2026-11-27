@@ -34,4 +34,19 @@ public class AuthzException extends ResponseStatusException {
     return new AuthzException(
         HttpStatus.GONE, "invite_unavailable", "This invite is expired, used, or revoked");
   }
+
+  public static AuthzException noEmail() {
+    return new AuthzException(
+        HttpStatus.UNPROCESSABLE_ENTITY, "no_email", "This inquiry has no email address");
+  }
+
+  public static AuthzException replyRateLimited() {
+    return new AuthzException(
+        HttpStatus.TOO_MANY_REQUESTS, "reply_rate_limited", "Too many replies, try again later");
+  }
+
+  public static AuthzException emailFailed() {
+    return new AuthzException(
+        HttpStatus.BAD_GATEWAY, "email_failed", "The reply could not be sent");
+  }
 }

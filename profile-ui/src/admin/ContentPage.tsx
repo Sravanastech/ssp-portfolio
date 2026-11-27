@@ -1,20 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "@/auth/auth";
 import { Info } from "lucide-react";
 import { adminRequest } from "@/api/accountApi";
 import { useAdmin } from "@/admin/AdminContext";
 import Forbidden from "@/admin/Forbidden";
-import VisitorsPanel from "@/components/admin/VisitorsPanel";
 import "@/styles/pages.css";
 
 type Draft = { id: number; version: number; content: Record<string, unknown> };
-export default function AdminPage() {
+export default function ContentPage() {
   const { getAccessTokenSilently } = useAuth();
   const { me } = useAdmin();
   const canEdit = me.permissions.includes("content.edit");
   const canPublish = me.permissions.includes("content.publish");
-  const canSeePeople = me.permissions.includes("people.read");
   const [draft, setDraft] = useState<Draft>();
   const [source, setSource] = useState("");
   const [notice, setNotice] = useState("");
@@ -93,12 +90,9 @@ export default function AdminPage() {
   return (
     <div className="admin-section-wrap">
       <div className="studio-container">
-        <header className="studio-page-intro">
-          <Link className="studio-link ops-back" to="/account">
-            ← Your account
-          </Link>
-          <h1 className="studio-page-heading">Portfolio editor</h1>
-          <p className="studio-lede">
+        <header className="admin-head">
+          <h1 className="admin-title">Content</h1>
+          <p className="page-small">
             Edit all public portfolio content as structured JSON: profile,
             career history, case studies, expertise, page copy, navigation, and
             search metadata. The server validates fields and saves a versioned
@@ -114,16 +108,11 @@ export default function AdminPage() {
         )}
         {canEdit && (
           <div className="ops-stack">
-            <div className="page-actions">
-              <Link className="studio-link" to="/admin/inquiries">
-                Open private contact inbox
-              </Link>
-              {draft && (
-                <span className="page-small">
-                  Draft {draft.id} · version {draft.version}
-                </span>
-              )}
-            </div>
+            {draft && (
+              <p className="page-small admin-mono">
+                Draft {draft.id} · version {draft.version}
+              </p>
+            )}
             <div className="field">
               <label className="field-label" htmlFor="site-content">
                 Complete site content
@@ -168,7 +157,6 @@ export default function AdminPage() {
                 </button>
               </div>
             </div>
-            <VisitorsPanel enabled={canSeePeople} />
           </div>
         )}
       </div>

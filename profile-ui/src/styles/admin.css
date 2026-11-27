@@ -23,52 +23,6 @@
   max-width: 640px;
 }
 
-/* ---------- Navigation ---------- */
-.admin-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 24px;
-  margin-top: 24px;
-  border-bottom: 1px solid var(--color-border);
-}
-.admin-nav ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.admin-nav-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 14px;
-  border-bottom: 2px solid transparent;
-  color: var(--color-textSecondary);
-  font-weight: 500;
-  text-decoration: none;
-  transition: color 150ms ease-out;
-}
-.admin-nav-link:hover {
-  color: var(--color-text);
-}
-.admin-nav-link[aria-current="page"] {
-  border-bottom-color: var(--color-primary);
-  color: var(--color-text);
-}
-.admin-nav-link:focus-visible {
-  outline: 3px solid var(--color-focus-ring);
-  outline-offset: -3px;
-}
-.admin-role {
-  color: var(--color-textSecondary);
-  font-family: var(--admin-mono);
-  font-size: 0.8125rem;
-}
-
 /* ---------- Headings and blocks ---------- */
 .admin-head {
   display: grid;
@@ -226,7 +180,6 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .admin-nav-link,
   .admin-switch-track,
   .admin-switch-track::after {
     transition: none;
@@ -234,7 +187,6 @@
 }
 
 /* ---------- Aether ---------- */
-:root[data-paradigm="aether"] .admin-nav,
 :root[data-paradigm="aether"] .admin-table th,
 :root[data-paradigm="aether"] .admin-table td {
   border-color: var(--border-hairline);
@@ -244,9 +196,6 @@
 }
 :root[data-paradigm="aether"] .admin-outcome--denied {
   border-color: var(--color-error);
-}
-:root[data-paradigm="aether"] .admin-nav-link[aria-current="page"] {
-  border-bottom-color: var(--accent-primary);
 }
 :root[data-paradigm="aether"] .admin-details-cell {
   background: var(--bg-primary);

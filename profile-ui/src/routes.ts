@@ -11,9 +11,15 @@ export const DEFINED_ROUTES = {
   TERMS: "/termsconditions",
   ACCOUNT: "/account",
   ADMIN: "/admin",
+  ADMIN_CONTENT: "/admin/content",
+  ADMIN_INBOX: "/admin/inbox",
+  ADMIN_PEOPLE: "/admin/people",
+  ADMIN_TEAM: "/admin/settings/team",
+  ADMIN_AUDIT: "/admin/settings/audit",
+  /** Legacy paths, kept as redirects. */
   INQUIRIES: "/admin/inquiries",
-  ADMIN_TEAM: "/admin/team",
-  ADMIN_AUDIT: "/admin/audit",
+  LEGACY_TEAM: "/admin/team",
+  LEGACY_AUDIT: "/admin/audit",
   ADMIN_INVITE: "/admin/invite",
 } as const;
 

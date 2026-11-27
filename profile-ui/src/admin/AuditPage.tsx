@@ -12,6 +12,7 @@ const AUDIT_ACTIONS = [
   "draft.save",
   "publish.request",
   "inquiry.archive",
+  "inquiry.reply",
   "media.upload",
   "resume_visitor.list",
   "resume_visitor.delete",
