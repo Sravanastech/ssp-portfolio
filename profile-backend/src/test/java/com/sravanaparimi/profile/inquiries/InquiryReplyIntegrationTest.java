@@ -253,9 +253,8 @@ class InquiryReplyIntegrationTest {
     inquiry("x@example.com", true);
     sql.update("DELETE FROM resume_visitor");
     sql.update("INSERT INTO resume_visitor(id,email) VALUES (?,'r@example.com')", UUID.randomUUID());
-    sql.update("DELETE FROM content_revision WHERE state='draft'");
-    sql.update(
-        "INSERT INTO content_revision(state,content) VALUES ('draft','{}'::jsonb)");
+    sql.update("UPDATE content_block SET draft=NULL, draft_deleted=false, draft_position=NULL");
+    sql.update("UPDATE content_block SET draft=published WHERE type='profile'");
     sql.update(
         "INSERT INTO audit_events(action,resource,outcome) VALUES ('access.denied','admin','denied')");
 

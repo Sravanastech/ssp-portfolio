@@ -1,0 +1,6 @@
+*
+!profile-backend/.mvn
+!profile-backend/mvnw
+!profile-backend/pom.xml
+!profile-backend/src
+!content-schema
