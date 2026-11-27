@@ -84,6 +84,13 @@ test.describe("private resume is never public", () => {
 
   test("public pages never request a PDF", async ({ page }) => {
     const pdfs: string[] = [];
+    // The contact page renders Cloudflare Turnstile, whose real widget keeps the network busy.
+    await page.route(/challenges\.cloudflare\.com/, (route) =>
+      route.fulfill({
+        contentType: "text/javascript",
+        body: "window.turnstile={render(){return 'w1'},reset(){},remove(){}};",
+      }),
+    );
     page.on("response", (res) => {
       const type = res.headers()["content-type"] ?? "";
       if (type.includes("application/pdf") || /\.pdf(\?|$)/i.test(res.url()))
