@@ -68,7 +68,7 @@ const AppRoutes = () => {
             }
           >
             <Route index element={<AdminHomePage />} />
-            <Route path="content" element={<ContentPage />} />
+            <Route path="content/*" element={<ContentPage />} />
             <Route path="inbox" element={<InboxPage />} />
             <Route path="people" element={<PeoplePage />} />
             <Route path="settings/team" element={<TeamPage />} />

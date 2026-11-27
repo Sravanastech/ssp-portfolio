@@ -7,10 +7,11 @@ import Forbidden from "@/admin/Forbidden";
 import "@/styles/pages.css";
 
 type Draft = { id: number; version: number; content: Record<string, unknown> };
-export default function ContentPage() {
+export default function ContentRawPage() {
   const { getAccessTokenSilently } = useAuth();
   const { me } = useAdmin();
-  const canEdit = me.permissions.includes("content.edit");
+  const canEdit =
+    me.role === "owner" && me.permissions.includes("content.edit");
   const canPublish = me.permissions.includes("content.publish");
   const [draft, setDraft] = useState<Draft>();
   const [source, setSource] = useState("");
@@ -91,7 +92,7 @@ export default function ContentPage() {
     <div className="admin-section-wrap">
       <div className="studio-container">
         <header className="admin-head">
-          <h1 className="admin-title">Content</h1>
+          <h1 className="admin-title">Content (raw JSON)</h1>
           <p className="page-small">
             Edit all public portfolio content as structured JSON: profile,
             career history, case studies, expertise, page copy, navigation, and

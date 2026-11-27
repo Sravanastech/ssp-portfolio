@@ -17,6 +17,7 @@ const NON_INDEXED_APP_ROUTES = new Set<string>([
   "/account",
   "/admin",
   "/admin/content",
+  "/admin/content/raw",
   "/admin/inbox",
   "/admin/people",
   "/admin/settings/team",
@@ -27,6 +28,9 @@ const NON_INDEXED_APP_ROUTES = new Set<string>([
   "/admin/invite",
 ]);
 
+const isNonIndexed = (route: string) =>
+  NON_INDEXED_APP_ROUTES.has(route) || route.startsWith("/admin/content/");
+
 export default function PageMetadata() {
   const content = useSiteContent();
   const { profile } = content;
@@ -36,7 +40,7 @@ export default function PageMetadata() {
   if (!metadata)
     return (
       <Helmet>
-        {!NON_INDEXED_APP_ROUTES.has(route) && (
+        {!isNonIndexed(route) && (
           <title>{`Page Not Found | ${profile.name}`}</title>
         )}
         <meta name="robots" content="noindex, noarchive" />
