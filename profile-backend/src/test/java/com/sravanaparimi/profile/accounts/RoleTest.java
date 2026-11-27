@@ -18,6 +18,8 @@ class RoleTest {
     assertEquals(EnumSet.of(CONTENT_EDIT, MEDIA_UPLOAD, INQUIRIES_MANAGE, INSIGHTS_READ), drafts);
     var publisher = Role.EDITOR.permissions(true);
     assertTrue(publisher.contains(CONTENT_PUBLISH));
+    assertTrue(publisher.contains(INQUIRIES_REPLY));
+    assertFalse(drafts.contains(INQUIRIES_REPLY));
     for (var p : EnumSet.of(PEOPLE_READ, PEOPLE_MANAGE, TEAM_MANAGE, AUDIT_READ, SETTINGS_MANAGE))
       assertFalse(publisher.contains(p), p.code());
   }

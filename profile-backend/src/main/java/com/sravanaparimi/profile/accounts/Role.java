@@ -15,7 +15,10 @@ public enum Role {
   public Set<Permission> permissions(boolean canPublish) {
     if (this == OWNER) return Collections.unmodifiableSet(EnumSet.allOf(Permission.class));
     var p = EnumSet.of(CONTENT_EDIT, MEDIA_UPLOAD, INQUIRIES_MANAGE, INSIGHTS_READ);
-    if (canPublish) p.add(CONTENT_PUBLISH);
+    if (canPublish) {
+      p.add(CONTENT_PUBLISH);
+      p.add(INQUIRIES_REPLY); // replying speaks for the owner, same trust as publishing
+    }
     return Collections.unmodifiableSet(p);
   }
 
