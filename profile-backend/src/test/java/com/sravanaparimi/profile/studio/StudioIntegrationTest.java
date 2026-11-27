@@ -61,6 +61,7 @@ class StudioIntegrationTest {
             "spring.datasource.password", db.getPassword(),
             "spring.data.redis.port", "1",
             "profile.auth.jwks", issuer + "jwks",
+            "profile.github.callback-secret", "integration-callback-secret-0123456789",
             "profile.media.root", "target/test-media",
             "logging.level.root", "WARN"));
     app =
@@ -467,5 +468,88 @@ class StudioIntegrationTest {
     save("ed", "[" + editExperience(b, "will discard") + "]", 200);
     ok(call("POST", "/api/admin/studio/discard", "ed", "{\"ids\":[\"" + b.get("id").asString() + "\"]}"), 200);
     assertEquals(b.get("id").asString(), lastAuditDetails("studio.discard").at("/blocks/0/id").asString());
+  }
+
+  // ---- CI callbacks ----------------------------------------------------------------------
+
+  static HttpResponse<String> publicCall(String method, String path, Map<String, String> headers, String body)
+      throws Exception {
+    var b = HttpRequest.newBuilder(URI.create(base + path)).header("Content-Type", "application/json");
+    headers.forEach(b::header);
+    b.method(method, body == null ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(body));
+    return HttpClient.newHttpClient().send(b.build(), HttpResponse.BodyHandlers.ofString());
+  }
+
+  static long newRelease() throws Exception {
+    var b = block("experience", "experience-1");
+    save("pub", "[" + editExperience(b, "release " + System.nanoTime()) + "]", 200);
+    return ok(call("POST", "/api/admin/releases", "pub", "{}"), 201).get("id").asLong();
+  }
+
+  static Map<String, String> ci(long id, long exp) {
+    var t = app.getBean(ReleaseTokens.class);
+    return Map.of("X-Release-Token", t.sign(id, exp), "X-Release-Expires", Long.toString(exp));
+  }
+
+  static String status(long id) {
+    return sql.queryForObject("SELECT status FROM site_release WHERE id=?", String.class, id);
+  }
+
+  @Test
+  void publicSnapshotNeedsAValidTokenAndIsNotCached() throws Exception {
+    long id = newRelease();
+    var t = app.getBean(ReleaseTokens.class);
+    long exp = t.newExpiry();
+    String url = "/api/public/releases/" + id + "?token=" + t.sign(id, exp) + "&exp=" + exp;
+    var r = publicCall("GET", url, Map.of(), null);
+    assertEquals(200, r.statusCode());
+    assertEquals("no-store", r.headers().firstValue("Cache-Control").orElseThrow());
+    assertEquals(
+        json.readTree(sql.queryForObject("SELECT snapshot::text FROM site_release WHERE id=?", String.class, id)),
+        json.readTree(r.body()));
+    assertEquals(401, publicCall("GET", "/api/public/releases/" + id, Map.of(), null).statusCode());
+    assertEquals(401, publicCall("GET", url.replace("token=", "token=0"), Map.of(), null).statusCode());
+    assertEquals(401, publicCall("GET", "/api/public/releases/" + (id + 1) + "?token=" + t.sign(id, exp) + "&exp=" + exp, Map.of(), null).statusCode());
+    long past = Instant.now().getEpochSecond() - 5;
+    assertEquals(401, publicCall("GET", "/api/public/releases/" + id + "?token=" + t.sign(id, past) + "&exp=" + past, Map.of(), null).statusCode());
+  }
+
+  @Test
+  void ciStatusMovesForwardOnlyAndSupersedesOlderLiveReleases() throws Exception {
+    long a = newRelease();
+    long exp = app.getBean(ReleaseTokens.class).newExpiry();
+    String run = "{\"status\":\"%s\",\"runUrl\":\"https://github.com/Sravanastech/ssp-portfolio/actions/runs/1\"}";
+    var building = publicCall("POST", "/api/public/releases/" + a + "/status", ci(a, exp), run.formatted("building"));
+    assertEquals(200, building.statusCode(), building.body());
+    assertEquals("building", status(a));
+    assertEquals(200, publicCall("POST", "/api/public/releases/" + a + "/status", ci(a, exp), run.formatted("building")).statusCode());
+    var live = ok(publicCall("POST", "/api/public/releases/" + a + "/status", ci(a, exp), run.formatted("live")), 200);
+    assertEquals("live", live.get("status").asString());
+    assertNotNull(live.get("finishedAt").asString());
+    assertTrue(live.get("runUrl").asString().endsWith("/runs/1"));
+    assertEquals(409, publicCall("POST", "/api/public/releases/" + a + "/status", ci(a, exp), run.formatted("building")).statusCode());
+    assertEquals(409, publicCall("POST", "/api/public/releases/" + a + "/status", ci(a, exp), run.formatted("failed")).statusCode());
+
+    long b = newRelease();
+    assertEquals(200, publicCall("POST", "/api/public/releases/" + b + "/status", ci(b, exp), run.formatted("live")).statusCode());
+    assertEquals("superseded", status(a));
+    assertEquals("live", status(b));
+    long c = newRelease();
+    assertEquals(200, publicCall("POST", "/api/public/releases/" + c + "/status", ci(c, exp), run.formatted("failed")).statusCode());
+    assertEquals("live", status(b), "a failed build leaves the live release alone");
+  }
+
+  @Test
+  void ciStatusRejectsBadTokensAndBodies() throws Exception {
+    long a = newRelease();
+    long b = newRelease();
+    long exp = app.getBean(ReleaseTokens.class).newExpiry();
+    String live = "{\"status\":\"live\"}";
+    assertEquals(401, publicCall("POST", "/api/public/releases/" + a + "/status", Map.of(), live).statusCode());
+    assertEquals(401, publicCall("POST", "/api/public/releases/" + a + "/status", ci(b, exp), live).statusCode(), "token of another release");
+    assertEquals(400, publicCall("POST", "/api/public/releases/" + a + "/status", ci(a, exp), "{\"status\":\"queued\"}").statusCode());
+    assertEquals(400, publicCall("POST", "/api/public/releases/" + a + "/status", ci(a, exp), "{\"status\":\"live\",\"runUrl\":\"http://evil.example/x\"}").statusCode());
+    assertEquals(404, publicCall("POST", "/api/public/releases/999999/status", ci(999999, exp), live).statusCode());
+    assertEquals("queued", status(a));
   }
 }

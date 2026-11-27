@@ -132,6 +132,66 @@ public class ReleaseService {
     return dispatchAndReload(id);
   }
 
+  /** The frozen snapshot of a release as raw JSON (for the CI build). */
+  public String snapshotJson(long id) {
+    var rows = db.queryForList("SELECT snapshot::text FROM site_release WHERE id=?", String.class, id);
+    if (rows.isEmpty()) throw StudioException.notFound("Release");
+    return rows.getFirst();
+  }
+
+  private static int rank(String status) {
+    return switch (status) {
+      case "queued" -> 0;
+      case "building" -> 1;
+      default -> 2; // live, failed, superseded: nothing follows
+    };
+  }
+
+  /**
+   * Status reported by the CI run. Only forward moves queued -> building -> live|failed; repeating
+   * the current status is a no-op. A release going live supersedes the older live ones.
+   */
+  public ReleaseView reportStatus(long id, String status, String runUrl) {
+    if (!Set.of("building", "live", "failed").contains(status))
+      throw new IllegalArgumentException("status");
+    return Objects.requireNonNull(
+        tx.execute(
+            s -> {
+              var current =
+                  db.queryForList(
+                      "SELECT status FROM site_release WHERE id=? FOR UPDATE", String.class, id);
+              if (current.isEmpty()) throw StudioException.notFound("Release");
+              String now = current.getFirst();
+              if (!now.equals(status)) {
+                if (rank(status) <= rank(now))
+                  throw new StudioException(
+                      org.springframework.http.HttpStatus.CONFLICT,
+                      "invalid_transition",
+                      "Release is already " + now,
+                      Map.of());
+                boolean done = !status.equals("building");
+                db.update(
+                    "UPDATE site_release SET status=?, run_url=COALESCE(?, run_url),"
+                        + " finished_at=CASE WHEN ? THEN now() ELSE finished_at END WHERE id=?",
+                    status,
+                    runUrl,
+                    done,
+                    id);
+                if (status.equals("live"))
+                  db.update(
+                      "UPDATE site_release SET status='superseded' WHERE status='live' AND id<>?",
+                      id);
+                audit.record(
+                    null, "release.status", Long.toString(id), Map.of("releaseId", id, "status", status));
+              }
+              return db.queryForObject(
+                  "SELECT id,status,note,created_by,created_at,finished_at,run_url FROM site_release"
+                      + " WHERE id=?",
+                  (rs, n) -> view(rs),
+                  id);
+            }));
+  }
+
   private JsonNode assembleLive() {
     return assembler.assemble(
         blocks.all().stream().filter(b -> b.published() != null).map(Block::livePart).toList());
