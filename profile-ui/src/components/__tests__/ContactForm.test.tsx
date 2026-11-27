@@ -547,4 +547,44 @@ describe("ContactForm", () => {
       expect(onSubmit).toHaveBeenCalled();
     });
   });
+
+  it("renders the captcha slot and blocks submit until it is ready", async () => {
+    const onSubmit = vi.fn();
+    const view = renderWithTheme(
+      <ContactForm
+        onSubmit={onSubmit}
+        captcha={<p>captcha slot</p>}
+        captchaReady={false}
+      />,
+    );
+    expect(screen.getByText("captcha slot")).toBeInTheDocument();
+    fireEvent.change(screen.getByPlaceholderText("Your name"), {
+      target: { value: "Jane Smith" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("example@mail.com"), {
+      target: { value: "jane@example.com" },
+    });
+    fireEvent.change(
+      screen.getByPlaceholderText(
+        "Tell me about the role, the team, or your questions…",
+      ),
+      { target: { value: "Please discuss this project with me." } },
+    );
+    const send = screen.getByRole("button", { name: /Send message/ });
+    expect(send).toHaveAttribute("aria-disabled", "true");
+    fireEvent.click(send);
+    await new Promise((r) => setTimeout(r, 50));
+    expect(onSubmit).not.toHaveBeenCalled();
+    view.rerender(
+      <ThemeProvider>
+        <ContactForm
+          onSubmit={onSubmit}
+          captcha={<p>captcha slot</p>}
+          captchaReady
+        />
+      </ThemeProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Send message/ }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+  });
 });

@@ -690,3 +690,17 @@ html:has(.studio-case-nav) {
     flex: 1 1 100%;
   }
 }
+
+/* Reserve the Turnstile widget height so the form does not jump when it loads. */
+.contact-captcha {
+  min-height: 65px;
+}
+.contact-captcha-live {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 44px;
+  color: var(--color-textSecondary);
+  font-size: 0.875rem;
+}

@@ -72,6 +72,11 @@ public class HttpTurnstileVerifier implements TurnstileVerifier {
 
   @Override
   public boolean verify(String token, String remoteIp) {
+    return verify(token, remoteIp, ACTION);
+  }
+
+  @Override
+  public boolean verify(String token, String remoteIp, String expectedAction) {
     if (!enabled) return true;
     if (token == null || token.isBlank() || token.length() > MAX_TOKEN_LENGTH) return false;
     try {
@@ -92,7 +97,7 @@ public class HttpTurnstileVerifier implements TurnstileVerifier {
       if (!allowedHostnames.contains(host)) return false;
       JsonNode action = node.get("action");
       if (action == null || action.isNull()) return !requireAction;
-      return ACTION.equals(action.asString(""));
+      return expectedAction.equals(action.asString(""));
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
       return false;

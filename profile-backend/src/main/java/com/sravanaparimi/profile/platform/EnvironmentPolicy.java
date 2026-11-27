@@ -40,6 +40,7 @@ public final class EnvironmentPolicy {
       if (contact && env.getProperty("profile.inquiries.ip-salt", "").length() < 16)
         throw new IllegalStateException(
             "Production requires profile.inquiries.ip-salt of at least 16 characters");
+      if (contact) validateContactTurnstile(env);
       if ("provider".equals(env.getProperty("profile.email.mode"))) {
         for (String key :
             Set.of(
@@ -64,6 +65,20 @@ public final class EnvironmentPolicy {
       if (!env.getProperty("profile.admin.require-mfa", "true").equals("true"))
         throw new IllegalStateException("Production administration requires MFA");
     }
+  }
+
+  /** The public contact form shares the resume OTP Turnstile configuration. */
+  private static void validateContactTurnstile(Environment env) {
+    String prefix = "profile.resume-otp.turnstile.";
+    if (!env.getProperty(prefix + "enabled", Boolean.class, false))
+      throw new IllegalStateException("Production contact API requires Turnstile enabled");
+    String secret = env.getProperty(prefix + "secret", "");
+    if (secret.isBlank() || secret.matches("[123]x0{20,}.*"))
+      throw new IllegalStateException("Production contact API requires a real Turnstile secret");
+    if (env.getProperty(prefix + "allowed-hostnames", "").isBlank())
+      throw new IllegalStateException("Production contact API requires Turnstile hostnames");
+    if (!env.getProperty(prefix + "require-action", Boolean.class, true))
+      throw new IllegalStateException("Production must require the Turnstile action");
   }
 
   private static void validateResumeOtp(Environment env) {

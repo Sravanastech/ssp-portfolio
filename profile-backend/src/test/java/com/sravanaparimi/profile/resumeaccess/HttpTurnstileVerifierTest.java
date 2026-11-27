@@ -115,6 +115,14 @@ class HttpTurnstileVerifierTest {
   }
 
   @Test
+  void callerSuppliedActionIsEnforced() {
+    response = "{\"success\":true,\"hostname\":\"sravanasparimi.com\",\"action\":\"contact\"}";
+    assertTrue(verifier().verify("tok", "1.2.3.4", "contact"));
+    assertFalse(verifier().verify("tok", "1.2.3.4"));
+    assertFalse(verifier().verify("tok", "1.2.3.4", "resume_otp"));
+  }
+
+  @Test
   void missingActionIsToleratedOnlyWhenNotRequired() {
     response = "{\"success\":true,\"hostname\":\"sravanasparimi.com\"}";
     assertTrue(verifier(true, false, Duration.ofSeconds(3)).verify("tok", "1.2.3.4"));

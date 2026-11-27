@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useInRouterContext } from "react-router-dom";
 import { z } from "@/lib/zod";
@@ -61,9 +61,18 @@ export type ContactFormData = z.infer<typeof contactFormSchema>;
 type Props = {
   onSubmit: (data: ContactFormData) => void | Promise<void>;
   isLoading?: boolean;
+  /** Human-verification slot rendered above the send button. */
+  captcha?: ReactNode;
+  /** When false the form cannot be sent yet (verification pending). */
+  captchaReady?: boolean;
 };
 
-const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
+const ContactForm = ({
+  onSubmit,
+  isLoading = false,
+  captcha,
+  captchaReady = true,
+}: Props) => {
   const submitting = useRef(false);
   const [showErrorSummary, setShowErrorSummary] = useState(false);
   const inRouter = useInRouterContext();
@@ -86,7 +95,7 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
   };
 
   const submitOnce = async (data: ContactFormData) => {
-    if (isLoading || submitting.current) return;
+    if (isLoading || submitting.current || !captchaReady) return;
     submitting.current = true;
     try {
       await onSubmit(data);
@@ -382,10 +391,13 @@ const ContactForm = ({ onSubmit, isLoading = false }: Props) => {
           </p>
         </div>
 
+        {captcha && <div className="contact-captcha">{captcha}</div>}
+
         <div className="pt-2">
           <button
             type="submit"
             disabled={isLoading || form.formState.isSubmitting}
+            aria-disabled={!captchaReady || undefined}
             className="studio-button w-full h-12 rounded-[6px] flex items-center justify-center gap-2 font-medium text-base transition-all hover:opacity-95 active:scale-[0.99] disabled:opacity-60"
             style={{
               backgroundColor: colors.primary,

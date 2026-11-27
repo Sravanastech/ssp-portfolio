@@ -2,7 +2,12 @@ import { SiteText } from "@/content/SiteContent";
 import { useSiteContent } from "@/content/siteContentContext";
 import { useState, useEffect } from "react";
 import ContactForm, { ContactFormData } from "@/components/ContactForm";
-import { useSubmitContactInquiry } from "@/api/ContactApi";
+import TurnstileWidget from "@/components/TurnstileWidget";
+import {
+  ContactApiError,
+  contactMode,
+  useSubmitContactInquiry,
+} from "@/api/ContactApi";
 import { CheckCircle2, AlertTriangle, CloudOff } from "lucide-react";
 import { reportEvent } from "@/lib/monitoring";
 import { trackEvent } from "@/lib/analytics";
@@ -92,6 +97,19 @@ const ContactPage = () => {
   const { submitInquiry, isPending, isError, error, reset } =
     useSubmitContactInquiry();
 
+  // Turnstile tokens are single use: every attempt consumes one and asks for a new one.
+  const needsCaptcha = contactMode() === "api";
+  const [token, setToken] = useState<string | null>(null);
+  const [captchaKey, setCaptchaKey] = useState(0);
+  const [captchaLost, setCaptchaLost] = useState(false);
+  const refreshCaptcha = () => {
+    setToken(null);
+    setCaptchaLost(false);
+    setCaptchaKey((k) => k + 1);
+  };
+  const rateLimited =
+    error instanceof ContactApiError && error.code === "rate_limited";
+
   useEffect(() => {
     void getPendingDrafts().then(setPendingDrafts);
   }, []);
@@ -99,9 +117,11 @@ const ContactPage = () => {
   const handleSubmit = async (data: ContactFormData) => {
     setLastAttemptedData(data);
     try {
-      await submitInquiry(data);
+      await submitInquiry({ data, token: token ?? undefined });
       reportEvent("contact_success");
-      trackEvent("contact_submit", { method: "web3forms" });
+      trackEvent("contact_submit", {
+        method: needsCaptcha ? "api" : "web3forms",
+      });
       setSubmittedData(data);
       setIsOfflineQueued(false);
       setIsSubmitted(true);
@@ -115,6 +135,8 @@ const ContactPage = () => {
       }
     } catch {
       reportEvent("contact_failure");
+    } finally {
+      if (needsCaptcha) refreshCaptcha();
     }
   };
 
@@ -134,10 +156,13 @@ const ContactPage = () => {
   const handleRetryPendingDraft = async (draft: QueuedContactDraft) => {
     try {
       await submitInquiry({
-        name: draft.name,
-        email: draft.email || "",
-        phone: draft.phone || "",
-        message: draft.message,
+        data: {
+          name: draft.name,
+          email: draft.email || "",
+          phone: draft.phone || "",
+          message: draft.message,
+        },
+        token: token ?? undefined,
       });
       await deleteOfflineDraft(draft.id);
       setPendingDrafts((prev) => prev.filter((d) => d.id !== draft.id));
@@ -151,6 +176,8 @@ const ContactPage = () => {
       setIsSubmitted(true);
     } catch (err: unknown) {
       setDraftError(err instanceof Error ? err.message : String(err));
+    } finally {
+      if (needsCaptcha) refreshCaptcha();
     }
   };
 
@@ -223,6 +250,7 @@ const ContactPage = () => {
                     <button
                       onClick={() => handleRetryPendingDraft(pendingDrafts[0])}
                       disabled={isPending}
+                      aria-disabled={(needsCaptcha && !token) || undefined}
                       className="studio-button studio-button--sm"
                     >
                       Retry send
@@ -246,7 +274,7 @@ const ContactPage = () => {
                     {error?.message ||
                       "Something went wrong. Please try again later."}
                   </span>
-                  {lastAttemptedData && (
+                  {lastAttemptedData && !rateLimited && (
                     <>
                       <span className="page-small">
                         Save draft locally to send when you are back online?
@@ -273,7 +301,51 @@ const ContactPage = () => {
             )}
 
             {!isSubmitted ? (
-              <ContactForm onSubmit={handleSubmit} isLoading={isPending} />
+              <ContactForm
+                onSubmit={handleSubmit}
+                isLoading={isPending}
+                captchaReady={!needsCaptcha || !!token}
+                captcha={
+                  needsCaptcha ? (
+                    <>
+                      <TurnstileWidget
+                        action="contact"
+                        resetKey={captchaKey}
+                        hints={{
+                          failed:
+                            "The verification check could not load. Check your connection, disable blockers for this site and reload, or use the email link.",
+                          unconfigured:
+                            "Verification is unavailable right now. Please use the email link.",
+                        }}
+                        onToken={(t) => {
+                          setCaptchaLost(false);
+                          setToken(t);
+                        }}
+                        onExpire={() => {
+                          setToken(null);
+                          setCaptchaLost(true);
+                        }}
+                      />
+                      <div aria-live="polite" className="contact-captcha-live">
+                        {!token && captchaLost && (
+                          <>
+                            <span>
+                              The verification check expired or failed.
+                            </span>
+                            <button
+                              type="button"
+                              className="link-button"
+                              onClick={refreshCaptcha}
+                            >
+                              Retry check
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  ) : undefined
+                }
+              />
             ) : (
               <SuccessBanner
                 submittedData={submittedData}
