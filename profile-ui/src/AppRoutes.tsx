@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import LayoutRoute, { PageSkeleton } from "./layouts/LayoutRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -13,12 +13,14 @@ const TermsAndConditionsPage = routeComponent("/termsconditions");
 const ContactPage = routeComponent("/contact");
 const ResumePage = routeComponent("/resume");
 const AccountPage = lazy(() => import("./pages/AccountPage"));
-const AdminPage = lazy(() => import("./pages/AdminPage"));
 const AdminShell = lazy(() => import("./admin/AdminShell"));
 const TeamPage = lazy(() => import("./admin/TeamPage"));
 const AuditPage = lazy(() => import("./admin/AuditPage"));
 const InviteAcceptPage = lazy(() => import("./admin/InviteAcceptPage"));
-const InquiriesPage = lazy(() => import("./pages/InquiriesPage"));
+const AdminHomePage = lazy(() => import("./admin/AdminHomePage"));
+const ContentPage = lazy(() => import("./admin/ContentPage"));
+const InboxPage = lazy(() => import("./admin/InboxPage"));
+const PeoplePage = lazy(() => import("./admin/PeoplePage"));
 import ErrorPage from "./pages/ErrorPage";
 import { DEFINED_ROUTES } from "./routes";
 import "./styles/pages.css";
@@ -65,24 +67,30 @@ const AppRoutes = () => {
               </ProtectedRoute>
             }
           >
-            <Route index element={<AdminPage />} />
-            <Route path="team" element={<TeamPage />} />
-            <Route path="audit" element={<AuditPage />} />
+            <Route index element={<AdminHomePage />} />
+            <Route path="content" element={<ContentPage />} />
+            <Route path="inbox" element={<InboxPage />} />
+            <Route path="people" element={<PeoplePage />} />
+            <Route path="settings/team" element={<TeamPage />} />
+            <Route path="settings/audit" element={<AuditPage />} />
+            <Route
+              path="team"
+              element={<Navigate to={DEFINED_ROUTES.ADMIN_TEAM} replace />}
+            />
+            <Route
+              path="audit"
+              element={<Navigate to={DEFINED_ROUTES.ADMIN_AUDIT} replace />}
+            />
+            <Route
+              path="inquiries"
+              element={<Navigate to={DEFINED_ROUTES.ADMIN_INBOX} replace />}
+            />
           </Route>
           {/* Invite acceptance handles its own sign-in so the #token fragment survives. */}
           <Route
             path={DEFINED_ROUTES.ADMIN_INVITE}
             element={<InviteAcceptPage />}
           />
-          <Route
-            path={DEFINED_ROUTES.INQUIRIES}
-            element={
-              <ProtectedRoute>
-                <InquiriesPage />
-              </ProtectedRoute>
-            }
-          />
-
           {/* Catch-all: 404 */}
           <Route
             path="*"
