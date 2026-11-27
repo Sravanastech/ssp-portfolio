@@ -1,0 +1,827 @@
+{
+  "pages.HomePage.text.1": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Headline, line 1"
+  },
+  "pages.HomePage.text.2": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Headline, line 2"
+  },
+  "pages.HomePage.text.3": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Intro paragraph"
+  },
+  "pages.HomePage.text.4": {
+    "page": "Home",
+    "section": "Featured case studies",
+    "label": "Button: Read case study"
+  },
+  "pages.HomePage.text.5": {
+    "page": "Home",
+    "section": "Featured case studies",
+    "label": "Button: Explore the case studies"
+  },
+  "pages.HomePage.text.6": {
+    "page": "Home",
+    "section": "My approach",
+    "label": "Heading part 1 (before the line break)"
+  },
+  "pages.HomePage.text.7": {
+    "page": "Home",
+    "section": "My approach",
+    "label": "Heading part 2 (after the line break)"
+  },
+  "pages.HomePage.text.8": {
+    "page": "Home",
+    "section": "My approach",
+    "label": "Intro paragraph"
+  },
+  "pages.HomePage.text.9": {
+    "page": "Home",
+    "section": "My approach",
+    "label": "Link: More about my approach"
+  },
+  "pages.HomePage.text.10": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card title: Interfaces for complex work"
+  },
+  "pages.HomePage.text.11": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card text: Interfaces for complex work"
+  },
+  "pages.HomePage.text.12": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card tags: Interfaces"
+  },
+  "pages.HomePage.text.13": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card title: Services"
+  },
+  "pages.HomePage.text.14": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card tags: Services"
+  },
+  "pages.HomePage.text.15": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card title: Technical direction"
+  },
+  "pages.HomePage.text.16": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card text: Technical direction"
+  },
+  "pages.HomePage.text.17": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card tags: Technical direction"
+  },
+  "pages.HomePage.text.18": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card title: Project delivery"
+  },
+  "pages.HomePage.text.19": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card tags: Project delivery"
+  },
+  "pages.HomePage.text.20": {
+    "page": "Home",
+    "section": "Hiring call to action",
+    "label": "Heading"
+  },
+  "pages.HomePage.text.21": {
+    "page": "Home",
+    "section": "Hiring call to action",
+    "label": "Supporting text"
+  },
+  "pages.HomePage.text.22": {
+    "page": "Home",
+    "section": "Hiring call to action",
+    "label": "Button: Start a conversation"
+  },
+  "pages.AboutPage.text.1": {
+    "page": "About",
+    "section": "Page header",
+    "label": "Headline, line 1"
+  },
+  "pages.AboutPage.text.2": {
+    "page": "About",
+    "section": "Page header",
+    "label": "Headline, line 2"
+  },
+  "pages.AboutPage.text.3": {
+    "page": "About",
+    "section": "Page header",
+    "label": "Separator between role details (dot)"
+  },
+  "pages.AboutPage.text.4": {
+    "page": "About",
+    "section": "Page header",
+    "label": "Intro sentence part 1 (before the career start year)"
+  },
+  "pages.AboutPage.text.5": {
+    "page": "About",
+    "section": "Page header",
+    "label": "Intro sentence part 2 (end punctuation after the year)"
+  },
+  "pages.AboutPage.text.6": {
+    "page": "About",
+    "section": "About me",
+    "label": "Section heading: About me"
+  },
+  "pages.AboutPage.text.7": {
+    "page": "About",
+    "section": "About me",
+    "label": "Biography paragraph"
+  },
+  "pages.AboutPage.text.8": {
+    "page": "About",
+    "section": "Current work",
+    "label": "Subheading: Current work at Fifth Third"
+  },
+  "pages.AboutPage.text.9": {
+    "page": "About",
+    "section": "Current work",
+    "label": "Subheading: Technical leadership & delivery"
+  },
+  "pages.AboutPage.text.10": {
+    "page": "About",
+    "section": "My approach",
+    "label": "Section heading: My approach"
+  },
+  "pages.AboutPage.text.11": {
+    "page": "About",
+    "section": "My approach",
+    "label": "Approach paragraph"
+  },
+  "pages.AboutPage.text.12": {
+    "page": "About",
+    "section": "My approach",
+    "label": "Link: See this approach in my work"
+  },
+  "pages.AboutPage.text.13": {
+    "page": "About",
+    "section": "Experience & resume",
+    "label": "Section heading: Professional experience"
+  },
+  "pages.AboutPage.text.14": {
+    "page": "About",
+    "section": "Experience & resume",
+    "label": "Link: View full resume"
+  },
+  "pages.AboutPage.text.15": {
+    "page": "About",
+    "section": "Let's connect",
+    "label": "Section heading: Let's connect"
+  },
+  "pages.AboutPage.text.16": {
+    "page": "About",
+    "section": "Let's connect",
+    "label": "Supporting text"
+  },
+  "pages.AboutPage.text.17": {
+    "page": "About",
+    "section": "Let's connect",
+    "label": "Button: Get in touch"
+  },
+  "pages.AboutPage.text.18": {
+    "page": "About",
+    "section": "Let's connect",
+    "label": "Link: LinkedIn"
+  },
+  "pages.WorkPage.text.1": {
+    "page": "Work",
+    "section": "Page header",
+    "label": "Headline part 1 (before the line break)"
+  },
+  "pages.WorkPage.text.2": {
+    "page": "Work",
+    "section": "Page header",
+    "label": "Headline part 2 (after the line break)"
+  },
+  "pages.WorkPage.text.3": {
+    "page": "Work",
+    "section": "Page header",
+    "label": "Intro paragraph"
+  },
+  "pages.WorkPage.text.4": {
+    "page": "Work",
+    "section": "Page header",
+    "label": "Disclaimer about illustrative diagrams"
+  },
+  "pages.WorkPage.text.5": {
+    "page": "Work",
+    "section": "Case studies",
+    "label": "Separator between project details (dot)"
+  },
+  "pages.WorkPage.text.6": {
+    "page": "Work",
+    "section": "Case study labels",
+    "label": "Label: The problem"
+  },
+  "pages.WorkPage.text.7": {
+    "page": "Work",
+    "section": "Case study labels",
+    "label": "Label: My contribution"
+  },
+  "pages.WorkPage.text.8": {
+    "page": "Work",
+    "section": "Case study labels",
+    "label": "Label: The outcome"
+  },
+  "pages.WorkPage.text.9": {
+    "page": "Work",
+    "section": "Hiring call to action",
+    "label": "Heading"
+  },
+  "pages.WorkPage.text.10": {
+    "page": "Work",
+    "section": "Hiring call to action",
+    "label": "Supporting text"
+  },
+  "pages.WorkPage.text.11": {
+    "page": "Work",
+    "section": "Hiring call to action",
+    "label": "Button: Get in touch"
+  },
+  "pages.PrivacyPage.text.1": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Browser tab title"
+  },
+  "pages.PrivacyPage.text.2": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Page heading"
+  },
+  "pages.PrivacyPage.text.3": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Introduction"
+  },
+  "pages.PrivacyPage.text.4": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Heading 1: Contact inquiries"
+  },
+  "pages.PrivacyPage.text.5": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Contact inquiries text"
+  },
+  "pages.PrivacyPage.text.6": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Contact inquiries: Web3Forms sentence part 1 (before the link)"
+  },
+  "pages.PrivacyPage.text.7": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Contact inquiries: Web3Forms link text"
+  },
+  "pages.PrivacyPage.text.8": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Contact inquiries: sentence part 2 (after the link)"
+  },
+  "pages.PrivacyPage.text.9": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Heading 2: Sign-in and resume access"
+  },
+  "pages.PrivacyPage.text.10": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Sign-in text"
+  },
+  "pages.PrivacyPage.text.11": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Heading 3: Browser storage"
+  },
+  "pages.PrivacyPage.text.12": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Browser storage text"
+  },
+  "pages.PrivacyPage.text.13": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Heading 4: Analytics and cookies"
+  },
+  "pages.PrivacyPage.text.14": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Analytics overview"
+  },
+  "pages.PrivacyPage.text.15": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Heading 5: Retention and requests"
+  },
+  "pages.PrivacyPage.text.16": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Retention text"
+  },
+  "pages.PrivacyPage.text.17": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Heading 6: External links and updates"
+  },
+  "pages.PrivacyPage.text.18": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "External links text"
+  },
+  "pages.PrivacyPage.text.19": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Closing sentence part 1 (before the link)"
+  },
+  "pages.PrivacyPage.text.20": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Closing link text: get in touch"
+  },
+  "pages.PrivacyPage.text.21": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Closing sentence part 2 (end punctuation)"
+  },
+  "pages.TermsAndConditions.text.1": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Browser tab title"
+  },
+  "pages.TermsAndConditions.text.2": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Page heading"
+  },
+  "pages.TermsAndConditions.text.3": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Introduction"
+  },
+  "pages.TermsAndConditions.text.4": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Heading 1: Use of content"
+  },
+  "pages.TermsAndConditions.text.5": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Use of content text"
+  },
+  "pages.TermsAndConditions.text.6": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Heading 2: Intellectual property"
+  },
+  "pages.TermsAndConditions.text.7": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Intellectual property text"
+  },
+  "pages.TermsAndConditions.text.8": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Heading 3: External links"
+  },
+  "pages.TermsAndConditions.text.9": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "External links text"
+  },
+  "pages.TermsAndConditions.text.10": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Heading 4: No warranty"
+  },
+  "pages.TermsAndConditions.text.11": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "No warranty text"
+  },
+  "pages.TermsAndConditions.text.12": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Heading 5: Limitation of liability"
+  },
+  "pages.TermsAndConditions.text.13": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Limitation of liability text"
+  },
+  "pages.TermsAndConditions.text.14": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Heading 6: Illustrative content"
+  },
+  "pages.TermsAndConditions.text.15": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Illustrative content text"
+  },
+  "pages.TermsAndConditions.text.16": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Heading 7: Changes to terms"
+  },
+  "pages.TermsAndConditions.text.17": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Changes to terms text"
+  },
+  "pages.TermsAndConditions.text.18": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Closing sentence part 1 (before the link)"
+  },
+  "pages.TermsAndConditions.text.19": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Closing link text: reach out"
+  },
+  "pages.TermsAndConditions.text.20": {
+    "page": "Global",
+    "section": "Terms & conditions",
+    "label": "Closing sentence part 2 (end punctuation)"
+  },
+  "pages.ContactPage.text.1": {
+    "page": "Contact",
+    "section": "Confirmation message",
+    "label": "Thank-you part 1 (before the visitor's name)"
+  },
+  "pages.ContactPage.text.2": {
+    "page": "Contact",
+    "section": "Confirmation message",
+    "label": "Thank-you part 2 (after the visitor's name)"
+  },
+  "pages.ContactPage.text.3": {
+    "page": "Contact",
+    "section": "Confirmation message",
+    "label": "Confirmation sentence part 1 (before the preferred contact)"
+  },
+  "pages.ContactPage.text.4": {
+    "page": "Contact",
+    "section": "Confirmation message",
+    "label": "Confirmation sentence part 2 (end punctuation)"
+  },
+  "pages.ContactPage.text.5": {
+    "page": "Contact",
+    "section": "Confirmation message",
+    "label": "Label: Primary contact"
+  },
+  "pages.ContactPage.text.6": {
+    "page": "Contact",
+    "section": "Confirmation message",
+    "label": "Label: Your message"
+  },
+  "pages.ContactPage.text.7": {
+    "page": "Contact",
+    "section": "Confirmation message",
+    "label": "Opening quote mark around message"
+  },
+  "pages.ContactPage.text.8": {
+    "page": "Contact",
+    "section": "Confirmation message",
+    "label": "Closing quote mark around message"
+  },
+  "pages.ContactPage.text.9": {
+    "page": "Contact",
+    "section": "Confirmation message",
+    "label": "Button: Send another message"
+  },
+  "pages.ContactPage.text.10": {
+    "page": "Contact",
+    "section": "Page header",
+    "label": "Browser tab title / description"
+  },
+  "pages.ContactPage.text.11": {
+    "page": "Contact",
+    "section": "Page header",
+    "label": "Headline part 1 (before the line break)"
+  },
+  "pages.ContactPage.text.12": {
+    "page": "Contact",
+    "section": "Page header",
+    "label": "Headline part 2 (after the line break)"
+  },
+  "pages.ContactPage.text.13": {
+    "page": "Contact",
+    "section": "Page header",
+    "label": "Eyebrow label: Contact"
+  },
+  "pages.ContactPage.text.14": {
+    "page": "Contact",
+    "section": "Page header",
+    "label": "Intro paragraph"
+  },
+  "pages.ContactPage.text.15": {
+    "page": "Contact",
+    "section": "Other ways to reach me",
+    "label": "Label: Prefer email?"
+  },
+  "pages.ContactPage.text.16": {
+    "page": "Contact",
+    "section": "Other ways to reach me",
+    "label": "Label: Find me on"
+  },
+  "pages.ContactPage.text.17": {
+    "page": "Contact",
+    "section": "Other ways to reach me",
+    "label": "Link: LinkedIn"
+  },
+  "components.HeroSection.text.1": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Nav chip: Work"
+  },
+  "components.HeroSection.text.2": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Nav chip: About"
+  },
+  "components.HeroSection.text.3": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Nav chip: Contact"
+  },
+  "components.HeroSection.text.4": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Separator after role (dot)"
+  },
+  "components.HeroSection.text.5": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Button: Explore work"
+  },
+  "components.HeroSection.text.6": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Button: Get in touch"
+  },
+  "components.HeroSection.text.7": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Tagline"
+  },
+  "components.HeroSection.text.8": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Link: See selected work"
+  },
+  "components.Header.text.1": {
+    "page": "Global",
+    "section": "Header & menu",
+    "label": "Logo part 1 (initials)"
+  },
+  "components.Header.text.2": {
+    "page": "Global",
+    "section": "Header & menu",
+    "label": "Logo part 2 (dot)"
+  },
+  "components.Header.text.3": {
+    "page": "Global",
+    "section": "Header & menu",
+    "label": "Site owner name"
+  },
+  "components.Header.text.4": {
+    "page": "Global",
+    "section": "Header & menu",
+    "label": "Header tagline"
+  },
+  "components.Footer.text.1": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Logo part 1 (first name)"
+  },
+  "components.Footer.text.2": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Logo part 2 (last name)"
+  },
+  "components.Footer.text.3": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Logo part 3 (dot)"
+  },
+  "components.Footer.text.4": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Tagline line 1"
+  },
+  "components.Footer.text.5": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Tagline line 2"
+  },
+  "components.Footer.text.6": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Link label: LinkedIn"
+  },
+  "components.Footer.text.7": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Link label: Email"
+  },
+  "components.Footer.text.8": {
+    "page": "Global",
+    "section": "Appearance settings",
+    "label": "Panel title: Appearance settings"
+  },
+  "components.Footer.text.9": {
+    "page": "Global",
+    "section": "Appearance settings",
+    "label": "Option heading: Composition"
+  },
+  "components.Footer.text.10": {
+    "page": "Global",
+    "section": "Appearance settings",
+    "label": "Composition description"
+  },
+  "components.Footer.text.11": {
+    "page": "Global",
+    "section": "Appearance settings",
+    "label": "Option heading: Color palette"
+  },
+  "components.Footer.text.12": {
+    "page": "Global",
+    "section": "Appearance settings",
+    "label": "Color palette description"
+  },
+  "components.Footer.text.13": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Copyright symbol"
+  },
+  "components.Footer.text.14": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Link: Privacy policy"
+  },
+  "components.Footer.text.15": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Link: Terms of service"
+  },
+  "components.MainMenu.text.1": {
+    "page": "Global",
+    "section": "Header & menu",
+    "label": "Menu link: Resume"
+  },
+  "components.MobileMenu.text.1": {
+    "page": "Global",
+    "section": "Header & menu",
+    "label": "Mobile menu heading: Explore"
+  },
+  "components.MobileMenu.text.2": {
+    "page": "Global",
+    "section": "Header & menu",
+    "label": "Mobile menu intro"
+  },
+  "components.MobileMenu.text.3": {
+    "page": "Global",
+    "section": "Header & menu",
+    "label": "Mobile menu link: Resume"
+  },
+  "components.MobileMenu.text.4": {
+    "page": "Global",
+    "section": "Header & menu",
+    "label": "Note: Resume access requires sign-in"
+  },
+  "components.HeroSection.text.9": {
+    "page": "Home",
+    "section": "Hero",
+    "label": "Button: View resume"
+  },
+  "pages.HomePage.text.23": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card text: Services"
+  },
+  "pages.HomePage.text.24": {
+    "page": "Home",
+    "section": "What I do",
+    "label": "Card text: Project delivery"
+  },
+  "pages.HomePage.text.25": {
+    "page": "Home",
+    "section": "Experience & tools",
+    "label": "Section heading: Where I've worked"
+  },
+  "pages.HomePage.text.26": {
+    "page": "Home",
+    "section": "Experience & tools",
+    "label": "Link: Full experience"
+  },
+  "pages.HomePage.text.27": {
+    "page": "Home",
+    "section": "Experience & tools",
+    "label": "Section heading: Tools I work in"
+  },
+  "pages.AboutPage.text.19": {
+    "page": "About",
+    "section": "Page header",
+    "label": "Contents label: On this page"
+  },
+  "pages.AboutPage.text.20": {
+    "page": "About",
+    "section": "Experience & resume",
+    "label": "Note: Resume access requires sign-in"
+  },
+  "pages.WorkPage.text.12": {
+    "page": "Work",
+    "section": "Case studies",
+    "label": "Section heading: Case studies"
+  },
+  "pages.PrivacyPage.text.22": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Analytics: what is collected"
+  },
+  "pages.PrivacyPage.text.23": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Analytics: what is not collected"
+  },
+  "pages.PrivacyPage.text.24": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Analytics: cookies"
+  },
+  "pages.PrivacyPage.text.25": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Analytics: your choice"
+  },
+  "pages.PrivacyPage.text.26": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Button: Analytics preferences"
+  },
+  "pages.PrivacyPage.text.27": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Analytics: retention"
+  },
+  "pages.PrivacyPage.text.28": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Analytics: Google processor sentence (before the link)"
+  },
+  "pages.PrivacyPage.text.29": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Analytics: Google privacy policy link text"
+  },
+  "pages.PrivacyPage.text.30": {
+    "page": "Global",
+    "section": "Privacy policy",
+    "label": "Analytics: hosting and service providers"
+  },
+  "components.ConsentBanner.text.1": {
+    "page": "Global",
+    "section": "Cookie banner",
+    "label": "Banner heading"
+  },
+  "components.ConsentBanner.text.2": {
+    "page": "Global",
+    "section": "Cookie banner",
+    "label": "Banner message"
+  },
+  "components.ConsentBanner.text.3": {
+    "page": "Global",
+    "section": "Cookie banner",
+    "label": "Link: Privacy policy"
+  },
+  "components.ConsentBanner.text.4": {
+    "page": "Global",
+    "section": "Cookie banner",
+    "label": "Button: Accept analytics"
+  },
+  "components.ConsentBanner.text.5": {
+    "page": "Global",
+    "section": "Cookie banner",
+    "label": "Button: Decline"
+  },
+  "components.Footer.text.16": {
+    "page": "Global",
+    "section": "Footer",
+    "label": "Button: Cookie preferences"
+  }
+}

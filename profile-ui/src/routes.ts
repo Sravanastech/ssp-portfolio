@@ -12,6 +12,8 @@ export const DEFINED_ROUTES = {
   ACCOUNT: "/account",
   ADMIN: "/admin",
   ADMIN_CONTENT: "/admin/content",
+  ADMIN_CONTENT_SECTION: "/admin/content/:page/:section",
+  ADMIN_CONTENT_RAW: "/admin/content/raw",
   ADMIN_INBOX: "/admin/inbox",
   ADMIN_PEOPLE: "/admin/people",
   ADMIN_TEAM: "/admin/settings/team",

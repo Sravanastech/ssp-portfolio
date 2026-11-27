@@ -94,12 +94,24 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       proxy: { "/api": apiTarget },
       fs: {
+        // The studio imports the backend's page-text label map (single source of truth).
+        allow: [
+          path.resolve(__dirname),
+          path.resolve(
+            __dirname,
+            "../profile-backend/src/main/resources/content-schema",
+          ),
+        ],
         deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "**/private/**"],
       },
     },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
+        "@content-schema": path.resolve(
+          __dirname,
+          "../profile-backend/src/main/resources/content-schema",
+        ),
       },
     },
     test: {
