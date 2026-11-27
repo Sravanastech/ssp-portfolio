@@ -13,6 +13,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      "@content-schema": path.resolve(
+        __dirname,
+        "../profile-backend/src/main/resources/content-schema",
+      ),
     },
   },
 });
