@@ -1,0 +1,423 @@
+/*
+ * Admin console layout: grouped sidebar, Home cards, Inbox, command palette.
+ * Shared --color-* tokens only, so every paradigm renders correctly.
+ */
+.admin-shell .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Layout ---------- */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 0 32px;
+  align-items: start;
+  padding-top: 24px;
+}
+.admin-side {
+  position: sticky;
+  top: 16px;
+  display: grid;
+  gap: 16px;
+}
+.admin-main {
+  min-width: 0;
+}
+/* Pages render their own container; inside the shell the layout owns the gutters. */
+.admin-main .studio-container {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding-inline: 0;
+}
+
+/* ---------- Navigation ---------- */
+.admin-nav {
+  display: grid;
+  gap: 12px;
+}
+.admin-nav-group ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-nav-heading {
+  margin: 0 0 2px;
+  color: var(--color-textSecondary);
+  font-family: var(--admin-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.admin-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-left: 2px solid transparent;
+  color: var(--color-textSecondary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 150ms ease-out;
+}
+.admin-nav-link:hover {
+  color: var(--color-text);
+}
+.admin-nav-link[aria-current="page"] {
+  border-left-color: var(--color-primary);
+  color: var(--color-text);
+}
+.admin-nav-link:focus-visible,
+.admin-palette-trigger:focus-visible,
+.admin-row:focus-visible,
+.admin-tab:focus-visible,
+.admin-card:focus-visible,
+.admin-back:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: -3px;
+}
+.admin-badge {
+  min-width: 22px;
+  padding: 1px 7px;
+  border: 1px solid var(--color-primary);
+  border-radius: 999px;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  text-align: center;
+}
+.admin-side-meta {
+  display: grid;
+  gap: 8px;
+}
+.admin-role {
+  color: var(--color-textSecondary);
+  font-family: var(--admin-mono);
+  font-size: 0.8125rem;
+}
+.admin-palette-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-textSecondary);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.admin-palette-trigger:hover {
+  color: var(--color-text);
+}
+.admin-palette-trigger kbd {
+  margin-left: auto;
+  font-size: 0.75rem;
+}
+
+/* ---------- Home cards ---------- */
+.admin-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-card {
+  display: grid;
+  gap: 4px;
+  min-height: 44px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  text-decoration: none;
+}
+.admin-card:hover {
+  border-color: var(--color-textSecondary);
+}
+.admin-card--attention {
+  border-color: var(--color-primary);
+}
+.admin-card-value {
+  font-size: 1.75rem;
+  font-weight: 500;
+}
+.admin-card-label {
+  color: var(--color-textSecondary);
+  font-size: 0.875rem;
+}
+
+/* ---------- Inbox ---------- */
+.admin-inbox {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+.admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.admin-tab {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--color-textSecondary);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+.admin-tab[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+.admin-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+}
+.admin-rows > li + li {
+  border-top: 1px solid var(--color-border);
+}
+.admin-row {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 16px;
+  border: 0;
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.admin-row[aria-current="true"] {
+  border-left-color: var(--color-primary);
+}
+.admin-row-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+}
+.admin-row-top time,
+.admin-row-meta {
+  color: var(--color-textSecondary);
+  font-size: 0.75rem;
+}
+.admin-row-snippet {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--color-textSecondary);
+  font-size: 0.875rem;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+}
+.admin-back {
+  display: none;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.admin-detail {
+  display: grid;
+  gap: 24px;
+}
+.admin-detail-head {
+  display: grid;
+  gap: 12px;
+}
+.admin-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px 24px;
+  margin: 0;
+}
+.admin-facts dt {
+  color: var(--color-textSecondary);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.admin-facts dd {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+}
+.admin-minor {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.admin-replies {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-replies > li {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+}
+.admin-reply-meta {
+  margin: 0;
+  color: var(--color-textSecondary);
+  font-size: 0.75rem;
+}
+.admin-compose {
+  max-width: 68ch;
+}
+.admin-reply-input {
+  min-height: 140px;
+  resize: vertical;
+}
+.admin-count {
+  margin: 4px 0 0;
+  color: var(--color-textSecondary);
+  font-size: 0.75rem;
+  text-align: right;
+}
+.admin-detail-empty {
+  padding-top: 8px;
+}
+
+/* ---------- Command palette ---------- */
+.admin-palette {
+  top: 20%;
+  transform: translate(-50%, 0);
+  gap: 12px;
+}
+.admin-palette-title {
+  margin: 0;
+  color: var(--color-textSecondary);
+  font-family: var(--admin-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.admin-palette-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.admin-palette-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+}
+.admin-palette-option[aria-selected="true"] {
+  border-left-color: var(--color-primary);
+  background: var(--color-background);
+}
+.admin-palette-path {
+  color: var(--color-textSecondary);
+  font-size: 0.75rem;
+}
+
+/* ---------- Narrow screens: sidebar becomes a scrollable group row ---------- */
+@media (max-width: 767px) {
+  .admin-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .admin-side {
+    position: static;
+  }
+  .admin-nav {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--color-border);
+    -webkit-overflow-scrolling: touch;
+  }
+  .admin-nav-group {
+    flex: none;
+  }
+  .admin-nav-group ul {
+    display: flex;
+  }
+  .admin-nav-link {
+    border-left: 0;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .admin-nav-link[aria-current="page"] {
+    border-bottom-color: var(--color-primary);
+  }
+  .admin-palette-trigger kbd {
+    display: none;
+  }
+  .admin-inbox {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-inbox--detail .admin-inbox-list {
+    display: none;
+  }
+  .admin-inbox:not(.admin-inbox--detail) .admin-inbox-detail {
+    display: none;
+  }
+  .admin-back {
+    display: inline-flex;
+    align-items: center;
+  }
+  .admin-compose .studio-button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-nav-link {
+    transition: none;
+  }
+}
+
+/* ---------- Aether ---------- */
+:root[data-paradigm="aether"] .admin-nav-link[aria-current="page"],
+:root[data-paradigm="aether"] .admin-row[aria-current="true"],
+:root[data-paradigm="aether"] .admin-palette-option[aria-selected="true"] {
+  border-color: var(--accent-primary);
+}
+:root[data-paradigm="aether"] .admin-rows,
+:root[data-paradigm="aether"] .admin-card,
+:root[data-paradigm="aether"] .admin-replies > li {
+  border-color: var(--border-hairline);
+}

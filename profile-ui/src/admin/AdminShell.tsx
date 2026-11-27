@@ -1,18 +1,31 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, Search } from "lucide-react";
 import { useAuth } from "@/auth/auth";
-import { adminFetch, AdminApiError, type AdminMe } from "@/api/adminApi";
-import { AdminContext, type AdminContextValue } from "./AdminContext";
+import {
+  adminFetch,
+  AdminApiError,
+  type AdminMe,
+  type AdminSummary,
+} from "@/api/adminApi";
+import {
+  AdminContext,
+  type AdminContextValue,
+  type SummaryState,
+} from "./AdminContext";
+import CommandPalette from "./CommandPalette";
 import { adminLoginOptions } from "./adminLogin";
-import { visibleNav } from "./permissions";
+import { visibleItems, visibleNav } from "./permissions";
 import "@/styles/pages.css";
 import "@/styles/admin.css";
+import "@/styles/admin-console.css";
 
 type State =
   | { phase: "loading" }
-  | { phase: "ready"; value: AdminContextValue }
+  | { phase: "ready"; value: Pick<AdminContextValue, "me" | "getToken"> }
   | { phase: "error"; error: AdminApiError | Error };
+
+const SUMMARY_TTL_MS = 30_000;
 
 /** Layout route for /admin: resolves the caller's role once, gates access, renders the nav. */
 export default function AdminShell() {
@@ -45,10 +58,63 @@ export default function AdminShell() {
     };
   }, [getToken, attempt]);
 
+  const [summary, setSummary] = useState<SummaryState>({ status: "loading" });
+  const lastSummaryAt = useRef(0);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const ready = state.phase === "ready" ? state.value : null;
+
+  const loadSummary = useCallback(
+    async (force: boolean) => {
+      const now = Date.now();
+      if (!force && now - lastSummaryAt.current < SUMMARY_TTL_MS) return;
+      lastSummaryAt.current = now;
+      try {
+        const token = await getToken();
+        const data = await adminFetch<AdminSummary>(token, "/summary");
+        setSummary({ status: "ready", data });
+      } catch {
+        lastSummaryAt.current = 0;
+        setSummary({ status: "error" });
+      }
+    },
+    [getToken],
+  );
+
+  // Refetch on route change, at most once per 30 s.
+  useEffect(() => {
+    if (ready) void loadSummary(false);
+  }, [ready, location.pathname, loadSummary]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [ready]);
+
   const nav = useMemo(
+    () => (ready ? visibleNav(ready.me.permissions) : []),
+    [ready],
+  );
+  const paletteItems = useMemo(
+    () => (ready ? visibleItems(ready.me.permissions) : []),
+    [ready],
+  );
+  const context = useMemo<AdminContextValue | null>(
     () =>
-      state.phase === "ready" ? visibleNav(state.value.me.permissions) : [],
-    [state],
+      ready
+        ? {
+            ...ready,
+            summary,
+            refreshSummary: () => void loadSummary(true),
+          }
+        : null,
+    [ready, summary, loadSummary],
   );
 
   if (state.phase === "loading") {
@@ -113,29 +179,63 @@ export default function AdminShell() {
     );
   }
 
+  const inboxCount =
+    summary.status === "ready" ? (summary.data.openInquiries ?? 0) : 0;
+  const { me } = state.value;
   return (
-    <AdminContext.Provider value={state.value}>
+    <AdminContext.Provider value={context!}>
       <div className="studio-page ops-page admin-shell">
-        <div className="studio-container">
-          <nav className="admin-nav" aria-label="Admin">
-            <ul>
-              {nav.map((item) => (
-                <li key={item.to}>
-                  <NavLink to={item.to} end className="admin-nav-link">
-                    {item.label}
-                  </NavLink>
-                </li>
+        <div className="studio-container admin-layout">
+          <aside className="admin-side">
+            <nav className="admin-nav" aria-label="Admin">
+              {nav.map((g) => (
+                <div key={g.group} className="admin-nav-group">
+                  <p className="admin-nav-heading" id={`nav-${g.group}`}>
+                    {g.group}
+                  </p>
+                  <ul aria-labelledby={`nav-${g.group}`}>
+                    {g.items.map((item) => (
+                      <li key={item.to}>
+                        <NavLink to={item.to} end className="admin-nav-link">
+                          {item.label}
+                          {item.to === "/admin/inbox" && inboxCount > 0 && (
+                            <span className="admin-badge admin-mono">
+                              {inboxCount}
+                              <span className="sr-only"> open</span>
+                            </span>
+                          )}
+                        </NavLink>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
-            <span className="admin-role">
-              Signed in as {state.value.me.role}
-              {state.value.me.role === "editor" && state.value.me.canPublish
-                ? " (can publish)"
-                : ""}
-            </span>
-          </nav>
+            </nav>
+            <div className="admin-side-meta">
+              <button
+                type="button"
+                className="admin-palette-trigger"
+                onClick={() => setPaletteOpen(true)}
+              >
+                <Search size={16} aria-hidden="true" />
+                <span>Jump to…</span>
+                <kbd className="admin-mono">Ctrl K</kbd>
+              </button>
+              <span className="admin-role">
+                Signed in as {me.role}
+                {me.role === "editor" && me.canPublish ? " (can publish)" : ""}
+              </span>
+            </div>
+          </aside>
+          <main className="admin-main">
+            <Outlet />
+          </main>
         </div>
-        <Outlet />
+        <CommandPalette
+          open={paletteOpen}
+          onOpenChange={setPaletteOpen}
+          items={paletteItems}
+        />
       </div>
     </AdminContext.Provider>
   );
