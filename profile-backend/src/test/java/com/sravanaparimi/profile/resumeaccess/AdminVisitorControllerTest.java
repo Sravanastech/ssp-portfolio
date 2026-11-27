@@ -127,6 +127,24 @@ class AdminVisitorControllerTest {
   }
 
   @Test
+  void meReportsAdminForBreakGlassOwnerWithoutDbRole() throws Exception {
+    sql.update("UPDATE accounts SET role=NULL WHERE subject='owner'");
+    try {
+      assertTrue(
+          JSON.readTree(call("GET", "/api/me", token("owner", true), null).body())
+              .get("admin")
+              .asBoolean());
+      assertTrue(List.of(200, 201).contains(call("POST", "/api/me", token("fresh-user", true), "{}").statusCode()));
+      assertFalse(
+          JSON.readTree(call("GET", "/api/me", token("fresh-user", true), null).body())
+              .get("admin")
+              .asBoolean());
+    } finally {
+      sql.update("UPDATE accounts SET role='owner' WHERE subject='owner'");
+    }
+  }
+
+  @Test
   void ownerListsVisitorsNewestFirstWithPagingShape() throws Exception {
     for (String e : List.of("a@x.com", "b@x.com", "c@x.com")) {
       visitors.upsert(e, new byte[] {1});

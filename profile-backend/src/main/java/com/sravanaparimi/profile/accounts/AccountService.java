@@ -3,6 +3,7 @@ package com.sravanaparimi.profile.accounts;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.UUID;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,9 +44,11 @@ public class AccountService {
   public record Provisioned(AccountDto account, boolean created) {}
 
   private final JdbcTemplate db;
+  private final String ownerSub;
 
-  public AccountService(JdbcTemplate db) {
+  public AccountService(JdbcTemplate db, Environment env) {
     this.db = db;
+    this.ownerSub = env.getProperty("profile.admin.owner-sub", "");
   }
 
   @Transactional
@@ -118,7 +121,8 @@ public class AccountService {
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("email"),
-                rs.getString("role") != null,
+                rs.getString("role") != null
+                    || (!ownerSub.isBlank() && ownerSub.equals(jwt.getSubject())),
                 rs.getString("phone"),
                 rs.getString("address_line1"),
                 rs.getString("address_line2"),
