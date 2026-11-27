@@ -2,10 +2,10 @@ name: Profile UI CI
 on:
   push:
     branches: [main]
-    paths: ["profile-ui/**", ".github/workflows/profile-ui.yml"]
+    paths: ["profile-ui/**", "profile-backend/src/main/resources/content-schema/**", ".github/workflows/profile-ui.yml"]
   pull_request:
     branches: [main]
-    paths: ["profile-ui/**", ".github/workflows/profile-ui.yml"]
+    paths: ["profile-ui/**", "profile-backend/src/main/resources/content-schema/**", ".github/workflows/profile-ui.yml"]
 jobs:
   build-and-lint:
     runs-on: ubuntu-latest
