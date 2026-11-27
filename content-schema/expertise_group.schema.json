@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sravanasparimi.com/content-schema/expertise_group",
+  "title": "Expertise group",
+  "x-studio": {
+    "type": "expertise_group",
+    "shape": "item",
+    "target": "expertiseData",
+    "collection": "expertiseData",
+    "page": "About",
+    "section": "Expertise",
+    "label": "Expertise",
+    "order": 30,
+    "slugFrom": "domain",
+    "itemTitle": "{{domain}}"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "domain",
+    "skills"
+  ],
+  "properties": {
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "x-ui": {
+        "label": "Group name",
+        "widget": "text",
+        "placeholder": "Frontend"
+      }
+    },
+    "skills": {
+      "type": "array",
+      "maxItems": 40,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60
+      },
+      "x-ui": {
+        "label": "Skills",
+        "widget": "tags",
+        "itemLabel": "Skill",
+        "help": "Press Enter after each skill."
+      }
+    }
+  }
+}

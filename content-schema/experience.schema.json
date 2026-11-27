@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sravanasparimi.com/content-schema/experience",
+  "title": "Experience",
+  "x-studio": {
+    "type": "experience",
+    "shape": "item",
+    "target": "experiences",
+    "collection": "experiences",
+    "page": "About",
+    "section": "Experience",
+    "label": "Experience",
+    "order": 20,
+    "slugFrom": "id",
+    "itemTitle": "{{title}} · {{company}}",
+    "itemSubtitle": "{{year}}"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "year",
+    "title",
+    "company",
+    "description"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+      "x-ui": {
+        "label": "Identifier",
+        "widget": "hidden",
+        "help": "Generated automatically."
+      }
+    },
+    "year": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "x-ui": {
+        "label": "Dates",
+        "widget": "text",
+        "help": "For example: June 2026 – Present",
+        "placeholder": "2016 – 2019"
+      }
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-ui": {
+        "label": "Job title",
+        "widget": "text"
+      }
+    },
+    "company": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-ui": {
+        "label": "Company",
+        "widget": "text"
+      }
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "x-ui": {
+        "label": "What you did",
+        "widget": "textarea"
+      }
+    }
+  }
+}

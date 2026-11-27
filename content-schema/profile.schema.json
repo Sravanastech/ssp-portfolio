@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sravanasparimi.com/content-schema/profile",
+  "title": "Profile",
+  "x-studio": {
+    "type": "profile",
+    "shape": "object",
+    "target": "profile",
+    "page": "About",
+    "section": "Profile",
+    "label": "Profile",
+    "order": 10
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "role",
+    "employer",
+    "location",
+    "careerStartYear",
+    "headline",
+    "description",
+    "leadership",
+    "currentWork",
+    "url",
+    "linkedin",
+    "email"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-ui": {
+        "label": "Full name",
+        "widget": "text"
+      }
+    },
+    "role": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-ui": {
+        "label": "Job title",
+        "widget": "text"
+      }
+    },
+    "employer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-ui": {
+        "label": "Employer",
+        "widget": "text"
+      }
+    },
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-ui": {
+        "label": "Location",
+        "widget": "text",
+        "placeholder": "City, ST"
+      }
+    },
+    "careerStartYear": {
+      "type": "integer",
+      "minimum": 1970,
+      "maximum": 2100,
+      "x-ui": {
+        "label": "Career start year",
+        "widget": "number",
+        "help": "Used to compute years of experience."
+      }
+    },
+    "headline": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-ui": {
+        "label": "Headline",
+        "widget": "text",
+        "help": "Short line shown in the hero."
+      }
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 600,
+      "x-ui": {
+        "label": "Introduction",
+        "widget": "textarea"
+      }
+    },
+    "leadership": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800,
+      "x-ui": {
+        "label": "Leadership summary",
+        "widget": "textarea"
+      }
+    },
+    "currentWork": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200,
+      "x-ui": {
+        "label": "Current work",
+        "widget": "textarea"
+      }
+    },
+    "url": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "x-ui": {
+        "label": "Website URL",
+        "widget": "url",
+        "placeholder": "https://"
+      }
+    },
+    "linkedin": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "x-ui": {
+        "label": "LinkedIn URL",
+        "widget": "url",
+        "placeholder": "https://www.linkedin.com/in/"
+      }
+    },
+    "email": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "x-ui": {
+        "label": "Contact email",
+        "widget": "email"
+      }
+    }
+  }
+}
