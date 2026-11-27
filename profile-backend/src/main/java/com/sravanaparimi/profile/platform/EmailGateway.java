@@ -113,6 +113,83 @@ public class EmailGateway {
       throw new IllegalStateException("Provider rejected verification email");
   }
 
+  static final String REPLY_SUBJECT = "Re: your message to Sravana S Parimi";
+
+  /**
+   * Sends an owner reply to a visitor. Capture mode writes reply-&lt;id&gt;.json; provider mode
+   * posts plain text with reply_to set to the owner inbox. Never logs recipient or body.
+   */
+  public void sendReply(
+      UUID replyId, String to, String visitorName, String originalMessage, String body)
+      throws Exception {
+    if (to == null || !to.matches("[^\\s<>\"',;]{1,254}"))
+      throw new IllegalArgumentException("Invalid recipient");
+    var payload =
+        replyPayload(
+            env.getProperty("profile.email.from", ""),
+            env.getProperty("profile.email.recipient", ""),
+            to,
+            visitorName,
+            originalMessage,
+            body);
+    if (env.getRequiredProperty("profile.email.mode").equals("capture")) {
+      Path dir =
+          Path.of(env.getRequiredProperty("profile.media.root"))
+              .toAbsolutePath()
+              .resolve("capture");
+      Files.createDirectories(dir);
+      Files.writeString(
+          dir.resolve("reply-" + replyId + ".json"),
+          json.writeValueAsString(
+              Map.of(
+                  "replyId", replyId.toString(),
+                  "to", to,
+                  "subject", payload.get("subject"),
+                  "text", payload.get("text"))));
+      return;
+    }
+    String endpoint = env.getRequiredProperty("profile.email.endpoint");
+    if (!endpoint.equals("https://api.resend.com/emails"))
+      throw new IllegalStateException("Unverified provider");
+    var req =
+        HttpRequest.newBuilder(URI.create(endpoint))
+            .timeout(Duration.ofSeconds(10))
+            .header("Authorization", "Bearer " + env.getRequiredProperty("profile.email.key"))
+            .header("Idempotency-Key", "reply-" + replyId)
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(json.writeValueAsString(payload)))
+            .build();
+    var response = client.send(req, HttpResponse.BodyHandlers.discarding());
+    if (response.statusCode() < 200 || response.statusCode() > 299)
+      throw new IllegalStateException("Provider rejected reply");
+  }
+
+  static Map<String, Object> replyPayload(
+      String from,
+      String replyTo,
+      String to,
+      String visitorName,
+      String originalMessage,
+      String body) {
+    String original = originalMessage == null ? "" : originalMessage;
+    if (original.length() > 2000) original = original.substring(0, 2000);
+    String quoted = original.replace("\r\n", "\n").replace("\r", "\n").replace("\n", "\n> ");
+    String text =
+        "Hi "
+            + visitorName
+            + ",\n\n"
+            + body
+            + "\n\n— Sravana S Parimi\nsravanasparimi.com\n\n> "
+            + quoted;
+    var p = new LinkedHashMap<String, Object>();
+    p.put("from", from);
+    p.put("to", List.of(to));
+    if (!replyTo.isBlank()) p.put("reply_to", replyTo);
+    p.put("subject", REPLY_SUBJECT);
+    p.put("text", text);
+    return p;
+  }
+
   static Map<String, Object> otpPayload(String from, String to, String code) {
     String text =
         "Your verification code is "

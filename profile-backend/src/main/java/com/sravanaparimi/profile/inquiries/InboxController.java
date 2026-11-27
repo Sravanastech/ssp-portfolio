@@ -32,8 +32,9 @@ public class InboxController {
         .cacheControl(CacheControl.noStore())
         .body(
             db.queryForList(
-                "SELECT i.id,i.name,i.email,i.phone,i.message,i.archived,i.created_at,o.status AS"
-                    + " delivery FROM inquiries i JOIN outbox o ON o.inquiry_id=i.id ORDER BY"
+                "SELECT i.id,i.name,i.email,i.phone,i.message,i.archived,i.created_at,"
+                    + " i.replied_at,(SELECT count(*) FROM inquiry_replies r WHERE"
+                    + " r.inquiry_id=i.id) AS reply_count,o.status AS delivery FROM inquiries i JOIN outbox o ON o.inquiry_id=i.id ORDER BY"
                     + " i.created_at DESC LIMIT 25 OFFSET ?",
                 page * 25));
   }
