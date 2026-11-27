@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sravanasparimi.com/content-schema/seo_page",
+  "title": "Page SEO",
+  "x-studio": {
+    "type": "seo_page",
+    "shape": "keyed",
+    "target": "seo",
+    "collection": "seo",
+    "page": "Global",
+    "section": "Search & sharing",
+    "label": "Page SEO",
+    "order": 20,
+    "itemTitle": "{{title}}",
+    "itemSubtitle": "Route"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "title",
+    "description"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "x-ui": {
+        "label": "Page title",
+        "widget": "text",
+        "help": "Shown in browser tabs and search results; keep under 60 characters."
+      }
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 320,
+      "x-ui": {
+        "label": "Search description",
+        "widget": "textarea",
+        "help": "Shown under the title in search results; aim for 150-160 characters."
+      }
+    }
+  }
+}
