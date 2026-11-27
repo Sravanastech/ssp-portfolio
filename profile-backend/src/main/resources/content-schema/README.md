@@ -4,8 +4,8 @@ One JSON Schema file per kind of content block. The backend validates every bloc
 and serves them to the studio UI, which renders its forms from them. Adding a section type means adding
 one file here (no code) as long as it maps onto an existing `shape`.
 
-The directory is copied into the backend jar at build time (`profile-backend/pom.xml`,
-`content-schema/*.schema.json`). A malformed file stops the backend from starting.
+This directory lives on the backend classpath (`profile-backend/src/main/resources/content-schema/`) and is packaged into the jar.
+A malformed file stops the backend from starting.
 
 ## File format
 
