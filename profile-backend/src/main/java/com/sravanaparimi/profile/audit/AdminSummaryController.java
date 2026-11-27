@@ -39,8 +39,8 @@ public class AdminSummaryController {
       out.put(
           "draftPending",
           db.queryForObject(
-              "SELECT EXISTS (SELECT 1 FROM content_revision d WHERE d.state='draft'"
-                  + " AND d.id > coalesce((SELECT revision_id FROM site_state), 0))",
+              "SELECT EXISTS (SELECT 1 FROM content_block WHERE draft IS NOT NULL"
+                  + " OR draft_deleted OR draft_position IS NOT NULL)",
               Boolean.class));
     if (actor.can(Permission.PEOPLE_READ))
       out.put(

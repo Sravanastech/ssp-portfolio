@@ -8,6 +8,10 @@ type Props = {
   /** Change to request a fresh challenge (tokens are single use). */
   resetKey?: number;
   siteKey?: string;
+  /** Must match the action the backend verifies for the form. */
+  action?: string;
+  /** Overrides the fallback copy shown when the check cannot load. */
+  hints?: { failed?: string; unconfigured?: string };
 };
 
 export default function TurnstileWidget({
@@ -15,6 +19,8 @@ export default function TurnstileWidget({
   onExpire,
   resetKey = 0,
   siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "",
+  action = "resume_otp",
+  hints,
 }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const widget = useRef<{ id: string; api: TurnstileApi } | null>(null);
@@ -38,7 +44,7 @@ export default function TurnstileWidget({
         if (cancelled || !host.current) return;
         const id = turnstile.render(host.current, {
           sitekey: siteKey,
-          action: "resume_otp",
+          action,
           callback: (token) => handlers.current.onToken(token),
           "expired-callback": () => handlers.current.onExpire(),
           "error-callback": fail,
@@ -62,7 +68,7 @@ export default function TurnstileWidget({
         widget.current = null;
       }
     };
-  }, [siteKey]);
+  }, [siteKey, action]);
 
   const first = useRef(true);
   useEffect(() => {
@@ -81,8 +87,10 @@ export default function TurnstileWidget({
           {state === "loading"
             ? "Loading verification…"
             : siteKey
-              ? "The verification check could not load. Check your connection, disable blockers for this site and reload, or sign in instead."
-              : "Email verification is unavailable right now. Please sign in instead."}
+              ? (hints?.failed ??
+                "The verification check could not load. Check your connection, disable blockers for this site and reload, or sign in instead.")
+              : (hints?.unconfigured ??
+                "Email verification is unavailable right now. Please sign in instead.")}
         </p>
       )}
     </div>

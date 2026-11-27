@@ -19,6 +19,14 @@ public class ApiErrors {
     return ResponseEntity.status(ex.getStatusCode()).cacheControl(CacheControl.noStore()).body(p);
   }
 
+  @ExceptionHandler(com.sravanaparimi.profile.studio.StudioException.class)
+  ResponseEntity<ProblemDetail> studio(com.sravanaparimi.profile.studio.StudioException ex) {
+    var p = ProblemDetail.forStatusAndDetail(ex.getStatusCode(), ex.getReason());
+    p.setProperty("code", ex.code());
+    ex.extra().forEach(p::setProperty);
+    return ResponseEntity.status(ex.getStatusCode()).cacheControl(CacheControl.noStore()).body(p);
+  }
+
   @ExceptionHandler({
     MethodArgumentNotValidException.class,
     HttpMessageNotReadableException.class,

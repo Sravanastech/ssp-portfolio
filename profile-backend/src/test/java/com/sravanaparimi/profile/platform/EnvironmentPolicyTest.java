@@ -107,6 +107,45 @@ class EnvironmentPolicyTest {
         .withProperty("profile.admin.owner-sub", "auth0|owner");
   }
 
+  static MockEnvironment contactProd() {
+    return prod()
+        .withProperty("profile.contact.enabled", "true")
+        .withProperty("profile.email.mode", "provider")
+        .withProperty("profile.email.endpoint", "https://api.resend.com/emails")
+        .withProperty("profile.email.key", "re_real_key")
+        .withProperty("profile.email.recipient", "admin@sravanasparimi.com")
+        .withProperty("profile.email.from", "Sravana <hello@mail.sravanasparimi.com>")
+        .withProperty("profile.notifications.enabled", "true")
+        .withProperty("profile.inquiries.ip-salt", "0123456789abcdef")
+        .withProperty("profile.resume-otp.turnstile.enabled", "true")
+        .withProperty("profile.resume-otp.turnstile.secret", "0x4AAAAAAArealsecretvalue")
+        .withProperty("profile.resume-otp.turnstile.allowed-hostnames", "sravanasparimi.com")
+        .withProperty("profile.resume-otp.turnstile.require-action", "true");
+  }
+
+  @Test
+  void productionContactFullyConfiguredIsValid() {
+    assertDoesNotThrow(() -> EnvironmentPolicy.validate(Set.of("prod"), contactProd()));
+  }
+
+  @Test
+  void productionContactRequiresRealTurnstile() {
+    for (String[] bad :
+        new String[][] {
+          {"profile.resume-otp.turnstile.enabled", "false"},
+          {"profile.resume-otp.turnstile.secret", ""},
+          {"profile.resume-otp.turnstile.secret", "1x0000000000000000000000000000000AA"},
+          {"profile.resume-otp.turnstile.allowed-hostnames", ""},
+          {"profile.resume-otp.turnstile.require-action", "false"},
+        }) {
+      var env = contactProd().withProperty(bad[0], bad[1]);
+      assertThrows(
+          IllegalStateException.class,
+          () -> EnvironmentPolicy.validate(Set.of("prod"), env),
+          bad[0] + "=" + bad[1]);
+    }
+  }
+
   @Test
   void productionOtpFullyConfiguredIsValid() {
     assertDoesNotThrow(() -> EnvironmentPolicy.validate(Set.of("prod"), otpProd()));

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sravanasparimi.com/content-schema/page_text",
+  "title": "Page text",
+  "x-studio": {
+    "type": "page_text",
+    "shape": "merge",
+    "target": "copy",
+    "collection": "copy",
+    "page": "Pages",
+    "section": "Page text",
+    "label": "Page text",
+    "order": 10,
+    "keyPrefix": "slug",
+    "itemTitle": "{{slug}}",
+    "groupBy": "first two key segments, e.g. pages.HomePage"
+  },
+  "type": "object",
+  "minProperties": 1,
+  "maxProperties": 200,
+  "propertyNames": {
+    "pattern": "^[A-Za-z][A-Za-z0-9]*(\\.[A-Za-z0-9]+){2,5}$"
+  },
+  "additionalProperties": {
+    "type": "string",
+    "maxLength": 2000,
+    "x-ui": {
+      "widget": "textarea"
+    }
+  }
+}

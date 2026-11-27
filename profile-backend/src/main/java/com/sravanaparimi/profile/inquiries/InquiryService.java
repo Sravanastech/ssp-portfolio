@@ -85,7 +85,7 @@ public class InquiryService {
             Integer.class,
             hash(salt + address));
     if (count > 5)
-      throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Please try again later");
+      throw new ContactException(HttpStatus.TOO_MANY_REQUESTS, "rate_limited", 3600);
     db.update("INSERT INTO outbox(id,inquiry_id) VALUES (?,?)", UUID.randomUUID(), id);
     return new Receipt(id, "accepted");
   }

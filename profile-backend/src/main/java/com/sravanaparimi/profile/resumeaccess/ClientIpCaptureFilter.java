@@ -30,7 +30,7 @@ class ClientIpCaptureFilter {
           chain.doFilter(req, res);
         };
     var registration = new FilterRegistrationBean<>(filter);
-    registration.addUrlPatterns("/api/resume/otp/*");
+    registration.addUrlPatterns("/api/resume/otp/*", "/api/contact");
     registration.setOrder(CAPTURE_ORDER);
     return registration;
   }
