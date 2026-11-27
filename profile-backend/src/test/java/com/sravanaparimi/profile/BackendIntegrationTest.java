@@ -48,6 +48,14 @@ class BackendIntegrationTest {
     jwks.start();
     issuer = "http://127.0.0.1:" + jwks.getAddress().getPort() + "/";
     var spring = new SpringApplication(ProfileApplication.class);
+    spring.addInitializers(
+        ctx ->
+            ((org.springframework.context.support.GenericApplicationContext) ctx)
+                .registerBean(
+                    "fakeTurnstile",
+                    com.sravanaparimi.profile.resumeaccess.TurnstileVerifier.class,
+                    () -> (token, ip) -> !"bad".equals(token),
+                    bd -> bd.setPrimary(true)));
     spring.setDefaultProperties(
         Map.of(
             "spring.profiles.active",
@@ -323,7 +331,7 @@ class BackendIntegrationTest {
     String id = UUID.randomUUID().toString();
     String body =
         "{\"name\":\"Review\",\"email\":\"review@example.test\",\"message\":\"Please discuss this"
-            + " portfolio project.\",\"website\":\"\"}";
+            + " portfolio project.\",\"website\":\"\",\"turnstileToken\":\"ok\"}";
     var first = request("POST", "/api/contact", null, body, id);
     assertEquals(202, first.statusCode());
     var second = request("POST", "/api/contact", null, body, id);
@@ -354,7 +362,7 @@ class BackendIntegrationTest {
                 "POST",
                 "/api/contact",
                 null,
-                "{\"name\":\"Bot\",\"email\":\"invalid\",\"message\":\"test\",\"website\":\"spam\"}",
+                "{\"name\":\"Bot\",\"email\":\"invalid\",\"message\":\"test\",\"website\":\"spam\",\"turnstileToken\":\"ok\"}",
                 UUID.randomUUID().toString())
             .statusCode());
   }
@@ -490,7 +498,7 @@ class BackendIntegrationTest {
         "/api/contact",
         null,
         "{\"name\":\"Worker\",\"email\":\"worker@example.test\",\"message\":\"Synthetic worker test"
-            + " message\"}",
+            + " message\",\"turnstileToken\":\"ok\"}",
         id);
     var worker = app.getBean(com.sravanaparimi.profile.jobs.NotificationWorker.class);
     worker.runOnce();
