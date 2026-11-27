@@ -59,7 +59,7 @@ export async function adminFetch<T>(
       code
         ? MESSAGES[code]
         : res.status === 429
-          ? "Too many invites. Try again later."
+          ? "Too many requests. Try again later."
           : "Request failed. Please retry.",
       res.status,
       code,

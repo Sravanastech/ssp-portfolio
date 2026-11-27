@@ -51,6 +51,6 @@ describe("adminFetch", () => {
     expect(error).toBeInstanceOf(AdminApiError);
     expect((error as AdminApiError).code).toBeUndefined();
     reply(429);
-    await expect(adminFetch("t", "/x")).rejects.toThrow(/Too many invites/);
+    await expect(adminFetch("t", "/x")).rejects.toThrow(/Too many requests/);
   });
 });
