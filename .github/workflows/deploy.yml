@@ -27,6 +27,10 @@ permissions:
   contents: read
   id-token: write # keyless Google auth (Workload Identity Federation)
 
+concurrency:
+  group: deploy-hosting
+  cancel-in-progress: false
+
 env:
   RELEASE_ID: ${{ inputs.release_id }}
   CALLBACK_BASE: ${{ inputs.callback_base }}

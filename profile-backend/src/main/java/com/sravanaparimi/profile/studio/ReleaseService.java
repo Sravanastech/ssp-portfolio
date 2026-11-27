@@ -179,7 +179,8 @@ public class ReleaseService {
                     id);
                 if (status.equals("live"))
                   db.update(
-                      "UPDATE site_release SET status='superseded' WHERE status='live' AND id<>?",
+                      "UPDATE site_release SET status='superseded', finished_at=COALESCE(finished_at, now())"
+                          + " WHERE id<? AND status IN ('live','queued','building')",
                       id);
                 audit.record(
                     null, "release.status", Long.toString(id), Map.of("releaseId", id, "status", status));

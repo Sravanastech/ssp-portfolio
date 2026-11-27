@@ -540,6 +540,20 @@ class StudioIntegrationTest {
   }
 
   @Test
+  void goingLiveAlsoSupersedesOlderQueuedAndBuildingReleases() throws Exception {
+    long a = newRelease();
+    long b = newRelease();
+    long c = newRelease();
+    long exp = app.getBean(ReleaseTokens.class).newExpiry();
+    assertEquals(200, publicCall("POST", "/api/public/releases/" + b + "/status", ci(b, exp), "{\"status\":\"building\"}").statusCode());
+    assertEquals(200, publicCall("POST", "/api/public/releases/" + c + "/status", ci(c, exp), "{\"status\":\"live\"}").statusCode());
+    assertEquals("superseded", status(a));
+    assertEquals("superseded", status(b));
+    assertEquals("live", status(c));
+    assertEquals(409, publicCall("POST", "/api/public/releases/" + a + "/status", ci(a, exp), "{\"status\":\"live\"}").statusCode());
+  }
+
+  @Test
   void ciStatusRejectsBadTokensAndBodies() throws Exception {
     long a = newRelease();
     long b = newRelease();
