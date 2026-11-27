@@ -31,7 +31,7 @@ export default function PrivacyPage() {
             </p>
             <p>
               <SiteText id="pages.PrivacyPage.text.6" />{" "}
-              <a href="https://web3forms.com/privacy">
+              <a href="https://www.cloudflare.com/privacypolicy/">
                 <SiteText id="pages.PrivacyPage.text.7" />
               </a>
               <SiteText id="pages.PrivacyPage.text.8" />

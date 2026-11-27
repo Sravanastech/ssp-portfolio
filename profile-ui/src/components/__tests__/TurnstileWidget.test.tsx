@@ -113,4 +113,33 @@ describe("TurnstileWidget", () => {
     expect(scripts()).toHaveLength(0);
     expect(screen.getByRole("status")).toHaveTextContent(/unavailable/i);
   });
+
+  it("renders with a caller-supplied action and defaults to resume_otp", async () => {
+    render(
+      <TurnstileWidget
+        siteKey="s"
+        action="contact"
+        onToken={vi.fn()}
+        onExpire={vi.fn()}
+      />,
+    );
+    render(
+      <TurnstileWidget siteKey="s" onToken={vi.fn()} onExpire={vi.fn()} />,
+    );
+    await loadScript();
+    expect(api.render.mock.calls[0][1].action).toBe("contact");
+    expect(api.render.mock.calls[1][1].action).toBe("resume_otp");
+  });
+
+  it("uses caller-supplied fallback copy", () => {
+    render(
+      <TurnstileWidget
+        siteKey=""
+        hints={{ unconfigured: "Use the email link." }}
+        onToken={vi.fn()}
+        onExpire={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("Use the email link.");
+  });
 });
