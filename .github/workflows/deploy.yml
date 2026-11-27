@@ -1,19 +1,82 @@
 name: Deploy hosting
 
+# Manual runs deploy the repository's bundled content, exactly as before.
+# The Site Studio backend dispatches this workflow with the release_* inputs: the run then builds the
+# site from that release's snapshot and reports building / live / failed back to the backend.
 on:
   workflow_dispatch:
+    inputs:
+      release_id:
+        description: Site Studio release id (set by the backend)
+        required: false
+        type: string
+      release_token:
+        description: Short-lived per-release callback token (set by the backend)
+        required: false
+        type: string
+      release_expires:
+        description: Callback token expiry, epoch seconds (set by the backend)
+        required: false
+        type: string
+      callback_base:
+        description: Backend base URL for the release callbacks (set by the backend)
+        required: false
+        type: string
 
 permissions:
   contents: read
   id-token: write # keyless Google auth (Workload Identity Federation)
 
+concurrency:
+  group: deploy-hosting
+  cancel-in-progress: false
+
+env:
+  RELEASE_ID: ${{ inputs.release_id }}
+  CALLBACK_BASE: ${{ inputs.callback_base }}
+  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Mask release token and check release inputs
+        if: ${{ inputs.release_id != '' }}
+        env:
+          RELEASE_TOKEN: ${{ inputs.release_token }}
+          RELEASE_EXPIRES: ${{ inputs.release_expires }}
+        run: |
+          echo "::add-mask::$RELEASE_TOKEN"
+          case "$RELEASE_ID" in ''|*[!0-9]*) echo "release_id must be numeric"; exit 1;; esac
+          case "$RELEASE_EXPIRES" in ''|*[!0-9]*) echo "release_expires must be numeric"; exit 1;; esac
+          case "$CALLBACK_BASE" in https://*) ;; *) echo "callback_base must be https"; exit 1;; esac
+          test -n "$RELEASE_TOKEN" || { echo "release_token is required"; exit 1; }
+      - name: Report building (best effort)
+        if: ${{ inputs.release_id != '' }}
+        env:
+          RELEASE_TOKEN: ${{ inputs.release_token }}
+          RELEASE_EXPIRES: ${{ inputs.release_expires }}
+        run: |
+          curl -sS --max-time 20 -X POST "${CALLBACK_BASE%/}/api/public/releases/${RELEASE_ID}/status" \
+            -H "Content-Type: application/json" \
+            -H "X-Release-Token: ${RELEASE_TOKEN}" \
+            -H "X-Release-Expires: ${RELEASE_EXPIRES}" \
+            -d "{\"status\":\"building\",\"runUrl\":\"${RUN_URL}\"}" \
+            -o /dev/null -w "building callback: HTTP %{http_code}\n" || echo "building callback failed (ignored)"
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - name: Fetch release snapshot
+        if: ${{ inputs.release_id != '' }}
+        working-directory: profile-ui
+        env:
+          RELEASE_TOKEN: ${{ inputs.release_token }}
+          RELEASE_EXPIRES: ${{ inputs.release_expires }}
+        run: |
+          curl -fsS --max-time 60 --retry 3 --retry-delay 3 -G "${CALLBACK_BASE%/}/api/public/releases/${RELEASE_ID}" \
+            --data-urlencode "token=${RELEASE_TOKEN}" --data-urlencode "exp=${RELEASE_EXPIRES}" \
+            -o src/data/release.json
+          node -e 'const c=JSON.parse(require("fs").readFileSync("src/data/release.json","utf8")); for (const k of ["profile","experiences","caseStudies","workProjects","expertiseData","copy","seo","navigation"]) if (c[k]===undefined) throw new Error("snapshot is missing "+k); console.log("Release snapshot OK")'
       - uses: actions/setup-node@v7
         with:
           node-version: 24
@@ -40,8 +103,32 @@ jobs:
           service_account: github-hosting@ssp-profile.iam.gserviceaccount.com
       - run: npx --yes firebase-tools@15.34.1 deploy --only hosting --project ssp-profile --non-interactive
         working-directory: profile-ui
+      - name: Report live (best effort)
+        if: ${{ inputs.release_id != '' }}
+        env:
+          RELEASE_TOKEN: ${{ inputs.release_token }}
+          RELEASE_EXPIRES: ${{ inputs.release_expires }}
+        run: |
+          curl -sS --max-time 20 --retry 2 -X POST "${CALLBACK_BASE%/}/api/public/releases/${RELEASE_ID}/status" \
+            -H "Content-Type: application/json" \
+            -H "X-Release-Token: ${RELEASE_TOKEN}" \
+            -H "X-Release-Expires: ${RELEASE_EXPIRES}" \
+            -d "{\"status\":\"live\",\"runUrl\":\"${RUN_URL}\"}" \
+            -o /dev/null -w "live callback: HTTP %{http_code}\n" || echo "live callback failed (ignored)"
       # Notify Bing/Yandex of the sitemap URLs; the script is a no-op when the secret is absent.
       - run: node scripts/indexnow.mjs --submit
         working-directory: profile-ui
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+      - name: Report failed (best effort)
+        if: ${{ failure() && inputs.release_id != '' }}
+        env:
+          RELEASE_TOKEN: ${{ inputs.release_token }}
+          RELEASE_EXPIRES: ${{ inputs.release_expires }}
+        run: |
+          curl -sS --max-time 20 --retry 2 -X POST "${CALLBACK_BASE%/}/api/public/releases/${RELEASE_ID}/status" \
+            -H "Content-Type: application/json" \
+            -H "X-Release-Token: ${RELEASE_TOKEN}" \
+            -H "X-Release-Expires: ${RELEASE_EXPIRES}" \
+            -d "{\"status\":\"failed\",\"runUrl\":\"${RUN_URL}\"}" \
+            -o /dev/null -w "failed callback: HTTP %{http_code}\n" || echo "failed callback failed (ignored)"

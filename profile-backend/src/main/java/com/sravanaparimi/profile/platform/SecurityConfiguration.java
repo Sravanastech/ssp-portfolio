@@ -43,7 +43,11 @@ public class SecurityConfiguration {
         .authorizeHttpRequests(
             a ->
                 a.requestMatchers(
-                        "/api/health", "/api/site", "/api/contact", "/api/media/public/**")
+                        "/api/health",
+                        "/api/site",
+                        "/api/contact",
+                        "/api/media/public/**",
+                        "/api/public/releases/**")
                     .permitAll()
                     .requestMatchers("/api/**")
                     .authenticated()

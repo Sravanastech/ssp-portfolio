@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sravanasparimi.com/content-schema/case_study",
+  "title": "Case study",
+  "x-studio": {
+    "type": "case_study",
+    "shape": "item",
+    "target": "caseStudies",
+    "collection": "caseStudies",
+    "page": "Work",
+    "section": "Case studies",
+    "label": "Case studies",
+    "order": 10,
+    "slugFrom": "id",
+    "itemTitle": "{{name}}",
+    "itemSubtitle": "{{organization}}"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "preview",
+    "organization",
+    "role",
+    "summary",
+    "problem",
+    "contribution",
+    "outcome",
+    "flow",
+    "flowNote",
+    "technologies"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+      "x-ui": {
+        "label": "Identifier",
+        "widget": "hidden",
+        "help": "Generated automatically."
+      }
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "x-ui": {
+        "label": "Title",
+        "widget": "text"
+      }
+    },
+    "preview": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "x-ui": {
+        "label": "Card preview",
+        "widget": "textarea",
+        "help": "One or two sentences shown on the Work page card."
+      }
+    },
+    "organization": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-ui": {
+        "label": "Organization",
+        "widget": "text"
+      }
+    },
+    "role": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "x-ui": {
+        "label": "Your role",
+        "widget": "text"
+      }
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "x-ui": {
+        "label": "Summary",
+        "widget": "textarea"
+      }
+    },
+    "problem": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800,
+      "x-ui": {
+        "label": "Problem",
+        "widget": "textarea"
+      }
+    },
+    "contribution": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200,
+      "x-ui": {
+        "label": "Your contribution",
+        "widget": "textarea"
+      }
+    },
+    "outcome": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800,
+      "x-ui": {
+        "label": "Outcome",
+        "widget": "textarea"
+      }
+    },
+    "flow": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      },
+      "x-ui": {
+        "label": "Workflow steps",
+        "widget": "stringList",
+        "itemLabel": "Step",
+        "help": "In order, one per step."
+      }
+    },
+    "flowNote": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "x-ui": {
+        "label": "Workflow note",
+        "widget": "textarea"
+      }
+    },
+    "technologies": {
+      "type": "array",
+      "maxItems": 30,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60
+      },
+      "x-ui": {
+        "label": "Technologies",
+        "widget": "tags",
+        "itemLabel": "Technology"
+      }
+    }
+  }
+}

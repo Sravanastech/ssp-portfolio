@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sravanasparimi.com/content-schema/navigation_item",
+  "title": "Navigation link",
+  "x-studio": {
+    "type": "navigation_item",
+    "shape": "item",
+    "target": "navigation",
+    "collection": "navigation",
+    "page": "Global",
+    "section": "Navigation",
+    "label": "Navigation",
+    "order": 10,
+    "slugFrom": "label",
+    "itemTitle": "{{label}}",
+    "itemSubtitle": "{{href}}"
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "href",
+    "label"
+  ],
+  "properties": {
+    "href": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "x-ui": {
+        "label": "Link",
+        "widget": "url",
+        "help": "A path on this site such as /about, or an https:// address."
+      }
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40,
+      "x-ui": {
+        "label": "Label",
+        "widget": "text"
+      }
+    }
+  }
+}

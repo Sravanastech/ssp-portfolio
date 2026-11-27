@@ -41,6 +41,12 @@ profile:
     from: ${EMAIL_FROM:onboarding@resend.dev}
   admin:
     owner-sub: ${ADMIN_OWNER_SUB:}
+  github:
+    dispatch-token: ${GITHUB_DISPATCH_TOKEN:}
+    callback-secret: ${RELEASE_CALLBACK_SECRET:}
+    callback-base: ${RELEASE_CALLBACK_BASE:}
+    owner: ${GITHUB_OWNER:Sravanastech}
+    repo: ${GITHUB_REPO:ssp-portfolio}
   resume-otp:
     enabled: ${RESUME_OTP_ENABLED:false}
     trusted-proxy-hops: ${OTP_TRUSTED_PROXY_HOPS:1}
